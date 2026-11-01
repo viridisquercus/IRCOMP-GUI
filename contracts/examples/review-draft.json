@@ -1,0 +1,57 @@
+{
+  "kind": "review",
+  "format_version": "1.0",
+  "request": {
+    "kind": "request",
+    "format_version": "1.0",
+    "study_id": "00000000-0000-4000-8000-000000000001",
+    "request_id": "00000000-0000-4000-8000-000000000002",
+    "title": "Synthetic example — no scientific result",
+    "revision": {
+      "revision_id": "00000000-0000-4000-8000-000000000003",
+      "reference_id": "demo-reference-v1",
+      "profile_id": "demo-spcas9-ngg-v1",
+      "coordinate_system": "0-based-half-open",
+      "targets": [
+        {
+          "target_id": "00000000-0000-4000-8000-000000000004",
+          "contig": "demo_contig",
+          "start": 100,
+          "end": 200,
+          "strand": "+"
+        }
+      ]
+    },
+    "target_labels": {
+      "00000000-0000-4000-8000-000000000004": "Demo target A"
+    }
+  },
+  "source_saved_version": 1,
+  "collections": [
+    {
+      "collection_id": "00000000-0000-4000-8000-000000000008",
+      "revision_id": "00000000-0000-4000-8000-000000000003",
+      "name": "Synthetic review",
+      "memberships": [
+        {
+          "candidate": {
+            "bundle_id": "00000000-0000-4000-8000-000000000005",
+            "candidate_id": "demo-A"
+          },
+          "disposition": "needs_clarification",
+          "rationale": "Example only; a real review is pending.",
+          "evidence_refs": []
+        }
+      ]
+    }
+  ],
+  "evidence_files": [
+    {
+      "bundle_id": "00000000-0000-4000-8000-000000000005",
+      "sha256": "fdcbc764b1b93c592d0455fb2a85e0b0134d46fb5cfbc8f0651e320d4012b554",
+      "content_base64": "ewogICJraW5kIjogImV2aWRlbmNlIiwKICAiZm9ybWF0X3ZlcnNpb24iOiAiMS4wIiwKICAiYnVuZGxlX2lkIjogIjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwNSIsCiAgInJlcXVlc3RfaWQiOiAiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwKICAiY29udGV4dCI6IHsKICAgICJyZXZpc2lvbl9pZCI6ICIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDMiLAogICAgInJlZmVyZW5jZV9pZCI6ICJkZW1vLXJlZmVyZW5jZS12MSIsCiAgICAicHJvZmlsZV9pZCI6ICJkZW1vLXNwY2FzOS1uZ2ctdjEiLAogICAgImNvb3JkaW5hdGVfc3lzdGVtIjogIjAtYmFzZWQtaGFsZi1vcGVuIiwKICAgICJ0YXJnZXRzIjogWwogICAgICB7CiAgICAgICAgInRhcmdldF9pZCI6ICIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDQiLAogICAgICAgICJjb250aWciOiAiZGVtb19jb250aWciLAogICAgICAgICJzdGFydCI6IDEwMCwKICAgICAgICAiZW5kIjogMjAwLAogICAgICAgICJzdHJhbmQiOiAiKyIKICAgICAgfQogICAgXQogIH0sCiAgImNhdGVnb3J5IjogInN5bnRoZXRpYyIsCiAgInNvdXJjZSI6IHsKICAgICJuYW1lIjogIlN5bnRoZXRpYyBmaXh0dXJlIiwKICAgICJ2ZXJzaW9uIjogIjEiLAogICAgInVyaSI6IG51bGwKICB9LAogICJjYW5kaWRhdGVzIjogWwogICAgewogICAgICAiY2FuZGlkYXRlX2lkIjogImRlbW8tQSIsCiAgICAgICJ0YXJnZXRfaWQiOiAiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDA0IiwKICAgICAgImxhYmVsIjogIlN5bnRoZXRpYyBjYW5kaWRhdGUgQSIsCiAgICAgICJtZXRyaWNzIjogWwogICAgICAgIHsKICAgICAgICAgICJuYW1lIjogIkV4YW1wbGUgc2NvcmUiLAogICAgICAgICAgIm1vZGVsIjogInN5bnRoZXRpYy1tb2RlbC12MSIsCiAgICAgICAgICAidW5pdCI6IG51bGwsCiAgICAgICAgICAic2NhbGUiOiAiMCB0byAxMDAgKGV4YW1wbGUgb25seSkiLAogICAgICAgICAgImRpcmVjdGlvbiI6ICJoaWdoZXIiLAogICAgICAgICAgImF2YWlsYWJpbGl0eSI6ICJwcmVzZW50IiwKICAgICAgICAgICJ2YWx1ZSI6IDAKICAgICAgICB9LAogICAgICAgIHsKICAgICAgICAgICJuYW1lIjogIk90aGVyIGV4YW1wbGUgc2NvcmUiLAogICAgICAgICAgIm1vZGVsIjogbnVsbCwKICAgICAgICAgICJ1bml0IjogbnVsbCwKICAgICAgICAgICJzY2FsZSI6IG51bGwsCiAgICAgICAgICAiZGlyZWN0aW9uIjogbnVsbCwKICAgICAgICAgICJhdmFpbGFiaWxpdHkiOiAibm90X3N1cHBsaWVkIiwKICAgICAgICAgICJ2YWx1ZSI6IG51bGwKICAgICAgICB9CiAgICAgIF0sCiAgICAgICJyYXdfcmVjb3JkIjogewogICAgICAgICJmaXh0dXJlIjogdHJ1ZSwKICAgICAgICAib3JpZ2luYWxfc2NvcmVfdGV4dCI6ICIwIiwKICAgICAgICAibm90ZSI6ICJObyBnZW5vbWljIGFuYWx5c2lzIHdhcyBwZXJmb3JtZWQuIgogICAgICB9CiAgICB9CiAgXSwKICAiZGVwZW5kZW5jaWVzIjogW10KfQo="
+    }
+  ],
+  "review_status": "draft",
+  "unresolved_count": 1
+}
