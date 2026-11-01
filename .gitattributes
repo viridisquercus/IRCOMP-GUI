@@ -1,3 +1,6 @@
 * text=auto eol=lf
 *.jpg binary
 *.png binary
+
+# Retain downloaded provenance files byte-for-byte for their recorded digests.
+contracts/references/* -text -diff
