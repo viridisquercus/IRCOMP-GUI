@@ -15,6 +15,7 @@ scientific execution or released IRCOMP adapter is implemented yet.
 | User problems and source evidence | [S2 desk research](docs/research/s2-desk-research.md) |
 | Pending primary research | [Interview plan](docs/research/s2-interview-plan.md) |
 | Existing applications and design lessons | [S3 comparison](docs/research/s3-competitive-analysis.md) |
+| UI design and wireframes | [S4 design](docs/design/README.md) |
 | Runtime boundaries and repository ownership | [Architecture](docs/architecture/overview.md) |
 | Conventions and verification | [Development](docs/development/README.md) |
 | Course milestones and remaining work | [ITU checklist](docs/tasks/itu-phase-i.md) |

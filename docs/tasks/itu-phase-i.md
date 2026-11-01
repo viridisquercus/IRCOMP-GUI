@@ -10,7 +10,7 @@ planned as a two-person equivalent.
 | S1: bounded topic and modules | Working scope prepared | [Scope](../research/s1-scope.md) |
 | S2: user research | Desk research prepared; two real sessions pending | [Research](../research/s2-desk-research.md), [plan](../research/s2-interview-plan.md) |
 | S3: four existing applications | Comparison prepared; final primary-need mapping pending | [Comparison](../research/s3-competitive-analysis.md) |
-| S4: UI design | TODO | Prepare, Review, Export; error and recovery states |
+| S4: UI design | Initial specification and five wireframes prepared; interview validation pending | [Design](../design/README.md) |
 | S5: architecture/contracts | Initial boundaries only | [Architecture](../architecture/overview.md) |
 | S6: all model/API operations and key GUI | TODO | Scaffold is not an implemented application |
 | S7–S10: report, archive, verification, upload | TODO | PDF and source archive; check contents before upload |

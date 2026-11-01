@@ -37,3 +37,8 @@ error recovery rather than mirror component markup. See [test strategy](../../te
 3. Select and lock the Python HTTP and frontend build tools.
 4. Implement request creation/edit/save/reopen end-to-end, then evidence review.
 5. Verify all declared model/API functions before the Phase I submission.
+
+## Version control and design artifacts
+
+Follow [working changes](../../CONTRIBUTING.md) for logical commits and publication.
+[S4 wireframes](../design/README.md) are generated design artifacts, not the runtime client.
