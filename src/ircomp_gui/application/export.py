@@ -7,7 +7,7 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from typing import Any
 
-from ircomp_gui.adapters.exchange import Exchange, encode_json
+from ircomp_gui.application.ports import ExchangePort
 from ircomp_gui.application.workspace import WorkspaceService
 from ircomp_gui.domain.errors import DomainError
 from ircomp_gui.domain.models import RequestSnapshot, Study
@@ -17,6 +17,7 @@ from ircomp_gui.domain.rules import (
     unique,
     unresolved,
 )
+from ircomp_gui.domain.serialization import encode_json
 
 
 @dataclass(frozen=True)
@@ -46,7 +47,7 @@ def request_snapshot(study: Study, revision_id: str) -> RequestSnapshot:
 class ExportService:
     """Export durable versions only; preparing/downloading never mutates studies."""
 
-    def __init__(self, workspace: WorkspaceService, exchange: Exchange) -> None:
+    def __init__(self, workspace: WorkspaceService, exchange: ExchangePort) -> None:
         self.workspace = workspace
         self.exchange = exchange
         self.files: OrderedDict[str, ExportFile] = OrderedDict()
@@ -151,7 +152,7 @@ class ExportService:
                 }
             else:
                 raise DomainError("SCHEMA_INVALID", "Choose request or review export.")
-            self.exchange.validator.validate(document)
+            self.exchange.validate_document(document)
             raw = encode_json(document)
             export_id = self.workspace.new_id()
             filename = f"study-{study.study_id[:8]}-{revision_id[:8]}.{kind}.json"

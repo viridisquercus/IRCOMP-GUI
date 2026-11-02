@@ -15,7 +15,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from ircomp_gui.adapters.exchange import Exchange, parse_json
+from ircomp_gui.adapters.exchange import Exchange
+from ircomp_gui.adapters.resources import load_catalogue, resource_path
 from ircomp_gui.adapters.sqlite import SQLiteRepository
 from ircomp_gui.api.requests import (
     CloseInput,
@@ -35,8 +36,8 @@ from ircomp_gui.application.commands import AttachEvidence
 from ircomp_gui.application.export import ExportService
 from ircomp_gui.application.imports import ImportService
 from ircomp_gui.application.workspace import WorkspaceService
-from ircomp_gui.domain.catalogue import load_catalogue, resource_path
 from ircomp_gui.domain.errors import DomainError
+from ircomp_gui.domain.serialization import parse_json
 
 LOG = logging.getLogger(__name__)
 

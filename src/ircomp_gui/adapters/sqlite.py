@@ -10,18 +10,20 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from ircomp_gui.adapters.exchange import MAX_DOCUMENT, Exchange, encode_json, parse_json
-from ircomp_gui.application.ports import SavedStudy, StudySummary
+from ircomp_gui.application.ports import ExchangePort, SavedStudy, StudySummary
 from ircomp_gui.domain.catalogue import Catalogue
 from ircomp_gui.domain.errors import DomainError
 from ircomp_gui.domain.models import Study
 from ircomp_gui.domain.rules import validate_study
+from ircomp_gui.domain.serialization import MAX_DOCUMENT, encode_json, parse_json
 
 
 class SQLiteRepository:
     """One aggregate per row prevents partially saved evidence/review state."""
 
-    def __init__(self, path: Path, catalogue: Catalogue, exchange: Exchange) -> None:
+    def __init__(
+        self, path: Path, catalogue: Catalogue, exchange: ExchangePort
+    ) -> None:
         self.path = path
         self.catalogue = catalogue
         self.exchange = exchange
@@ -34,13 +36,51 @@ class SQLiteRepository:
                         "SCHEMA_INVALID",
                         "Unsupported database layout; the file was not changed.",
                     )
-                _ = connection.execute(
-                    "CREATE TABLE IF NOT EXISTS studies (study_id TEXT PRIMARY "
-                    "KEY, request_id TEXT NOT NULL UNIQUE, saved_version INTEGER "
-                    "NOT NULL CHECK(saved_version > 0), title TEXT NOT NULL, "
-                    "updated_at TEXT NOT NULL, document_json TEXT NOT NULL)"
-                )
-                _ = connection.execute("PRAGMA user_version = 1")
+                tables = [
+                    row[0]
+                    for row in connection.execute(
+                        "SELECT name FROM sqlite_master WHERE type = 'table' "
+                        "AND name NOT LIKE 'sqlite_%' ORDER BY name"
+                    ).fetchall()
+                ]
+                if version == 0:
+                    if tables:
+                        raise DomainError(
+                            "SCHEMA_INVALID",
+                            "Unversioned database contains data; it was not changed.",
+                        )
+                    _ = connection.execute("BEGIN IMMEDIATE")
+                    try:
+                        _ = connection.execute(
+                            "CREATE TABLE studies (study_id TEXT PRIMARY KEY, "
+                            "request_id TEXT NOT NULL UNIQUE, saved_version INTEGER "
+                            "NOT NULL CHECK(saved_version > 0), title TEXT NOT NULL, "
+                            "updated_at TEXT NOT NULL, document_json TEXT NOT NULL)"
+                        )
+                        _ = connection.execute("PRAGMA user_version = 1")
+                        _ = connection.execute("COMMIT")
+                    except Exception:
+                        _ = connection.execute("ROLLBACK")
+                        raise
+                else:
+                    columns = [
+                        row[1]
+                        for row in connection.execute(
+                            "PRAGMA table_info(studies)"
+                        ).fetchall()
+                    ]
+                    if tables != ["studies"] or columns != [
+                        "study_id",
+                        "request_id",
+                        "saved_version",
+                        "title",
+                        "updated_at",
+                        "document_json",
+                    ]:
+                        raise DomainError(
+                            "SCHEMA_INVALID",
+                            "Database layout is invalid; the file was not changed.",
+                        )
         except (sqlite3.Error, OSError) as error:
             raise DomainError(
                 "PERSISTENCE_UNAVAILABLE", "Cannot open the local study database."

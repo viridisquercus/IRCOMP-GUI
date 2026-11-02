@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import base64
 import hashlib
 import json
@@ -15,14 +16,14 @@ from fastapi.testclient import TestClient
 from httpx import Client
 from pydantic import TypeAdapter, ValidationError
 
-from ircomp_gui.adapters.exchange import Exchange, decode_base64, parse_json
+from ircomp_gui.adapters.exchange import Exchange
+from ircomp_gui.adapters.resources import load_catalogue, resource_path
 from ircomp_gui.adapters.sqlite import SQLiteRepository
 from ircomp_gui.api.app import create_app
 from ircomp_gui.application.commands import Command
 from ircomp_gui.application.export import ExportService
 from ircomp_gui.application.imports import ImportService
 from ircomp_gui.application.workspace import Session, WorkspaceService
-from ircomp_gui.domain.catalogue import load_catalogue, resource_path
 from ircomp_gui.domain.errors import DomainError
 from ircomp_gui.domain.models import (
     CandidateKey,
@@ -31,6 +32,7 @@ from ircomp_gui.domain.models import (
     TargetDraft,
 )
 from ircomp_gui.domain.rules import active_revision
+from ircomp_gui.domain.serialization import decode_base64, parse_json
 
 ADAPTER: TypeAdapter[Command] = TypeAdapter(Command)
 
@@ -834,3 +836,47 @@ def test_stale_workspace_and_wrong_revision_membership_rejected(stack: Stack) ->
             },
         )
     assert stack.session.study.evidence[0].bundle.context.revision_id == old
+
+
+@pytest.mark.parametrize("version", [0, 1])
+def test_unsupported_database_layout_is_not_repaired(
+    tmp_path: Path, version: int
+) -> None:
+    path = tmp_path / "unsupported.sqlite3"
+    with sqlite3.connect(path) as connection:
+        if version == 0:
+            _ = connection.execute("CREATE TABLE unrelated (message TEXT)")
+            _ = connection.execute("INSERT INTO unrelated VALUES ('keep me')")
+        else:
+            _ = connection.execute("PRAGMA user_version = 1")
+    before = path.read_bytes()
+    catalogue = load_catalogue()
+    with pytest.raises(DomainError) as failure:
+        _ = SQLiteRepository(path, catalogue, Exchange(catalogue))
+    assert failure.value.code == "SCHEMA_INVALID"
+    assert path.read_bytes() == before
+
+
+def test_domain_and_application_keep_inward_dependencies() -> None:
+    source = Path(__file__).resolve().parents[1] / "src/ircomp_gui"
+    forbidden = (
+        "fastapi",
+        "starlette",
+        "sqlite3",
+        "ircomp_gui.adapters",
+        "ircomp_gui.api",
+    )
+    for layer in ["domain", "application"]:
+        for path in (source / layer).glob("*.py"):
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+            modules: list[str] = []
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ImportFrom) and node.module:
+                    modules.append(node.module)
+                elif isinstance(node, ast.Import):
+                    modules.extend(alias.name for alias in node.names)
+            assert not any(name.startswith(forbidden) for name in modules), path.name
+            if layer == "domain":
+                assert not any(
+                    name.startswith("ircomp_gui.application") for name in modules
+                )

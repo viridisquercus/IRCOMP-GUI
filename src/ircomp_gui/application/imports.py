@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from ircomp_gui.adapters.exchange import Exchange, decode_base64, parse_json
+from ircomp_gui.application.ports import ExchangePort
 from ircomp_gui.application.workspace import Session, WorkspaceService
 from ircomp_gui.domain.errors import DomainError
 from ircomp_gui.domain.models import (
@@ -19,6 +19,7 @@ from ircomp_gui.domain.models import (
     Revision,
 )
 from ircomp_gui.domain.rules import revision_by_id, same_context, validate_study
+from ircomp_gui.domain.serialization import decode_base64, parse_json
 
 
 @dataclass(frozen=True)
@@ -39,7 +40,7 @@ class ImportPreview:
 class ImportService:
     """Parsing never changes accepted data; attachment rechecks under the lock."""
 
-    def __init__(self, workspace: WorkspaceService, exchange: Exchange) -> None:
+    def __init__(self, workspace: WorkspaceService, exchange: ExchangePort) -> None:
         self.workspace = workspace
         self.exchange = exchange
         self.previews: dict[str, ImportPreview] = {}
