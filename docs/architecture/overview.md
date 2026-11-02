@@ -1,8 +1,8 @@
 # Software architecture — S5
 
-Status: implementation specification, 1 November 2026. The schemas and fixtures
-are design artifacts; application services, persistence and GUI remain S6 work.
-This record supports ITU report §4, not evidence that the API already exists.
+Status: local model/API, SQLite persistence and key React flows implemented.
+S5 design recorded 1 November; S6 [verification](../development/s6-verification.md)
+recorded 2 November 2026. Compiler integration remains deferred.
 
 ## Reading order
 
@@ -90,14 +90,14 @@ failure and stale-state messages are part of this presentation model.
 
 ## Module allocation
 
-These are intended source files, not an inventory of implemented code or student
-authorship. Create each with its behavior; record actual files in the final report.
+The following are implemented source boundaries. Source ownership/report author
+labels still require the submission review; this table identifies responsibilities.
 
 | Module | Views / controller / selectors | Application and domain |
 | --- | --- | --- |
-| A — Prepare | `web/src/features/prepare/{PrepareView,TargetEditor,TargetList,ProblemList}.tsx`; `controller.ts`, `selectors.ts` | `application/prepare.py`: apply/remove target, context, labels, validation; `domain/request.py`: revisions, intervals, catalogue checks |
-| B — Review | `web/src/features/review/{ReviewView,EvidencePreview,CandidateDetails,CollectionEditor}.tsx`; `controller.ts`, `selectors.ts` | `application/review.py`: preview/attach, collections, membership, decisions; `domain/evidence.py`, `domain/review.py`: immutable observations and editable review layer |
-| Shared | `web/src/app/{App,WorkspaceProvider}.tsx`, `state.ts`, `controller.ts`; `web/src/shared/api.ts`; `features/export/` | `application/workspace.py`, `application/export.py`, `application/ports.py`; `domain/study.py`, `domain/diagnostics.py`; `api/`; `adapters/sqlite.py`, `adapters/exchange.py` |
+| A — Prepare | `web/src/features/prepare/PrepareView.tsx`; shared `app/controller.ts`, `app/selectors.ts` | `application/prepare.py`; `domain/models.py`, `domain/rules.py`, `domain/catalogue.py` |
+| B — Review | `web/src/features/review/ReviewView.tsx`; shared controller/state | `application/review.py`, `application/imports.py`; immutable evidence and separate memberships in `domain/models.py` |
+| Shared | `web/src/app/{App,WorkspaceProvider}.tsx`, `state.ts`, `controller.ts`, `selectors.ts`; `shared/api.ts`, `shared/ImportPreview.tsx`, `shared/types.ts`; `features/export/ExportView.tsx` | `application/workspace.py`, `application/export.py`, `application/ports.py`; `domain/serialization.py`; `api/app.py`, `api/requests.py`; `adapters/sqlite.py`, `adapters/exchange.py`, `adapters/resources.py` |
 
 Python paths are relative to `src/ircomp_gui/`. Module A has substantive target and
 context editing; Module B has many-to-many membership and editable decisions.
@@ -130,15 +130,30 @@ sequenceDiagram
     end
 ```
 
+## Runtime implementation notes
+
+Strict frozen Pydantic value models own local data contracts; a dataclass owns the
+working session coordinator. `Repository` and `ExchangePort` protocols belong to
+`application/ports.py`; SQLite and JSON Schema implementations live in adapters.
+Domain/application modules import neither FastAPI nor concrete adapters. Pure
+bounded JSON handling stays in the domain; packaged metadata I/O stays in adapters.
+The API assembly injects concrete implementations.
+
+A local lock serializes workspace operations in this single-worker application.
+Browser reload may reconnect to an existing session; explicitly opening a saved
+study creates a separate copy. Leaving a working copy closes its owned session
+and previews after confirmation. Export-last-saved may briefly open/read/close a
+separate copy to identify the durable revision without changing working state.
+
 ## Scope and course mapping
 
-| Course requirement | Design evidence | Runtime evidence still needed |
+| Course requirement | Design evidence | Runtime evidence |
 | --- | --- | --- |
 | Separate GUI / model | Component diagram and dependency rules | Headless domain/service tests |
 | State outside visual elements | Shared reducer + authoritative domain session | Reactive updates across panels |
-| Per-module classes, data, API | Allocation above and [operation tables](api.md) | Implement every declared operation |
+| Per-module classes, data, API | Allocation above and [operation tables](api.md) | Complete local operation inventory implemented |
 | Asynchronous web interaction | Fetch boundary; versioned responses | Connected key flows without reload |
-| Complete Phase I API | [Acceptance checklist](s6-acceptance.md) | Passing model, API, persistence and GUI checks |
+| Complete Phase I API | [Acceptance checklist](s6-acceptance.md) | Model/API, persistence and seven browser workflows pass |
 
 S2 interviews may still change interaction priorities. The implementation must
 keep input correction, exact evidence context and honest missing-data states.

@@ -1,7 +1,7 @@
 # Application and HTTP API
 
-Status: local model/API implemented, prefix `/api/v1`; browser integration
-verification in progress. Runtime OpenAPI is available at `/openapi.json`.
+Status: local model/API implemented, prefix `/api/v1`; seven browser workflows
+and 33 backend checks pass. See [verification](../development/s6-verification.md). Runtime OpenAPI is available at `/openapi.json`.
 This is the operation inventory for S6, including less visible operations from S1.
 FastAPI generates the request/command interface from strict runtime models.
 This document records operation semantics alongside that generated interface.

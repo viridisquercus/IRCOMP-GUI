@@ -20,7 +20,7 @@ Scientific execution and the future IRCOMP adapter are outside this runtime.
 | Architecture, state and complete operation specification | [S5 architecture](docs/architecture/overview.md) |
 | Exchange schemas and example files | [Contracts](contracts/README.md) |
 | IRCOMP specification ownership and missing integration capabilities | [Integration and gaps](docs/architecture/ircomp-integration.md) |
-| Implementation order and acceptance criteria | [S6 plan](docs/architecture/s6-acceptance.md) |
+| Implementation criteria and observed checks | [S6 criteria](docs/architecture/s6-acceptance.md), [verification](docs/development/s6-verification.md) |
 | Conventions and verification | [Development](docs/development/README.md) |
 | Course milestones and remaining work | [ITU checklist](docs/tasks/itu-phase-i.md) |
 
@@ -28,15 +28,21 @@ Scientific execution and the future IRCOMP adapter are outside this runtime.
 
 - `src/ircomp_gui/`: Python application package; service/model implementation
   belongs here, outside visual components.
-- `web/`: planned React/TypeScript client; implementation boundary documented,
-  runtime dependencies and application code pending S6.
+- `web/`: connected React/TypeScript views, state/controllers, native lock and browser tests.
 - `contracts/`: versioned exchange schema, catalogue and labelled fixtures.
-- `tests/`: verification strategy; runtime suites added with behavior.
+- `tests/`: headless model/service, persistence, exchange and HTTP acceptance tests.
 - `docs/`: research, architecture decisions, development notes and task records.
 
-The Python package has no runtime dependencies yet. `pyproject.toml` defines the
-package and initial quality settings. There is deliberately no command that
-pretends to launch an unfinished application.
+## Run locally
+
+After setup, run `.venv/bin/ircomp-gui` from the repository root and open
+[http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+For a new clone, follow the [installation and verification commands](docs/development/README.md).
+The interface supports explicit Save/Undo, request round trips, atomic evidence
+imports, collection-specific decisions and identified saved-snapshot exports.
+Synthetic examples remain visibly labelled. Saved studies use local SQLite;
+unsaved sessions remain in process memory.
 
 ## Relationship to IRCOMP
 

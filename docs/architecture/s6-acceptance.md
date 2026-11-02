@@ -1,16 +1,16 @@
 # S6 implementation and acceptance plan
 
-S5 supplies a specification; no box below is marked implemented. Complete all
-model/API operations before Phase I, then demonstrate key connected GUI flows.
-Use logical commits that each have a verifiable behavior. Do not replace operation
-coverage with a static mockup or a single successful fixture.
+Status: declared local model/API operations and connected Prepare/Review/Export
+implemented. [S6 verification](../development/s6-verification.md) records observed
+backend/browser checks and their limits. The original acceptance criteria below
+remain the implementation contract, not an exhaustive claim about all inputs.
 
 The [IRCOMP integration boundaries](ircomp-integration.md) apply throughout:
 local validation remains local, source evidence is immutable and no compiler is
 required to use the workspace. Future YAML/compiler/graph acceptance criteria are
 tracked separately there; they do not add runtime features to this S6 checklist.
 
-## Implementation order
+## Implementation sequence
 
 1. Lock the runtime/build tools; implement catalogue, domain types, diagnostics,
    revision/interval rules and a headless service test. Add actual author headers
@@ -57,9 +57,10 @@ tracked separately there; they do not add runtime features to this S6 checklist.
 | U02 | GUI | Keyboard-only correction → review → Save → export | Labels/focus/error links usable; relevant panels update without page reload |
 | U03 | API/service | Run operations headlessly | Same domain results as GUI; no component/DOM dependency |
 
-Meaningful integration tests must assert preserved state, not just status/message
-text. The S5 schema checker verifies structural artifacts only. S6 owns actual
-semantic/HTTP/SQLite/browser tests; do not report the table as passing beforehand.
+Runtime tests assert preserved state, source bytes and observable interactions.
+The S5 checker still covers structural artifacts only. Actual semantic/HTTP/SQLite
+and browser evidence is linked in the verification record; future integration
+features and primary user validation are outside those observed checks.
 
 ## Demonstration path
 

@@ -1,23 +1,19 @@
-# Test strategy
+# Runtime verification
 
-No runtime tests exist at the scaffold stage. Add each suite with implemented
-behavior; directory names alone do not establish test coverage.
+The local implementation has 33 pytest acceptance cases in
+[test_workspace.py](test_workspace.py) and seven Chromium workflows in
+[workspace.spec.ts](../web/e2e/workspace.spec.ts). The [verification record](../docs/development/s6-verification.md)
+records actual outcomes and their limits; [Development](../docs/development/README.md)
+contains reproducible commands.
 
-| Level | First useful contracts |
-| --- | --- |
-| Unit | Interval/identity checks, missing versus zero, revision compatibility |
-| Component | Import parser preserves raw evidence; failed import changes no accepted state |
-| Integration | Save/reopen round trip; service and persistence agree on revision/decision identity |
-| End-to-end | Repair input; attach compatible evidence; change decision; recover; export/reopen |
+Tests exercise invalid input atomicity, revisions, source bytes, collection-specific
+decisions, Save/reopen/Undo, concurrent Save conflicts, corruption, exact exports,
+HTTP types/origins, reactive views, delayed responses and keyboard/focus recovery.
+Temporary databases are isolated from normal saved studies. Synthetic examples and
+arbitrary test identities are labelled; no scientific result is established.
 
-S5 [exchange fixtures](../contracts/README.md) are available for implementation.
-Their structural checks pass; runtime semantic acceptance has not been tested.
-Use the [S6 matrix](../docs/architecture/s6-acceptance.md) for operation coverage.
-
-Use small synthetic fixtures beside the owning suite, labelled with format
-version, intended case and expected outcome. Do not copy private genomic data.
-Scientific correctness is a separate claim from a UI or persistence test.
-
-Future formal-language integration has separate [F01–F10 acceptance gates](../docs/architecture/ircomp-integration.md#future-integration-acceptance-criteria).
-Add those tests with an actual adapter and accepted upstream schema. They are not
-current test coverage or a requirement to implement YAML/compiler features in S6.
+The [exchange fixtures](../contracts/README.md) remain structural test inputs, not
+proof of semantic acceptance on their own. Future formal-language integration has
+separate [F01–F10 gates](../docs/architecture/ircomp-integration.md#future-integration-acceptance-criteria);
+no current test claims a working YAML/compiler/graph adapter. Real user usability
+sessions remain separate from automated browser checks.

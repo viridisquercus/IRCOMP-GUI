@@ -2,7 +2,9 @@
 
 Date: 2026-11-01
 
-Status: Initial wireframe design. Primary-research validation pending.
+Status: Initial wireframe design; primary-research validation pending.
+The local runtime is implemented; [S6 verification/screenshots](../development/s6-verification.md)
+record the connected interface separately from these design artifacts.
 
 ## Design objective
 
@@ -276,7 +278,8 @@ assistance, interpretation errors and recovery; no fabricated success rate.
       match the actual decision granularity.
 - [x] S5: specify identity, revision, compatibility and import transaction rules.
 - [x] S5: define export schema and exactly which raw records are included.
-- [ ] S6: implement all declared operations, keyboard/focus behavior and recovery.
+- [x] S6: implement the declared local operations and representative keyboard/focus
+      and recovery paths; recorded checks do not replace user usability testing.
 - [ ] Report: review the design and required author labels before incorporating
       the wireframes into the assessed report.
 

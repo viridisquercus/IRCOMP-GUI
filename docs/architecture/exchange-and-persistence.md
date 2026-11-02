@@ -1,6 +1,7 @@
 # Local exchange, persistence and IRCOMP boundary
 
-Status: local `1.0` specification for S6; no released compiler compatibility claim.
+Status: local `1.0` exchange/persistence implemented and checked in S6;
+no released compiler compatibility claim. See [verification](../development/s6-verification.md).
 See [schemas and fixtures](../../contracts/README.md) for exact structural fields.
 
 ## References and profiles

@@ -1,52 +1,96 @@
 # Development
 
-Status: scaffold; runtime toolchain installation pending first implementation.
+Status: S6 local model/API and React client implemented. See the
+[verification record](s6-verification.md) for observed checks and their limits.
+IRCOMP compiler integration and primary user research remain separate work.
 
-## Conventions
+## Install from source
 
-Python follows the IRCOMP conventions adapted in `pyproject.toml`: typed public
-signatures, four spaces, double quotes, LF, Google-style docstrings and strict
-type checking. Avoid copying unrelated environment policies or host-specific
-settings. Version declarations belong in native configuration; resolved dependency
-locks are added with the actual toolchain, not copied from another project.
+Tested environment: Linux, CPython 3.14.6, Node 20.20.2 and npm 10.8.2.
+The package targets Python >=3.12; Vite requires Node >=20.19. The recorded run did
+not test other Python versions, operating systems or browsers.
 
-Documentation uses stable relative links, evidence dates, concise status labels,
-and actionable TODOs. Source behavior, design interpretation and implemented
-behavior remain separate. Research artifacts belong under `docs/research`;
-decisions belong under `docs/architecture/decisions`.
+From the repository root:
 
-## Verification
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.lock
+.venv/bin/python -m pip install --no-build-isolation --no-deps -e .
+npm --prefix web ci
+npm --prefix web run build
+.venv/bin/ircomp-gui
+```
 
-For documentation/scaffold changes: parse TOML, compile Python syntax without
-writing tracked artifacts, resolve relative document links, and inspect the diff
-for unintended files. No runtime test pass is claimed while no runtime exists.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000). The one-process Python service
+serves the built client and API. Runtime OpenAPI is at `/openapi.json`; interactive
+API documentation is at `/docs`. A different local port can be selected with
+`--port 8001`.
 
-With the development tools installed, use `ruff check .`, `ruff format --check .`
-and `pyright`. Their configurations are present; the initial scaffold does not
-pin or install these developer tools. Select reproducible versions when creating
-the first development environment and record the lock and execution evidence.
+For frontend development, leave the Python service on port 8000 and run
+`npm --prefix web run dev`. Vite serves the client on port 5173 and proxies `/api`.
+Do not enable multiple Uvicorn workers: unsaved workspaces/previews are process-local.
 
-Add tests for domain invariants, import failure atomicity, persistence and API
-behavior with implementation. Frontend testing should verify interactions and
-error recovery rather than mirror component markup. See [test strategy](../../tests/README.md).
+`requirements-dev.lock` pins the complete observed Python runtime/development
+environment, excluding the editable project itself. Runtime dependencies are also
+pinned in `pyproject.toml`; `web/package-lock.json` is the native frontend lock.
+No environment files or credentials are needed.
 
-The S5 artifact checker is `python scripts/development/check_contracts.py`
-(requires `jsonschema`). It verifies schema/fixture outcomes, embedded source
-bytes and the pinned reference catalogue. It is not a runtime test suite.
-Downloaded provenance files use an explicit Git attribute to preserve exact
-bytes; verify their digests from a Git archive as well as the working tree.
+## Persistence and recovery
 
-## Next implementation checkpoint
+Default database: `~/.local/share/ircomp-gui/workspace.sqlite3`.
+`IRCOMP_GUI_DATABASE` selects a different SQLite file; `IRCOMP_GUI_WEB` can select
+an already built client directory. Normal use from this editable source checkout
+finds `web/dist` automatically. A standalone backend wheel includes its schema,
+catalogue and source examples, but not built web assets; supply `IRCOMP_GUI_WEB`
+when serving a separately installed wheel.
 
-1. Use the [S5 specification](../architecture/overview.md) as the implementation
-   contract; refine needs separately through the two pending S2 sessions.
-2. Lock and verify the selected React/TypeScript/Vite and Python/FastAPI toolchain.
-3. Implement request creation/edit/save/reopen end-to-end, then evidence review.
-4. Implement the complete operation inventory, persistence and export rules.
-5. Verify the [S6 acceptance criteria](../architecture/s6-acceptance.md) before
-   claiming the Phase I code requirement complete.
+Explicit Save persists accepted data and separate unapplied editor buffers. A
+server restart loses unsaved working sessions and previews. Browser reload can
+reconnect to the session ID in session storage; typing since the last submitted
+buffer is not guaranteed to survive. Open saved study creates another working
+copy; stale durable versions cannot overwrite a newer Save. Unsaved conflict
+resolution offers explicit reopen or request-only duplication.
 
-## Version control and design artifacts
+## Verification commands
 
-Follow [working changes](../../CONTRIBUTING.md) for logical commits and publication.
-[S4 wireframes](../design/README.md) are generated design artifacts, not the runtime client.
+```sh
+.venv/bin/python scripts/development/check_contracts.py
+.venv/bin/pytest -q
+.venv/bin/ruff check .
+.venv/bin/ruff format --check .
+.venv/bin/pyright
+npm --prefix web run build
+npm --prefix web run format:check
+cd web
+npx playwright install chromium
+npm test
+```
+
+Browser tests start a separate server on port 8765 and use a fresh database under
+the OS temporary directory. They do not touch normal saved studies. Failed traces
+and screenshots go to ignored `web/test-results/`; three selected synthetic-data
+screenshots are retained in the verification record.
+
+For packaging, `.venv/bin/python -m build --no-isolation` builds an sdist and wheel
+using the installed build tools. The source install above must be complete first.
+The standalone contract checker covers structural artifacts/provenance only;
+pytest and Playwright exercise runtime behavior. Downloaded reference provenance
+uses Git attributes to retain exact bytes and its recorded hash.
+
+## Conventions and next work
+
+Python: typed signatures, four spaces, double quotes, LF, Google-style docstrings,
+strict Pyright. Strict frozen Pydantic value models provide shared structural
+validation; domain rules/services import neither FastAPI nor SQLite. The mutable
+session coordinator uses a dataclass and serialized replace-on-success operations.
+TypeScript: strict types, two spaces, double quotes and Prettier. State, selectors,
+transport and controllers are outside visual feature modules.
+
+Follow [working changes](../../CONTRIBUTING.md) for recoverable commits and
+publication. Research, intended design and implemented/tested behavior remain
+explicitly distinguished. Before assessed packaging, review source ownership,
+required author labels and the actual report text. The
+[S6 matrix](../architecture/s6-acceptance.md) links the original contract to this
+implementation; [IRCOMP integration gates](../architecture/ircomp-integration.md)
+remain deferred. User sessions, final report, submission packaging and presentation
+preparation are still tracked in the [course checklist](../tasks/itu-phase-i.md).

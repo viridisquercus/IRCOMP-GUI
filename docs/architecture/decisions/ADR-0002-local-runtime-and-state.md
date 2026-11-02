@@ -67,3 +67,12 @@ Consulted 1 November 2026:
   persistence, explicit transaction behavior and bound SQL parameters.
 - [JSON Schema 2020-12](https://json-schema.org/draft/2020-12): structural exchange
   constraints; cross-object and scientific checks require domain validation.
+
+## S6 implementation note — 2 November 2026
+
+Runtime tools and locks are now present. Strict frozen Pydantic value models own
+local contracts; a dataclass owns the process-local session. These replace the
+initial dataclass-only expectation without importing HTTP/database code into the
+domain. Typed repository and exchange ports are owned by the application layer.
+See the [verification record](../../development/s6-verification.md) for tested
+behavior and the actual source/runtime scope.

@@ -1,6 +1,6 @@
 # Domain model and state transitions
 
-Status: S5 normative local contract, version `1.0`; implementation pending.
+Status: implemented local contract, version `1.0`; see [S6 verification](../development/s6-verification.md).
 The [exchange schema](../../contracts/exchange.schema.json) fixes wire fields.
 The rules below additionally constrain references, equality and state transitions.
 

@@ -1,7 +1,8 @@
 # Local exchange contracts
 
 Version: `1.0`, selected S5 contract for implementation. No released IRCOMP compiler
-API is implied, and no GUI service is implemented by adding these files.
+API is implied. The local GUI service is now implemented; its [runtime checks](../docs/development/s6-verification.md)
+are separate from structural artifact validation.
 
 | File | Role |
 | --- | --- |
@@ -14,7 +15,8 @@ API is implied, and no GUI service is implemented by adding these files.
 The schema `$id` is a stable identifier, not a promise that a website serves it.
 All `$ref` values are local; checking these artifacts requires no network fetch.
 Use a Draft 2020-12 validator with format checking enabled, including UUIDs.
-JSON Schema is only the structural layer; apply the
+Runtime-generated object IDs use canonical lowercase UUID spelling; use that
+spelling in local exchange files. JSON Schema is only the structural layer; apply the
 [semantic and transaction rules](../docs/architecture/exchange-and-persistence.md)
 and [domain invariants](../docs/architecture/domain-model.md) before acceptance.
 
