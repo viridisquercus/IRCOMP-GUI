@@ -1,6 +1,9 @@
 * text=auto eol=lf
-*.jpg binary
-*.png binary
+*.docx binary
+*.pdf binary
 
 # Retain downloaded provenance files byte-for-byte for their recorded digests.
 contracts/references/* -text -diff
+
+# Reports are submitted separately from source code.
+docs/report/output export-ignore

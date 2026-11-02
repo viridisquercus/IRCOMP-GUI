@@ -2,7 +2,11 @@
 
 Návrh rozhraní a architektury pro Fázi I projektu ITU 2026
 
-{{identification}}
+Kapitán a jediný člen: Lukáš Dubšík.
+
+Login: TODO DOPLNIT LOGIN. Cvičení: TODO DOPLNIT DEN A ČAS CVIČENÍ.
+
+Moduly: Prepare, Review a společná infrastruktura. Samostatná účast dohodnuta; rozsah odpovídá dvěma členům.
 
 ## Téma projektu
 
@@ -14,7 +18,7 @@ Lokální aplikace již provádí editaci, validaci podporovaných pravidel, ukl
 
 TODO před odevzdáním: doplnit dva skutečné rozhovory a jejich dopad do návrhu, login a termín cvičení; zkontrolovat autorství a pravidla využití AI. Tento stav není dokončením povinného primárního výzkumu.
 
-{{contents}}
+Obsah a čísla stran jsou v editovatelném dokumentu.
 
 <!-- page -->
 
@@ -142,7 +146,7 @@ Ponaučení: převzít dohledatelnost, nikoli rozsah obecné platformy. Omezení
 
 ### 2.6 Syntéza
 
-Společné návrhové důsledky: viditelný kontext, provázané panely, zřetelný stav uložení a export zachovávající původ podkladů. Nejistá zůstává hodnota nového formátu a kolekcí. Úplné záznamy a snímky posouzených stavů jsou v docs/research/evidence/s3; nedokládají dokončené uživatelské úlohy. Žádná z převzatých interakcí nepřenáší do IRCOMP-GUI vědecké schopnosti těchto produktů.
+Společné návrhové důsledky: viditelný kontext, provázané panely, zřetelný stav uložení a export zachovávající původ podkladů. Nejistá zůstává hodnota nového formátu a kolekcí. Rozsah inspekce vymezují popisy produktů a jejich dokumentace [7 až 11]; nejde o test dokončených uživatelských úloh. Žádná z převzatých interakcí nepřenáší do IRCOMP-GUI vědecké schopnosti těchto produktů.
 
 <!-- page -->
 
@@ -152,7 +156,7 @@ Společné návrhové důsledky: viditelný kontext, provázané panely, zřetel
 
 Prepare řeší vyjádření a opravu požadavku (N2, N4). Review řeší význam přijatých podkladů a oddělené rozhodnutí (N1, N3, N8). Export zpřístupňuje uložený kontext pro předání (N5, N6). Trvalý pruh s referencí, profilem, revizí a stavem uložení omezuje nutnost dohledávat souvislosti mezi obrazovkami.
 
-![Obrázek 1 Navigace a tok dat z pohledu uživatele](asset:navigation)
+Obrázek 1 Navigace a tok dat z pohledu uživatele. Obrázek je vložen v editovatelném dokumentu.
 
 Přechody mezi třemi pohledy jsou možné bez nového načtení stránky. Výběr zobrazené historické revize mění navigaci, nikoli aktivní požadavek. Výpočet mimo aplikaci je v diagramu hranicí, ne dostupnou funkcí Run.
 
@@ -175,9 +179,9 @@ Běžné úpravy zůstávají v panelech. Diagnostika odkazuje na konkrétní po
 
 Uspořádání tvoří seznam cílů vlevo, editor uprostřed a kontroly vpravo. Seznam udržuje přehled při editaci jedné položky. U vstupů je výslovně uvedena konvence 0-based, end-exclusive; reference a profil jsou společným kontextem.
 
-![Obrázek 2 Drátěný model editoru cíle ze S4 čitelný výřez](asset:prepare-wire)
+Obrázek 2 Drátěný model editoru cíle ze S4 čitelný výřez. Obrázek je vložen v editovatelném dokumentu.
 
-Celý drátěný model je v docs/design/wireframes/01-prepare.png. Výřez ukazuje editovaná data a explicitní souřadnice. Návrhový stav ze S4 není snímkem hotové aplikace.
+Celý drátěný model je v docs/design/wireframes/01-prepare.svg. Výřez ukazuje editovaná data a explicitní souřadnice. Návrhový stav ze S4 není snímkem hotové aplikace.
 
 Scénář A: vytvořit studii, přidat dva cíle a změnit interval. Psaní mění textový buffer. Apply přijme konzistentní hodnoty; změna souřadnic vytvoří novou revizi a současně se aktualizují seznam, souhrn a připravenost exportu. Pouhé přejmenování novou vědeckou revizi netvoří.
 
@@ -191,9 +195,9 @@ Scénář C: změnit referenci či profil. Změna vyžaduje explicitní úplnou 
 
 Seznam kandidátů vybírá středový detail neměnných pozorování. Vpravo je samostatná editovatelná vrstva kolekce a rozhodnutí. Uživatel tak nemusí přepisovat původní pozorování, aby zaznamenal vlastní úsudek.
 
-![Obrázek 3 Drátěný model rozhodnutí a odůvodnění výřez ze S4](asset:review-wire)
+Obrázek 3 Drátěný model rozhodnutí a odůvodnění výřez ze S4. Obrázek je vložen v editovatelném dokumentu.
 
-Zdrojové hodnoty zůstávají oddělené; nevzniká průměr ani univerzální procento spolehlivosti. Nula je hodnota, absence je jiný stav. Celý návrh je v docs/design/wireframes/03-review.png.
+Zdrojové hodnoty zůstávají oddělené; nevzniká průměr ani univerzální procento spolehlivosti. Nula je hodnota, absence je jiný stav. Celý návrh je v docs/design/wireframes/03-review.svg.
 
 Scénář D: nejprve zkontrolovat import. Náhled ukáže očekávaný a přijatý kontext, zdroj a kategorii. Připojení je atomické a vyžaduje shodu request ID i celé vybrané revize. Neshodný soubor nelze opravit pouhým přejmenováním reference. Chyba nezpůsobí částečné připojení.
 
@@ -207,7 +211,7 @@ Scénář F: odstranit členství omylem a použít Undo. Změní se jen rozhodo
 
 Export není třetím samostatným modulem. Sdílí uložený požadavek a výběr kolekcí. Náhled pojmenuje uloženou verzi, revizi, zahrnuté zdroje, závislosti a počet nevyřešených položek. Změny po vytvoření náhledu již jeho bajty nemění.
 
-![Obrázek 4 Drátěný model náhledu exportu výřez ze S4](asset:export-wire)
+Obrázek 4 Drátěný model náhledu exportu výřez ze S4. Obrázek je vložen v editovatelném dokumentu.
 
 Při neuložených změnách je nutné Save nebo výslovné Export last saved. Export požadavku obsahuje jednu revizi, nikoli celou historii či buffery. Review export zachovává vybraná rozhodnutí a úplné původní bajty potřebných podkladů s hashi. Stav reviewed znamená dokončenou evidenci rozhodnutí, nikoli vědecké schválení. Nevyřešené položky vedou ke stavu draft.
 
@@ -230,7 +234,7 @@ Klávesnice používá nativní popsané ovládací prvky a viditelné zaměřen
 
 React a TypeScript vykreslují sdílený prezentační model. Kontrolér převádí uživatelský záměr na asynchronní HTTP příkaz. Python služby a doména vlastní přijatá data i pravidla. FastAPI zajišťuje transport; SQLite a výměnný formát jsou adaptéry implementující aplikační porty.
 
-![Obrázek 5 Vrstvy a tok změny stavu v implementované aplikaci](asset:architecture)
+Obrázek 5 Vrstvy a tok změny stavu v implementované aplikaci. Obrázek je vložen v editovatelném dokumentu.
 
 Doména ani aplikační služby neimportují React, FastAPI nebo konkrétní SQLite adaptér. Lze je volat bez GUI; testy používají stejné služby. Šipky zobrazují volání při obsluze, zatímco porty vlastní aplikační vrstva a adaptéry na ně závisejí.
 
@@ -351,11 +355,11 @@ IRCOMP vlastní formální jazyk, normalizovaný request, cartridge, cíle, omez
 
 ### 5.1 Implementované rozhraní a ověření
 
-Stav implementace odpovídá commitu {{implementation_commit_short}} z 2. listopadu 2026. Přesné příkazy, záběr a omezení kontrol jsou v docs/development/s6-verification.md. Nejde o výsledky uživatelských sezení.
+Stav implementace odpovídá commitu 9364e16 z 2. listopadu 2026. Přesné příkazy, záběr a omezení kontrol jsou v docs/verification.md. Nejde o výsledky uživatelských sezení.
 
-![Obrázek 6 Implementovaný Review výřez původních metrik ze syntetického příkladu S6](asset:runtime-review)
+Obrázek 6 Implementovaný Review výřez původních metrik ze syntetického příkladu S6. Obrázek je vložen v editovatelném dokumentu.
 
-Snímek skutečné aplikace ukazuje numerickou nulu a samostatné not supplied. Vpravo v celém snímku je editor rozhodnutí; jeho Apply mění členství, nikoli hodnoty výše. Originální snímky Prepare, Review a Export jsou v docs/development/screenshots.
+Snímek skutečné aplikace ukazuje numerickou nulu a samostatné not supplied. Editor rozhodnutí mění rozhodovací vrstvu, nikoli původní hodnoty. Výřez je přímo součástí této zprávy.
 
 | Kontrola provedená v S6 | Zjištěný výsledek a hranice |
 | --- | --- |
@@ -387,10 +391,10 @@ Python soubory níže jsou relativní ke src/ircomp_gui. Sdílený základ ozna�
 | Doména | domain/models.py, rules.py, errors.py, catalogue.py, serialization.py |
 | Aplikační základ | application/workspace.py, commands.py, ports.py |
 | Adaptéry a HTTP | adapters/sqlite.py, exchange.py, resources.py; api/app.py, requests.py; __main__.py |
-| Kontroly a dokumentační nástroje | tests/test_workspace.py; web/e2e/workspace.spec.ts; scripts/development/check_contracts.py, render_wireframes.py; scripts/report/build.py |
+| Automatizované kontroly | tests/test_workspace.py; web/e2e/workspace.spec.ts; scripts/development/check_contracts.py |
 | Kontrakty a konfigurace | contracts/exchange.schema.json, catalogue.json, cases.json, examples; pyproject.toml, requirements-dev.lock; web/package.json, package-lock.json, vite.config.ts, playwright.config.ts; balíčkové __init__.py |
 
-Přesná veřejná API a návratové typy jsou popsány v kapitole 4 a v běhovém OpenAPI. Úplný archiv včetně podpůrných souborů vznikne v S8; tento seznam netvrdí, že ZIP již existuje nebo je odevzdán. Závislosti zůstávají externími projekty se svými licencemi.
+Přesná veřejná API a návratové typy jsou popsány v kapitole 4 a v běhovém OpenAPI. Revizi zdrojového archivu a kontrolní součet eviduje S8 v adresáři submission; postup a další kontroly jsou v docs/submission.md. Závislosti zůstávají externími projekty se svými licencemi.
 
 <!-- page -->
 
@@ -418,7 +422,7 @@ Save je výslovný. Restart serveru ztratí neuložené relace a náhledy. Obnov
 | Dva skutečné rozhovory | TODO provést, zapsat a promítnout do návrhu |
 | Login a termín cvičení | TODO doplnit na identifikační straně |
 | Autorské označení a pravidla AI | TODO věcná kontrola; samotný název v nadpisu ji nenahrazuje |
-| 00_{{login_filename}}_source.zip | S8: TODO vytvořit a ověřit skutečný obsah |
+| 00_DOPLNIT_LOGIN_source.zip | S8: zdrojový archiv a kontrolní součet v adresáři submission; ověřit aktuální revizi |
 | Finální kontrola a Moodle | S9 až S10: TODO; termín 6. 11. 2026 ve 23:59 |
 
 Kontrolní prezentace proběhne v termínu cvičení v týdnu od 9. listopadu 2026. Předvede oba moduly, změny sdíleného stavu, opravu chyby, Save/otevření a odpovídající API. Konkrétní slot je k doplnění. Podle dodaného Moodle záznamu jsou všechny části a demonstrace povinné; neúplnost může vést k 0 bodům a pozdní odevzdání k penalizaci 5 bodů. Tato zpráva nenahrazuje záznam skutečného odevzdání.
@@ -435,7 +439,7 @@ Kontrolní prezentace proběhne v termínu cvičení v týdnu od 9. listopadu 20
 
 [3] ITU. Průvodce uživatelským výzkumem a testováním použitelnosti. Dodaný DOCX; příprava a záznam reálných sezení. Veřejné diskuse nejsou náhradními respondenty.
 
-Lokální autorské pracovní podklady: docs/research/s1-scope.md, s2-desk-research.md, s2-interview-plan.md, s3-competitive-analysis.md; docs/design/s4-ui-design.md; docs/architecture/overview.md, domain-model.md, api.md, exchange-and-persistence.md a ircomp-integration.md. Pozorované technické výsledky: docs/development/s6-verification.md, implementace {{implementation_commit_short}}. Tyto materiály rozlišují zamýšlené chování, implementaci a ověřené případy.
+Lokální projektové podklady: docs/research/s2-desk-research.md a s2-interview-plan.md; docs/design/README.md a SVG návrhy; docs/architecture/overview.md, domain-model.md, api.md, exchange-and-persistence.md a ircomp-integration.md. Pozorované technické výsledky: docs/verification.md, implementace 9364e16. Tyto materiály rozlišují zamýšlené chování, implementaci a ověřené případy.
 
 ### 6.2 Veřejné podklady výzkumu a srovnání
 

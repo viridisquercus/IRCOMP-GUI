@@ -1,6 +1,6 @@
 # S2 — Interview kit and hypothesis checks
 
-Prepared 1 November 2026. This is a plan, not a record of completed research. Read alongside [desk research](s2-desk-research.md) and [S1 design](s1-scope.md).
+Prepared 1 November 2026. This is a plan, not a record of completed research. Read alongside [desk research](s2-desk-research.md) and [current project scope](../report/phase-i.md).
 
 ## Recruit for relevant behavior
 

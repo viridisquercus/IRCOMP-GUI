@@ -1,7 +1,7 @@
 # Local exchange contracts
 
-Version: `1.0`, selected S5 contract for implementation. No released IRCOMP compiler
-API is implied. The local GUI service is now implemented; its [runtime checks](../docs/development/s6-verification.md)
+Version: `1.0`, implemented local exchange contract. No released IRCOMP compiler
+API is implied. The local GUI service is now implemented; its [runtime checks](../docs/verification.md)
 are separate from structural artifact validation.
 
 | File | Role |
@@ -60,6 +60,5 @@ python scripts/development/check_contracts.py
 This checks schema validity, positive/negative fixture structural expectations,
 embedded raw evidence hashes, and catalogue extraction against the recorded source
 report. It does **not** run application semantics, HTTP handlers, SQLite saves or a
-browser. Those are the [S6 acceptance obligations](../docs/architecture/s6-acceptance.md).
-The development checker dependency is separate from runtime packages; pin it with
-the S6 toolchain rather than claiming a runtime environment exists already.
+browser. See [runtime verification](../docs/verification.md) for those checks.
+The installed `requirements-dev.lock` environment includes the checker dependencies.

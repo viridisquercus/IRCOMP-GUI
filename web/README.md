@@ -25,7 +25,7 @@ client style. `npx playwright install chromium` installs the browser used by
 SQLite database in the OS temporary directory. They never use the normal study
 database. Browser artifacts stay in ignored `test-results/`.
 
-See [development instructions](../docs/development/README.md), the
+See [development instructions](../README.md), the
 [state contract](../docs/architecture/domain-model.md) and
 [API inventory](../docs/architecture/api.md). Synthetic fixtures are visibly
 labelled and retain their fixed request context; the app does not patch them to

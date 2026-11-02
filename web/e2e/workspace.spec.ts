@@ -34,7 +34,7 @@ async function review(page: Page) {
 
 test("prepare, import, decide, save, reopen and download exact draft", async ({
   page,
-}, info) => {
+}) => {
   await start(page);
   await page.getByRole("button", { name: /Demo target A/ }).click();
   await page.getByRole("button", { name: "Check request" }).click();
@@ -43,10 +43,6 @@ test("prepare, import, decide, save, reopen and download exact draft", async ({
       exact: false,
     }),
   ).toBeVisible();
-  await page.screenshot({
-    path: info.outputPath("prepare.png"),
-    fullPage: true,
-  });
   await review(page);
   await expect(page.locator(".metric-value")).toHaveText("0");
   await expect(page.locator(".metric-missing")).toHaveText("not supplied");
@@ -66,10 +62,6 @@ test("prepare, import, decide, save, reopen and download exact draft", async ({
     page.getByText("1 members · 1 unresolved", { exact: true }),
   ).toBeVisible();
   await save(page);
-  await page.screenshot({
-    path: info.outputPath("review.png"),
-    fullPage: true,
-  });
   await page.getByRole("button", { name: "03 Export" }).click();
   await page.getByText("Review / evidence package", { exact: true }).click();
   await page.getByRole("checkbox", { name: /Review collection/ }).check();
@@ -93,10 +85,6 @@ test("prepare, import, decide, save, reopen and download exact draft", async ({
   expect(createHash("sha256").update(source).digest("hex")).toBe(
     document.evidence_files[0].sha256,
   );
-  await page.screenshot({
-    path: info.outputPath("export.png"),
-    fullPage: true,
-  });
   const before = await page.evaluate(() =>
     sessionStorage.getItem("ircomp.workspace"),
   );

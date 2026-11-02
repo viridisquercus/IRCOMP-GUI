@@ -2,8 +2,8 @@
 
 The local implementation has 33 pytest acceptance cases in
 [test_workspace.py](test_workspace.py) and seven Chromium workflows in
-[workspace.spec.ts](../web/e2e/workspace.spec.ts). The [verification record](../docs/development/s6-verification.md)
-records actual outcomes and their limits; [Development](../docs/development/README.md)
+[workspace.spec.ts](../web/e2e/workspace.spec.ts). The [verification record](../docs/verification.md)
+records actual outcomes and their limits; [Development](../README.md)
 contains reproducible commands.
 
 Tests exercise invalid input atomicity, revisions, source bytes, collection-specific

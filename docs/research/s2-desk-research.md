@@ -2,7 +2,7 @@
 
 Research date: 1 November 2026. Status: secondary research and provisional design recommendations; no interviews or usability sessions have been conducted for this memo.
 
-Companion: [S1 design](s1-scope.md). Interview materials: [S2 interview kit](s2-interview-plan.md).
+Current scope/design: [report text](../report/phase-i.md). Interview materials: [S2 interview kit](s2-interview-plan.md).
 
 ## 1. Decision supported by this research
 
@@ -22,7 +22,7 @@ Research coverage included public discussions on Reddit (r/labrats and r/bioinfo
 
 Representative queries included `CRISPR guide scores different Benchling IDT CHOPCHOP`, `site:biostars.org CRISPOR CHOPCHOP scores different`, `site:help.galaxyproject.org history reproduce parameters`, and `site:reddit.com/r/bioinformatics CRISPR workflow tools`. Biostars-targeted searches yielded adjacent material, including Galaxy archives; this is not a comprehensive survey of Biostars. Some Reddit results were inaccessible or only available as search excerpts and were excluded from the main evidence set. No private messaging groups were accessed and nobody was contacted.
 
-The register below retains **16 public sources**: seven community/issue threads, six official documentation pages, and three research papers. The current thesis context comes from the earlier S1 inspection, not a new claim that its implementation has advanced. Search results were followed to relevant source passages where retained; unrelated recommended posts on Reddit pages were not treated as part of the thread.
+The register below retains **16 public sources**: seven community/issue threads, six official documentation pages, and three research papers. Thesis context comes from the recorded scope inspection, not a new claim that its implementation has advanced. Search results were followed to relevant source passages where retained; unrelated recommended posts on Reddit pages were not treated as part of the thread.
 
 Evidence labels:
 
@@ -211,4 +211,4 @@ The supplied ITU assignment (supplied course material) requires an interview or 
 
 **S2 desk research is prepared; S2 primary research remains pending.** This memo can guide recruitment, questioning, comparison and design. It must not be labelled as two interviews or copied into the report as observed user findings. The course explicitly allows AI consultation/search while restricting generation of large project sections; this is a research aid to inspect and use critically, not a finished assessed research chapter.
 
-The supplied Moodle deadline remains **6 November 2026, 23:59**. Schedule the real research early enough for findings to affect the submitted design. The checklist in the companion interview kit explains how to turn actual evidence into the final research section without inventing missing results.
+The supplied Moodle deadline remains **6 November 2026, 23:59**. Schedule the real research early enough for findings to affect the submitted design. The checklist in the interview kit explains how to turn actual evidence into the final research section without inventing missing results.

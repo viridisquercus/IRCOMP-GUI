@@ -1,4 +1,4 @@
-"""Check S5 structural artifacts and retained source bytes."""
+"""Check exchange artifacts. Project owner: Lukáš Dubšík; review pending."""
 
 from __future__ import annotations
 

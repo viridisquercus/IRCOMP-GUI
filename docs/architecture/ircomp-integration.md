@@ -1,8 +1,8 @@
 # IRCOMP integration boundary and gap register
 
 Status: architectural alignment, 2 November 2026. No compiler integration is
-implemented. [ADR-0003](decisions/ADR-0003-ircomp-specification-boundary.md) records
-the decision; [S6](s6-acceptance.md) remains the current ITU implementation scope.
+implemented. This record owns the integration decision, missing meaning and
+future acceptance gates. The [local API](api.md) defines the current ITU scope.
 
 ## Ownership and conversion
 
@@ -53,9 +53,8 @@ an explicit mapping; reusing a request UUID alone cannot establish revision iden
 
 ## Local fields and missing specification meaning
 
-This is a mapping assessment, not a second product schema. `StudyRequest` in S1 is
-realized by the S5 Study and selected RequestRevision, not by an existing compiler
-request class. No mapping below is declared executable or complete.
+This is a mapping assessment, not a second product schema. The local Study and
+selected RequestRevision are not an existing compiler request class. No mapping below is declared executable or complete.
 
 | IRCOMP draft concept | Current GUI data | Missing / required before conversion |
 | --- | --- | --- |
@@ -131,7 +130,7 @@ architecture, not an extra November 6 feature commitment.
 
 | Priority / stage | Capability | Gate / owner |
 | --- | --- | --- |
-| P0 — documented now | Ownership, object separation, mapping failures and validation layers | This record and ADR-0003; preserve in S6 |
+| P0 — documented now | Ownership, object separation, mapping failures and validation layers | This record; retained independently of implementation |
 | P1 — future integration | Authoritative request schema and safe YAML parser/normalizer | Accepted, versioned and tested in IRCOMP first |
 | P1 — future integration | Goals, constraints, fixed requirements and AI-control policy | Accepted cartridge/specification semantics; explicit GUI model/schema migration |
 | P1 — future integration | Versioned adapter, YAML import/export, compiler diagnostics | Complete supported-subset mapping and F01–F09 below |

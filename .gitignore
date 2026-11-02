@@ -34,3 +34,6 @@ coverage/
 # Browser acceptance artifacts
 web/test-results/
 web/playwright-report/
+
+# Generated Moodle source archive and verification records
+/submission/

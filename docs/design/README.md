@@ -1,59 +1,29 @@
 # UI design
 
-[S4 specification](s4-ui-design.md) owns the navigation, data/operation mapping,
-editing scenarios, state transitions and accessibility requirements.
+Prepare edits a small target list against an explicit reference/profile. Review
+places immutable observations beside collection-specific decisions. Export previews
+an identified saved request or review package. Shared context and save state remain
+visible through navigation; changes propagate from the shared model.
 
-The five wireframes are static design artifacts, not a runnable application.
-Every example is synthetic. SVG files are editable vector sources; PNGs provide
-portable previews for review and report preparation.
+| Editable SVG | Purpose |
+| --- | --- |
+| [Prepare](wireframes/01-prepare.svg) | Interval editor, target list and scoped checks |
+| [Prepare error](wireframes/02-prepare-error.svg) | Invalid draft and field-focused correction |
+| [Review](wireframes/03-review.svg) | Source evidence separate from editable judgement |
+| [Import mismatch](wireframes/04-import-mismatch.svg) | Expected/received identity before atomic acceptance |
+| [Export](wireframes/05-export.svg) | Saved context, unresolved decisions and draft status |
 
-| View | Preview | Editable vector | Purpose |
-| --- | --- | --- | --- |
-| Prepare | [PNG](wireframes/01-prepare.png) | [SVG](wireframes/01-prepare.svg) | Target editing and scoped checks |
-| Prepare error | [PNG](wireframes/02-prepare-error.png) | [SVG](wireframes/02-prepare-error.svg) | Invalid draft and field-focused recovery |
-| Review | [PNG](wireframes/03-review.png) | [SVG](wireframes/03-review.svg) | Immutable evidence beside editable decisions |
-| Import mismatch | [PNG](wireframes/04-import-mismatch.png) | [SVG](wireframes/04-import-mismatch.svg) | Transactional preview and incompatible context |
-| Export | [PNG](wireframes/05-export.png) | [SVG](wireframes/05-export.svg) | Contents, unresolved decisions and draft status |
+These are the initial design sources, not live application captures. All shown
+candidate data are synthetic. Edit the SVG directly in a vector or text editor.
+The report contains the rationale and interaction scenarios in chapter 3, with
+readable figure excerpts. Exact runtime state and validation rules are in the
+[architecture](../architecture/overview.md).
 
-## Prepare
+Ordinary edits use inline panels; diagnostics focus the relevant field. Text
+accompanies status colors, native controls have labels, and narrow layouts stack
+regions. A typed draft is separate from an accepted value. Historical evidence
+retains its revision, and source scores are never combined into a universal score.
 
-![Prepare request](wireframes/01-prepare.png)
-
-## Correct a draft
-
-![Invalid interval draft](wireframes/02-prepare-error.png)
-
-## Review evidence
-
-![Evidence and review decision](wireframes/03-review.png)
-
-## Inspect an incompatible import
-
-![Expected and received reference identity](wireframes/04-import-mismatch.png)
-
-## Preview an export
-
-![Draft review package](wireframes/05-export.png)
-
-## Editing and rendering
-
-The maintained drawing source is
-[`render_wireframes.py`](../../scripts/development/render_wireframes.py).
-Edit that script and regenerate both formats together from the repository root:
-
-```sh
-python scripts/development/render_wireframes.py
-```
-
-Requires Pillow and the DejaVu Sans regular/bold fonts at the paths declared in
-the renderer. These are authoring dependencies, not application dependencies.
-The renderer wraps paragraphs and rejects text that extends beyond the frame.
-SVG text uses DejaVu Sans with a sans-serif fallback; an unavailable font can
-change vector text metrics. PNG previews preserve the inspected rendering.
-
-Visual review checked all five frames for clipping, readable labels and alignment.
-The invalid-draft frame explicitly differs from the saved request in the list.
-No keyboard, screen-reader, responsive or user-task test has been performed on a
-real GUI; those checks belong to implementation and later usability testing.
-
-Rendering environment inspected: Python 3.14.6, Pillow 12.3.0; Linux DejaVu Sans.
+The [real interviews](../research/s2-interview-plan.md) must still validate interval
+entry, candidate-level decisions and collection granularity. Automated browser
+checks in [verification](../verification.md) do not establish measured usability.

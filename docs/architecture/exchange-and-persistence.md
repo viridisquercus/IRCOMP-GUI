@@ -1,7 +1,7 @@
 # Local exchange, persistence and IRCOMP boundary
 
 Status: local `1.0` exchange/persistence implemented and checked in S6;
-no released compiler compatibility claim. See [verification](../development/s6-verification.md).
+no released compiler compatibility claim. See [verification](../verification.md).
 See [schemas and fixtures](../../contracts/README.md) for exact structural fields.
 
 ## References and profiles
@@ -140,8 +140,7 @@ bytes are in the row, so no filesystem/SQLite two-phase commit is required.
 
 ## Future compiler mapping
 
-[ADR-0003](decisions/ADR-0003-ircomp-specification-boundary.md) and the
-[integration contract/gap register](ircomp-integration.md) define the complete
+[integration contract and gap register](ircomp-integration.md) define the complete
 mapping obligations. The local exchange is a workspace/request format; it is not
 IRCOMP's normalized specification, canonical IR, backend bundle or execution record.
 The main IRCOMP repository owns its request schema and YAML semantics.
