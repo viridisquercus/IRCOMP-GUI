@@ -1,0 +1,36 @@
+{
+  "source_sha256": "4219435087abb4076f576c34c73e6e413de2fc612d46d5f38d0f8ace859f0542",
+  "metadata_sha256": "5790a36000f9004b59dc58da34cc7979b0f74375a20cf30e0146495ead5e8d47",
+  "template_sha256": "35bbd6d62d18fbc8a4985b5302694f2fe6e6105f3a42150b5cd9f02a0d87e00d",
+  "implementation_commit": "9364e167c58b8ebb1d832085de56eadbc3c4be89",
+  "planned_pages": 20,
+  "figures": 6,
+  "unresolved_todo_lines": [
+    "TODO před odevzdáním: doplnit dva skutečné rozhovory a jejich dopad do návrhu, login a termín cvičení; zkontrolovat autorství a pravidla využití AI. Tento stav není dokončením povinného primárního výzkumu.",
+    "| P01 | TODO role a relevantní zkušenost, datum, délka, prostředí, souhlas, konkrétní nedávný úkol, použité podklady |",
+    "| P02 | TODO role a relevantní zkušenost, datum, délka, prostředí, souhlas, konkrétní nedávný úkol, použité podklady |",
+    "| Pozorování | TODO oddělit přímo pozorované kroky od vzpomínek a názorů; odkázat na záznam P01/P02 |",
+    "| Vyhodnocení | TODO doložit potřeby, rozpory, funkční současná řešení a skutečné změny návrhu |",
+    "TODO po rozhovorech: ke každé ponechané potřebě připojit konkrétní záznam P01 nebo P02; označit potvrzení, rozpor či neověřený předpoklad. Samostatně uvést pozorovaný krok, jeho dopad a návrhovou interpretaci. Potřeba bez podpory nesmí být přejmenována na výsledek rozhovoru.",
+    "Oba moduly spadají do dohodnuté samostatné práce Lukáše Dubšíka. Níže jsou odpovědnosti zdrojů, nikoli tvrzení, že externí knihovny byly vytvořeny v projektu. TODO před odevzdáním: ověřit vlastní porozumění, skutečný autorský podíl a požadované hlavičky; současné hlavičky ještě uvádějí review pending.",
+    "| Dva skutečné rozhovory | TODO provést, zapsat a promítnout do návrhu |",
+    "| Login a termín cvičení | TODO doplnit na identifikační straně |",
+    "| Autorské označení a pravidla AI | TODO věcná kontrola; samotný název v nadpisu ji nenahrazuje |",
+    "| 00_DOPLNIT_LOGIN_source.zip | S8: TODO vytvořit a ověřit skutečný obsah |",
+    "| Finální kontrola a Moodle | S9 až S10: TODO; termín 6. 11. 2026 ve 23:59 |"
+  ],
+  "preserved_template_parts": [
+    "word/numbering.xml",
+    "word/styles.xml",
+    "word/fontTable.xml",
+    "word/theme/theme1.xml",
+    "word/settings.xml",
+    "_rels/.rels"
+  ],
+  "verified_pdf_pages": 20,
+  "verified_contents_entries": 33,
+  "outputs_sha256": {
+    "00_DOPLNIT_LOGIN_navrh.pdf": "f4ff95e9ebd7a5ed5dae3a20844c3b81935016261287dee0b52e162e9a7f774c",
+    "00_DOPLNIT_LOGIN_navrh.docx": "f09d2389273eb654e8336daba0b651de4372f90020e04346c8895ae6f831adb5"
+  }
+}
