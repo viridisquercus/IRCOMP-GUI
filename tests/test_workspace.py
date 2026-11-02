@@ -588,3 +588,249 @@ def test_http_contract_strict_types_origins_and_full_workflow(tmp_path: Path) ->
         assert closed.status_code == 204
         assert client.get(route).status_code == 404
         assert len(client.get("/api/v1/studies").json()["studies"]) == 1
+
+
+def test_target_add_remove_drafts_and_noop_identity(stack: Stack) -> None:
+    draft = TargetDraft(
+        target_id=None,
+        label="Second target",
+        contig="demo_contig",
+        start="300",
+        end="450",
+        strand=".",
+    )
+    _ = command(stack, {"type": "apply_target", "draft": draft.model_dump()})
+    targets = active_revision(stack.session.study).targets
+    assert len(targets) == 2
+    added = next(target for target in targets if target.start == 300)
+    version = stack.session.version
+    same = TargetDraft(
+        target_id=added.target_id,
+        label="Second target",
+        contig=added.contig,
+        start="300",
+        end="450",
+        strand=".",
+    )
+    _ = command(stack, {"type": "apply_target", "draft": same.model_dump()})
+    assert stack.session.version == version
+    _ = command(
+        stack,
+        {"type": "remove_target", "target_id": added.target_id},
+        DraftBuffers(target=same),
+    )
+    assert stack.session.study.draft_buffers.target is None
+    assert len(active_revision(stack.session.study).targets) == 1
+    _ = stack.workspace.undo(stack.session.workspace_id, stack.session.version)
+    assert len(active_revision(stack.session.study).targets) == 2
+    assert stack.session.study.draft_buffers.target == same
+
+
+def test_supporting_reference_closure_and_dangling_rejection(stack: Stack) -> None:
+    attach(stack)
+    first = stack.session.study.evidence[0].bundle
+    second_id = stack.workspace.new_id()
+    attach(stack, evidence_raw(bundle_id=second_id))
+    collection = stack.session.study.collections[0]
+    key = {"bundle_id": first.bundle_id, "candidate_id": "demo-A"}
+    _ = command(
+        stack,
+        {
+            "type": "add_member",
+            "collection_id": collection.collection_id,
+            "candidate": key,
+        },
+    )
+    before = stack.session.study
+    with pytest.raises(DomainError):
+        _ = command(
+            stack,
+            {
+                "type": "set_decision",
+                "collection_id": collection.collection_id,
+                "candidate": key,
+                "disposition": "exclude",
+                "rationale": "Example",
+                "evidence_refs": [{"bundle_id": second_id, "candidate_id": "missing"}],
+            },
+        )
+    assert stack.session.study == before
+    _ = command(
+        stack,
+        {
+            "type": "set_decision",
+            "collection_id": collection.collection_id,
+            "candidate": key,
+            "disposition": "exclude",
+            "rationale": "Conflicting source requires separate follow-up.",
+            "evidence_refs": [{"bundle_id": second_id, "candidate_id": "demo-A"}],
+        },
+    )
+    save(stack)
+    result = stack.exports.prepare(
+        before.study_id,
+        stack.session.base_saved_version,
+        collection.revision_id,
+        "review",
+        [collection.collection_id],
+    )
+    exported = json.loads(stack.exports.download(result["export_id"]).raw)
+    assert {item["bundle_id"] for item in exported["evidence_files"]} == {
+        first.bundle_id,
+        second_id,
+    }
+    _ = command(
+        stack,
+        {
+            "type": "rename_collection",
+            "collection_id": collection.collection_id,
+            "name": "Renamed review",
+        },
+    )
+    assert stack.session.study.collections[0].name == "Renamed review"
+    _ = command(
+        stack,
+        {
+            "type": "remove_member",
+            "collection_id": collection.collection_id,
+            "candidate": key,
+        },
+    )
+    assert stack.session.study.collections[0].memberships == []
+    version = stack.session.version
+    _ = command(
+        stack,
+        {
+            "type": "remove_member",
+            "collection_id": collection.collection_id,
+            "candidate": key,
+        },
+    )
+    assert stack.session.version == version
+    assert len(stack.session.study.evidence) == 2
+
+
+def test_missing_metric_states_and_invalid_preview_metadata(stack: Stack) -> None:
+    document = json.loads(evidence_raw())
+    for state in ["unsupported", "failed", "unknown"]:
+        document["candidates"][0]["metrics"].append(
+            {
+                "name": state,
+                "model": None,
+                "unit": None,
+                "scale": None,
+                "direction": None,
+                "availability": state,
+                "value": None,
+            }
+        )
+    attach(stack, json.dumps(document).encode())
+    assert [
+        item.availability
+        for item in stack.session.study.evidence[0].bundle.candidates[0].metrics
+    ] == ["present", "not_supplied", "unsupported", "failed", "unknown"]
+    document["context"]["reference_id"] = {"invalid": "object"}
+    result = preview(stack, json.dumps(document).encode())
+    assert result["status"] == "blocked"
+    assert result["summary"]["received_context"] is None
+
+
+def test_preview_limits_and_empty_review_export(stack: Stack) -> None:
+    for _ in range(5):
+        _ = preview(stack, evidence_raw())
+    with pytest.raises(DomainError) as failure:
+        _ = preview(stack, evidence_raw())
+    assert failure.value.code == "LIMIT_EXCEEDED"
+    for preview_id in list(stack.imports.previews):
+        stack.imports.cancel(preview_id)
+    attach(stack, resource_path("examples/evidence-empty.json").read_bytes())
+    collection = stack.session.study.collections[0]
+    save(stack)
+    result = stack.exports.prepare(
+        stack.session.study.study_id,
+        1,
+        collection.revision_id,
+        "review",
+        [collection.collection_id],
+    )
+    assert result["candidate_count"] == 0 and result["unresolved_count"] == 1
+    document = json.loads(stack.exports.download(result["export_id"]).raw)
+    assert len(document["evidence_files"]) == 1
+    for _ in range(5):
+        _ = stack.exports.prepare(
+            stack.session.study.study_id, 1, collection.revision_id, "request", []
+        )
+    with pytest.raises(DomainError) as failure:
+        _ = stack.exports.download(result["export_id"])
+    assert failure.value.code == "PREVIEW_EXPIRED"
+
+
+def test_corrupt_source_digest_and_collection_limit_preserve_state(
+    stack: Stack,
+) -> None:
+    attach(stack)
+    save(stack)
+    for index in range(19):
+        _ = command(
+            stack,
+            {
+                "type": "create_collection",
+                "revision_id": stack.session.study.active_revision_id,
+                "name": f"Collection {index}",
+            },
+        )
+    before = stack.session.study
+    with pytest.raises(DomainError) as failure:
+        _ = command(
+            stack,
+            {
+                "type": "create_collection",
+                "revision_id": stack.session.study.active_revision_id,
+                "name": "Over the limit",
+            },
+        )
+    assert failure.value.code == "LIMIT_EXCEEDED" and stack.session.study == before
+    with sqlite3.connect(stack.repository.path) as connection:
+        row = connection.execute("SELECT document_json FROM studies").fetchone()
+        document = json.loads(row[0])
+        document["study"]["evidence"][0]["sha256"] = "0" * 64
+        _ = connection.execute(
+            "UPDATE studies SET document_json = ?", (json.dumps(document),)
+        )
+    with pytest.raises(DomainError, match="disagree"):
+        _ = stack.repository.load(stack.session.study.study_id)
+
+
+def test_stale_workspace_and_wrong_revision_membership_rejected(stack: Stack) -> None:
+    attach(stack)
+    old = stack.session.study.active_revision_id
+    version = stack.session.version
+    _ = command(
+        stack,
+        {"type": "apply_target", "draft": target_draft(stack, end="230").model_dump()},
+    )
+    with pytest.raises(DomainError) as failure:
+        _ = stack.workspace.undo(stack.session.workspace_id, version)
+    assert failure.value.code == "WORKSPACE_CONFLICT"
+    _ = command(
+        stack,
+        {
+            "type": "create_collection",
+            "revision_id": stack.session.study.active_revision_id,
+            "name": "New context",
+        },
+    )
+    new_collection = stack.session.study.collections[-1]
+    with pytest.raises(DomainError):
+        _ = command(
+            stack,
+            {
+                "type": "add_member",
+                "collection_id": new_collection.collection_id,
+                "candidate": {
+                    "bundle_id": stack.session.study.evidence[0].bundle.bundle_id,
+                    "candidate_id": "demo-A",
+                },
+            },
+        )
+    assert stack.session.study.evidence[0].bundle.context.revision_id == old

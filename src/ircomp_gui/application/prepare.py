@@ -118,6 +118,10 @@ class PrepareService:
                     "targets": command.targets,
                 }
             )
+        if len(proposed.targets) > 50:
+            raise DomainError(
+                "LIMIT_EXCEEDED", "A request supports at most 50 targets."
+            )
         proposed = Revision.model_validate(proposed.model_dump())
         validate_revision(proposed, self.catalogue)
         if same_context(proposed, revision):

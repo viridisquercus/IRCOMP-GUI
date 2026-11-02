@@ -221,6 +221,14 @@ class WorkspaceService:
 
     def accept(self, session: Session, changed: Study, previous: Study) -> Session:
         """Validate the entire replacement before touching accepted state or Undo."""
+        if (
+            len(changed.collections) > 20
+            or len(changed.evidence) > 10
+            or len(changed.revisions) > 200
+        ):
+            raise DomainError(
+                "LIMIT_EXCEEDED", "The proposed change exceeds a study limit."
+            )
         changed = Study.model_validate(changed.model_dump())
         validate_study(changed, self.catalogue)
         if changed != session.study:

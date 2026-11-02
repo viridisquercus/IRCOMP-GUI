@@ -6,6 +6,8 @@ import hashlib
 from dataclasses import dataclass
 from typing import Any
 
+from pydantic import ValidationError
+
 from ircomp_gui.adapters.exchange import Exchange, decode_base64, parse_json
 from ircomp_gui.application.workspace import Session, WorkspaceService
 from ircomp_gui.domain.errors import DomainError
@@ -14,6 +16,7 @@ from ircomp_gui.domain.models import (
     DraftBuffers,
     EvidenceBundle,
     RequestSnapshot,
+    Revision,
 )
 from ircomp_gui.domain.rules import revision_by_id, same_context, validate_study
 
@@ -84,7 +87,13 @@ class ImportService:
                     if kind == "evidence"
                     else document.get("revision")
                 )
-                summary["received_context"] = context
+                if context is not None:
+                    try:
+                        summary["received_context"] = Revision.model_validate(
+                            context
+                        ).model_dump()
+                    except ValidationError:
+                        pass
                 parsed = self.exchange.decode(raw, kind)
                 if isinstance(parsed, RequestSnapshot):
                     collision = self.workspace.repository.identity_exists(
