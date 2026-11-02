@@ -17,3 +17,7 @@ Use the [S6 matrix](../docs/architecture/s6-acceptance.md) for operation coverag
 Use small synthetic fixtures beside the owning suite, labelled with format
 version, intended case and expected outcome. Do not copy private genomic data.
 Scientific correctness is a separate claim from a UI or persistence test.
+
+Future formal-language integration has separate [F01–F10 acceptance gates](../docs/architecture/ircomp-integration.md#future-integration-acceptance-criteria).
+Add those tests with an actual adapter and accepted upstream schema. They are not
+current test coverage or a requirement to implement YAML/compiler features in S6.

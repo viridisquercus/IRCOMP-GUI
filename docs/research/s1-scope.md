@@ -4,6 +4,17 @@
 
 Prepared 31 October 2026. This is a planning and consultation document, not the submitted ITU design report, completed user research, or institutional approval. S1 means Submission Task 1 in this chat, not IRCOMP sprint S01. The agreed solo arrangement is taken as given. Two modules, two research users and four competitor analyses follow the student's chosen two-person-equivalent workload, not a newly verified instructor rule.
 
+## Architectural follow-up — 2 November 2026
+
+The bounded ITU scope below is retained. [ADR-0003](../architecture/decisions/ADR-0003-ircomp-specification-boundary.md)
+and the [integration gap register](../architecture/ircomp-integration.md) clarify
+the future role as an editor/viewer of IRCOMP specifications. Prepare currently
+represents a restricted subset of intent; the local request format is separate
+from IRCOMP's normalized request and workflow IR. Goals, constraints, control
+policies, YAML editing and compiler operations remain explicitly deferred, with
+conversion/acceptance gates. This follow-up does not claim interoperability or
+expand the November 6 implementation scope.
+
 ## Recommended project
 
 **CRISPR Study Workspace — preparation of analysis requests and review of computational evidence.**

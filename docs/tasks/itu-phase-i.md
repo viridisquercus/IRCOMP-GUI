@@ -20,6 +20,15 @@ Submission filenames from the assignment: `00_<login>_navrh.pdf` and
 required parts and the checkpoint demonstration matter; late upload incurs the
 specified five-point penalty. This checklist does not replace the course files.
 
+## Future integration tracking
+
+[ADR-0003](../architecture/decisions/ADR-0003-ircomp-specification-boundary.md) and
+the [gap register](../architecture/ircomp-integration.md) record ownership, mapping
+limitations and future acceptance gates. Documentation alignment is complete;
+YAML/specification editing, compiler calls and workflow graphs are unimplemented
+and outside the current ITU milestone. Revisit the register before adding any
+compiler adapter or changing request semantics. S6 continues with the local API.
+
 ## Source material
 
 Supplied course documents: “ITU – Zadání a pokyny k projektu”, “ITU – Fáze I

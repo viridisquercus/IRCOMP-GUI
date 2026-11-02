@@ -5,8 +5,8 @@ imported computational evidence. The ITU project focuses on editable request
 data, explainable validation, evidence context and persistent review decisions.
 
 **Status:** S1–S5 working design and contracts prepared; primary interviews pending.
-No runnable GUI, HTTP service,
-scientific execution or released IRCOMP adapter is implemented yet.
+No runnable GUI, HTTP service, scientific execution or released IRCOMP adapter
+is implemented yet.
 
 ## Project notes
 
@@ -19,6 +19,7 @@ scientific execution or released IRCOMP adapter is implemented yet.
 | UI design and wireframes | [S4 design](docs/design/README.md) |
 | Architecture, state and complete operation specification | [S5 architecture](docs/architecture/overview.md) |
 | Exchange schemas and example files | [Contracts](contracts/README.md) |
+| IRCOMP specification ownership and missing integration capabilities | [Integration and gaps](docs/architecture/ircomp-integration.md) |
 | Implementation order and acceptance criteria | [S6 plan](docs/architecture/s6-acceptance.md) |
 | Conventions and verification | [Development](docs/development/README.md) |
 | Course milestones and remaining work | [ITU checklist](docs/tasks/itu-phase-i.md) |
@@ -41,6 +42,9 @@ pretends to launch an unfinished application.
 
 [IRCOMP](https://github.com/viridisquercus/IRCOMP) owns the scientific/compiler
 work. This repository owns the course GUI and its local application model.
-Future integration goes through an explicit adapter and accepted contracts.
+Prepare is the initial editor of a restricted subset of IRCOMP user intent.
+Future formal-specification/YAML integration goes through a versioned adapter and
+IRCOMP-owned accepted contracts; missing goals, policies and cartridge semantics
+are recorded in the [gap register](docs/architecture/ircomp-integration.md).
 Importing evidence does not assert that this application executed or verified
 the external analysis. Synthetic examples must remain labelled.

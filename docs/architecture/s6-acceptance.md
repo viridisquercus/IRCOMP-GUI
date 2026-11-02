@@ -5,6 +5,11 @@ model/API operations before Phase I, then demonstrate key connected GUI flows.
 Use logical commits that each have a verifiable behavior. Do not replace operation
 coverage with a static mockup or a single successful fixture.
 
+The [IRCOMP integration boundaries](ircomp-integration.md) apply throughout:
+local validation remains local, source evidence is immutable and no compiler is
+required to use the workspace. Future YAML/compiler/graph acceptance criteria are
+tracked separately there; they do not add runtime features to this S6 checklist.
+
 ## Implementation order
 
 1. Lock the runtime/build tools; implement catalogue, domain types, diagnostics,

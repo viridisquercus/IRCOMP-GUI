@@ -37,6 +37,16 @@ more sequences than the supported subset; extraction is limited to rows marked
 patches or alternate loci are silently enabled. See provenance URL/hash in the
 catalogue. Do not interpret matching metadata as sequence-content verification.
 
+## Future formal-language integration
+
+These schemas describe local workspace exchange only. IRCOMP owns the future
+normalized specification schema and YAML language semantics. Do not add placeholder
+compiler fields or treat local `format_version` as IRCOMP `contract_version`.
+Supported YAML/GUI round trips must eventually preserve specification meaning;
+unsupported constructs require diagnostics rather than lossy subset export.
+See [the gap register and integration gates](../docs/architecture/ircomp-integration.md).
+Current schema files and fixture meanings are unchanged by that architectural decision.
+
 ## Artifact verification
 
 From the repository root, with `jsonschema` available:

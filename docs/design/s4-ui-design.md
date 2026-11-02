@@ -20,6 +20,22 @@ The structure follows provisional needs N1–N8 in
 confirmed the design. English is the initial UI language; Czech report text can
 describe the same controls without maintaining a second UI vocabulary.
 
+## Relationship to IRCOMP specifications
+
+Prepare is the initial graphical editor of a restricted subset of IRCOMP user
+intent. The current forms cover interval targets and declared reference/profile
+context; they do not represent a complete IRCOMP specification. The
+[integration record](../architecture/ircomp-integration.md) lists missing goals,
+constraints, fixed tool requirements, AI-control policies and conversion gates.
+IRCOMP owns their authoritative semantics; a versioned adapter performs conversion.
+Do not add controls for fields that have no accepted semantics yet.
+
+Future interaction levels may include basic forms, an advanced YAML/specification
+editor and an expert workflow view/editor. They must use the same underlying
+specification semantics. Displaying accepted plans/IR should precede graph editing;
+proposed graph edits require controller validation and authorization. These are
+future possibilities, not new ITU screen commitments. Existing wireframes stand.
+
 ## Information architecture
 
 ```mermaid
@@ -198,6 +214,19 @@ decisions and their external dependency declarations. The [S5 exchange contract]
 selects `.request.json` and `.review.json`, including complete original source
 bytes in review packages. Export uses an explicitly selected saved snapshot;
 unapplied draft buffers are excluded with a visible notice.
+
+Future Export destinations must distinguish **Local request snapshot**,
+**IRCOMP-compatible YAML specification**, and **Review/evidence package**. Only
+the local snapshot and review package belong to the current API. A compiled
+Snakemake/backend bundle and an execution record are separately typed compiler
+products, never ordinary request exports. Validation/compilation must not imply
+execution authorization or progress.
+
+Local field/model checks remain distinct from future IRCOMP specification,
+cartridge and compiler/controller validation. Preserve the originating stage of
+a diagnostic; link it to a supported form field or graph object, otherwise show
+it in a summary. A locally valid interval is not proof of available reference
+sequence, biological suitability or a constructible workflow.
 
 ## State coverage
 
