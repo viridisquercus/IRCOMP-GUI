@@ -13,7 +13,10 @@ planned as a two-person equivalent.
 | S4: UI design | Initial specification and five wireframes prepared; interview validation pending | [Design](../design/README.md) |
 | S5: architecture/contracts | Specification prepared; schema/fixture and provenance checks pass | [Architecture](../architecture/overview.md), [contracts](../../contracts/README.md) |
 | S6: all model/API operations and key GUI | Implemented locally; 33 backend and seven Chromium workflows pass | [Criteria](../architecture/s6-acceptance.md), [verification](../development/s6-verification.md) |
-| S7–S10: report, archive, verification, upload | TODO | PDF and source archive; check contents before upload |
+| S7: design report | Review draft rendered and checked; research and authorship pending | [Report text, DOCX and PDF](../report/README.md) |
+| S8: source archive | TODO | Create the actual ZIP and verify contents |
+| S9: final verification | TODO | Research, attribution, reproducibility and final PDF/ZIP |
+| S10: Moodle upload | TODO | Upload and verify actual submission state |
 
 Submission filenames from the assignment: `00_<login>_navrh.pdf` and
 `00_<login>_source.zip`. Report sections require author identification. All

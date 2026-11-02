@@ -21,6 +21,7 @@ Scientific execution and the future IRCOMP adapter are outside this runtime.
 | Exchange schemas and example files | [Contracts](contracts/README.md) |
 | IRCOMP specification ownership and missing integration capabilities | [Integration and gaps](docs/architecture/ircomp-integration.md) |
 | Implementation criteria and observed checks | [S6 criteria](docs/architecture/s6-acceptance.md), [verification](docs/development/s6-verification.md) |
+| Phase I report draft and fill-in fields | [S7 report](docs/report/README.md) |
 | Conventions and verification | [Development](docs/development/README.md) |
 | Course milestones and remaining work | [ITU checklist](docs/tasks/itu-phase-i.md) |
 
