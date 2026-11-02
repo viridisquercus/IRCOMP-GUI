@@ -10,7 +10,7 @@ Solo participation is agreed; the chosen scope corresponds to two members.
 | S2 real-user research | Desk research and interview plan retained; two sessions pending |
 | S5 architecture; S6 model/API/GUI | Implemented; contracts and verification retained |
 | S7 report | Editable DOCX/PDF draft; research, login/lab and attribution review pending |
-| S8 source package | Cleaned source tree; archive verification recorded below |
+| S8 source package | Prepared and checked from a fresh extraction; login placeholder retained |
 | S9 final verification | TODO after research/report/authorship edits |
 | S10 upload | TODO upload and confirm actual Moodle status |
 
@@ -51,3 +51,16 @@ inventory and clean installation again as appropriate. The generated
 All Phase I parts and the demonstration are required. The supplied Moodle text
 states 0 points for missing required work/demonstration and a five-point late
 penalty. Preparing an archive does not satisfy the remaining research or upload.
+
+## S8 package check
+
+The cleanup source commit `bc8fe0d` passed a fresh Python environment install,
+33 backend cases, clean `npm ci`/build, formatting and seven Chromium workflows
+from its extracted archive. The final source ZIP is regenerated after recording
+these results; subsequent changes are documentation only. CRCs, the final file
+inventory and exclusions are checked again. Exact revision, byte count and hash
+are in `submission/manifest.json` and the adjacent `.zip.sha256` file.
+
+The package contains 86 files with a common `IRCOMP-GUI/` root. The login remains
+intentionally unfilled, matching the report. This package is prepared for review;
+S9, S10 and the outstanding primary research are not marked complete.

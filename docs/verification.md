@@ -38,3 +38,28 @@ No command check proves biological validity, every input case, crash/power-loss
 durability, real-user usability or compliance with unresolved course conditions.
 Future YAML/compiler/graph gates remain in the
 [integration record](architecture/ircomp-integration.md).
+
+## S8 cleanup and extracted-source checks
+
+Verified again on 2 November 2026 after cleanup:
+
+- 33 backend cases, seven Chromium workflows, strict typing, lint/format and
+  contract/provenance checks pass in the working repository.
+- A Git source archive from cleanup commit `bc8fe0d` was extracted into a new
+  temporary directory. A fresh virtual environment installed
+  `requirements-dev.lock` and the project with the documented commands.
+- The extracted source passed all 33 backend cases and all seven Chromium
+  workflows. Fresh `npm ci`, TypeScript/Vite build and Prettier checks pass.
+- ZIP CRCs and required source/lock/provenance entries pass. Report outputs,
+  Git metadata, installed dependencies, caches, databases and loose raster assets
+  are absent from the source ZIP.
+- All retained Markdown links resolve locally. Removed paths are absent from
+  retained documentation and report text.
+- The updated report retains 20 pages, 33 contents entries and six embedded
+  figures. Changed pages were visually checked; other pages match the previously
+  inspected render. Body bounds and preserved package parts pass.
+
+Only this verification record and the submission record change after the tested
+cleanup commit. The delivered ZIP is regenerated from the final committed tree;
+its manifest records that final revision and SHA-256. No additional runtime or
+browser assertions were removed; only decorative screenshot capture was deleted.
