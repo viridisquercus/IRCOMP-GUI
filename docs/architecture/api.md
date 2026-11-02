@@ -1,9 +1,10 @@
 # Application and HTTP API
 
-Status: S5 specification, API prefix `/api/v1`; no routes implemented yet.
+Status: local model/API implemented, prefix `/api/v1`; browser integration
+verification in progress. Runtime OpenAPI is available at `/openapi.json`.
 This is the operation inventory for S6, including less visible operations from S1.
-The future FastAPI OpenAPI document must describe these implemented routes; this
-Markdown contract does not pretend to be a generated runtime API.
+FastAPI generates the request/command interface from strict runtime models.
+This document records operation semantics alongside that generated interface.
 
 All operations here are local workspace services. In particular, local
 `validate_request` is not IRCOMP's compiler-side operation of the same logical
@@ -215,3 +216,9 @@ Exchange port: `decode_request(bytes)`, `decode_evidence(bytes)`,
 Inject UUID generation/clock at the application boundary for deterministic tests.
 These interfaces can be called without HTTP or React; they are owned here, not
 asserted to be the compiler's interface.
+
+## Runtime support route
+
+GET `/examples/{name}` downloads one of four bounded, labelled source fixtures
+(request, compatible evidence, empty evidence or mismatched evidence). It does not
+generate scientific results or rewrite their fixed request context.

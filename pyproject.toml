@@ -4,14 +4,33 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ircomp-gui"
-version = "0.0.1"
+version = "0.1.0"
 description = "Local request preparation and computational evidence review"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "fastapi==0.162.0",
+    "pydantic==2.14.2",
+    "uvicorn==0.54.0",
+    "jsonschema==4.26.0",
+]
+
+[project.scripts]
+ircomp-gui = "ircomp_gui.__main__:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ircomp_gui"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"contracts/catalogue.json" = "ircomp_gui/resources/catalogue.json"
+"contracts/exchange.schema.json" = "ircomp_gui/resources/exchange.schema.json"
+"contracts/examples/request-valid.json" = "ircomp_gui/resources/examples/request-valid.json"
+"contracts/examples/evidence-valid.json" = "ircomp_gui/resources/examples/evidence-valid.json"
+"contracts/examples/evidence-empty.json" = "ircomp_gui/resources/examples/evidence-empty.json"
+"contracts/examples/evidence-context-mismatch.json" = "ircomp_gui/resources/examples/evidence-context-mismatch.json"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.ruff]
 src = ["src", "tests"]
@@ -41,6 +60,8 @@ known-first-party = ["ircomp_gui"]
 "tests/**/*.py" = ["D", "S101"]
 
 [tool.pyright]
+venvPath = "."
+venv = ".venv"
 include = ["src", "tests"]
 pythonVersion = "3.12"
 typeCheckingMode = "strict"

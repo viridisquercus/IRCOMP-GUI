@@ -4,9 +4,9 @@ Local workspace for preparing explicit CRISPR analysis requests and reviewing
 imported computational evidence. The ITU project focuses on editable request
 data, explainable validation, evidence context and persistent review decisions.
 
-**Status:** S1–S5 working design and contracts prepared; primary interviews pending.
-No runnable GUI, HTTP service, scientific execution or released IRCOMP adapter
-is implemented yet.
+**Status:** local Python model/API implemented and tested; web integration and
+browser acceptance checks in progress. Primary interviews remain pending.
+Scientific execution and the future IRCOMP adapter are outside this runtime.
 
 ## Project notes
 
