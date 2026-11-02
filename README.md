@@ -4,7 +4,8 @@ Local workspace for preparing explicit CRISPR analysis requests and reviewing
 imported computational evidence. The ITU project focuses on editable request
 data, explainable validation, evidence context and persistent review decisions.
 
-**Status:** research and repository scaffold. No runnable GUI, HTTP service,
+**Status:** S1–S5 working design and contracts prepared; primary interviews pending.
+No runnable GUI, HTTP service,
 scientific execution or released IRCOMP adapter is implemented yet.
 
 ## Project notes
@@ -16,7 +17,9 @@ scientific execution or released IRCOMP adapter is implemented yet.
 | Pending primary research | [Interview plan](docs/research/s2-interview-plan.md) |
 | Existing applications and design lessons | [S3 comparison](docs/research/s3-competitive-analysis.md) |
 | UI design and wireframes | [S4 design](docs/design/README.md) |
-| Runtime boundaries and repository ownership | [Architecture](docs/architecture/overview.md) |
+| Architecture, state and complete operation specification | [S5 architecture](docs/architecture/overview.md) |
+| Exchange schemas and example files | [Contracts](contracts/README.md) |
+| Implementation order and acceptance criteria | [S6 plan](docs/architecture/s6-acceptance.md) |
 | Conventions and verification | [Development](docs/development/README.md) |
 | Course milestones and remaining work | [ITU checklist](docs/tasks/itu-phase-i.md) |
 
@@ -25,8 +28,9 @@ scientific execution or released IRCOMP adapter is implemented yet.
 - `src/ircomp_gui/`: Python application package; service/model implementation
   belongs here, outside visual components.
 - `web/`: planned React/TypeScript client; implementation boundary documented,
-  dependencies and application code pending UI design.
-- `tests/`: verification strategy; suites added with behavior.
+  runtime dependencies and application code pending S6.
+- `contracts/`: versioned exchange schema, catalogue and labelled fixtures.
+- `tests/`: verification strategy; runtime suites added with behavior.
 - `docs/`: research, architecture decisions, development notes and task records.
 
 The Python package has no runtime dependencies yet. `pyproject.toml` defines the

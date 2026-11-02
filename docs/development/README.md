@@ -30,13 +30,21 @@ Add tests for domain invariants, import failure atomicity, persistence and API
 behavior with implementation. Frontend testing should verify interactions and
 error recovery rather than mirror component markup. See [test strategy](../../tests/README.md).
 
+The S5 artifact checker is `python scripts/development/check_contracts.py`
+(requires `jsonschema`). It verifies schema/fixture outcomes, embedded source
+bytes and the pinned reference catalogue. It is not a runtime test suite.
+Downloaded provenance files use an explicit Git attribute to preserve exact
+bytes; verify their digests from a Git archive as well as the working tree.
+
 ## Next implementation checkpoint
 
-1. Resolve S4 preparation/review flows and complete S2 primary research.
-2. Freeze a minimal model/API/exchange contract for S5.
-3. Select and lock the Python HTTP and frontend build tools.
-4. Implement request creation/edit/save/reopen end-to-end, then evidence review.
-5. Verify all declared model/API functions before the Phase I submission.
+1. Use the [S5 specification](../architecture/overview.md) as the implementation
+   contract; refine needs separately through the two pending S2 sessions.
+2. Lock and verify the selected React/TypeScript/Vite and Python/FastAPI toolchain.
+3. Implement request creation/edit/save/reopen end-to-end, then evidence review.
+4. Implement the complete operation inventory, persistence and export rules.
+5. Verify the [S6 acceptance criteria](../architecture/s6-acceptance.md) before
+   claiming the Phase I code requirement complete.
 
 ## Version control and design artifacts
 

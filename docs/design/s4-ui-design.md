@@ -75,9 +75,10 @@ declared operations; target and collection removal remain supported.
 Use one documented coordinate convention for manual entry in the first version:
 **0-based, end-exclusive**. Repeat this beside the interval controls and in exports.
 The source importer must require a declared convention; it cannot infer one from
-numbers. Actual reference profiles and contig bounds belong to the S5 contract.
-Wireframes use a synthetic `demo-reference-v1` profile rather than pretending
-that a real genome manifest has already been verified.
+numbers. The [S5 catalogue](../../contracts/catalogue.json) specifies supported
+profiles and contig bounds: a synthetic reference and an explicit 24-chromosome
+GRCh38.p14 subset. Wireframes remain synthetic examples. Catalogue metadata does
+not establish that a reference sequence file was checked.
 
 The left list preserves orientation during editing. The middle editor keeps
 related fields together. The right panel links a problem to the exact input,
@@ -95,7 +96,9 @@ Adding/removing a target or changing accepted analysis context produces a new
 request revision. Cosmetic study/target labels do not invalidate scientific
 context. Repeated keystrokes do not create revisions. Existing evidence remains
 bound to its original revision; a context change explains the consequence before
-acceptance. The final transaction/revision rules are a required S5 decision.
+acceptance. [S5 state rules](../architecture/domain-model.md) specify the exact
+revision boundary, separately saved draft buffers and one-step Undo. Save clears
+Undo history; imported evidence retains its original revision.
 
 Remove target uses an inline confirmation naming the target and explaining any
 evidence association. Undo restores the previous in-memory state; save/reopen
@@ -191,8 +194,10 @@ human summary preserve that state; clicking Download is not an approval action.
 
 Only the selected collections are included. Preview counts are recalculated from
 the same selection. Include original evidence records needed to interpret those
-decisions and a manifest of omitted/external dependencies. Final file extension,
-schema and archive contents are S5 decisions, not frozen by the visual design.
+decisions and their external dependency declarations. The [S5 exchange contract](../architecture/exchange-and-persistence.md)
+selects `.request.json` and `.review.json`, including complete original source
+bytes in review packages. Export uses an explicitly selected saved snapshot;
+unapplied draft buffers are excluded with a visible notice.
 
 ## State coverage
 
@@ -240,8 +245,8 @@ assistance, interpretation errors and recovery; no fabricated success rate.
 - [ ] S2: confirm that interval entry fits the actual operator's starting data.
 - [ ] S2: determine whether candidate-level decisions and multiple collections
       match the actual decision granularity.
-- [ ] S5: freeze identity, revision, compatibility and import transaction rules.
-- [ ] S5: define export schema and exactly which raw records are included.
+- [x] S5: specify identity, revision, compatibility and import transaction rules.
+- [x] S5: define export schema and exactly which raw records are included.
 - [ ] S6: implement all declared operations, keyboard/focus behavior and recovery.
 - [ ] Report: review the design and required author labels before incorporating
       the wireframes into the assessed report.

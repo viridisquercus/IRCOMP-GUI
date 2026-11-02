@@ -11,8 +11,8 @@ planned as a two-person equivalent.
 | S2: user research | Desk research prepared; two real sessions pending | [Research](../research/s2-desk-research.md), [plan](../research/s2-interview-plan.md) |
 | S3: four existing applications | Comparison prepared; final primary-need mapping pending | [Comparison](../research/s3-competitive-analysis.md) |
 | S4: UI design | Initial specification and five wireframes prepared; interview validation pending | [Design](../design/README.md) |
-| S5: architecture/contracts | Initial boundaries only | [Architecture](../architecture/overview.md) |
-| S6: all model/API operations and key GUI | TODO | Scaffold is not an implemented application |
+| S5: architecture/contracts | Specification prepared; schema/fixture and provenance checks pass | [Architecture](../architecture/overview.md), [contracts](../../contracts/README.md) |
+| S6: all model/API operations and key GUI | TODO; specification is not implementation | [Implementation and acceptance plan](../architecture/s6-acceptance.md) |
 | S7–S10: report, archive, verification, upload | TODO | PDF and source archive; check contents before upload |
 
 Submission filenames from the assignment: `00_<login>_navrh.pdf` and
