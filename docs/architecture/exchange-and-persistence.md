@@ -139,20 +139,23 @@ bytes are in the row, so no filesystem/SQLite two-phase commit is required.
 
 ## Future compiler mapping
 
-The local request is **not canonical IR**, a compiler execution bundle or a
-scientifically validated request. The sibling IRCOMP I/O contract is still a
-logical proposal. A future adapter must map the accepted fields explicitly:
+[ADR-0003](decisions/ADR-0003-ircomp-specification-boundary.md) and the
+[integration contract/gap register](ircomp-integration.md) define the complete
+mapping obligations. The local exchange is a workspace/request format; it is not
+IRCOMP's normalized specification, canonical IR, backend bundle or execution record.
+The main IRCOMP repository owns its request schema and YAML semantics.
 
-| Local field | Potential IRCOMP concept | Gate before use |
-| --- | --- | --- |
-| request/revision IDs | Request identity and provenance | Accepted compiler identity/version rules |
-| reference/profile/intervals | Cartridge-owned `known_inputs` and goal | Accepted CRISPR cartridge schema and reference policy |
-| evidence source/bytes/dependencies | Identified product/evidence artifacts | Frozen output schema, execution provenance and mapping tests |
-| review disposition/rationale | Human review record | Explicit interpretation; never execution authorization |
+Current intervals/reference metadata are only part of possible `known_inputs`.
+Exact cartridge version, explicit goals/deliverables, general constraints and AI
+control are missing. A local profile must not silently supply these. A future
+adapter either converts the complete supported specification with provenance or
+returns blocking diagnostics. Unsupported constructs cannot disappear in a GUI
+import/edit/export round trip. No compiler schema is duplicated here.
 
-No `RunRecord`, planner status or successful scientific execution is synthesized.
-The actual compiler must validate its own input. A new mapping version must have
-positive/negative fixtures before a runtime adapter is enabled.
+Future IRCOMP-compatible YAML is a distinct export kind, gated by an accepted
+compiler schema/parser and mapping tests. Local `.request.json` and `.review.json`
+remain unchanged. No `RunRecord`, planner status or scientific execution success
+is synthesized; the compiler must perform its own authoritative validation.
 
 Sources: [IRCOMP I/O design](https://github.com/viridisquercus/IRCOMP/blob/main/docs/architecture/contracts/input-output-error-contract.md),
 [NCBI GRCh38.p14 assembly report](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_assembly_report.txt).

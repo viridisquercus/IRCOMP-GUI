@@ -5,6 +5,14 @@ This is the operation inventory for S6, including less visible operations from S
 The future FastAPI OpenAPI document must describe these implemented routes; this
 Markdown contract does not pretend to be a generated runtime API.
 
+All operations here are local workspace services. In particular, local
+`validate_request` is not IRCOMP's compiler-side operation of the same logical
+name. Compiler invocation, YAML conversion and graph editing are absent from this
+API version. The [integration boundary](ircomp-integration.md) specifies future
+ownership, source-labelled diagnostics and conversion failures; extending runtime
+routes/types requires a separate accepted interface change.
+
+
 ## Types and common behavior
 
 IDs are UUID strings unless explicitly bundle-local candidate IDs. JSON object

@@ -13,6 +13,8 @@ This record supports ITU report §4, not evidence that the API already exists.
    rules, reference catalogue, transactions and thesis boundary.
 5. [S6 acceptance plan](s6-acceptance.md): implementation slices and observable checks.
 6. [Machine-readable contracts](../../contracts/README.md): schemas and examples.
+7. [IRCOMP integration and gaps](ircomp-integration.md): formal-language ownership,
+   unsupported mappings and deferred capabilities; [ADR-0003](decisions/ADR-0003-ircomp-specification-boundary.md).
 
 ## Architecture and dependency direction
 
@@ -39,6 +41,30 @@ Runtime flow goes through adapters; code dependencies point toward application
 ports and the domain. Domain modules import neither FastAPI, React nor SQLite.
 Handlers translate typed requests/errors; they do not implement interval rules,
 compatibility, collection membership or disposition completeness.
+
+## Relationship to the formal specification language
+
+The long-term frontend edits/views IRCOMP user specifications and presents
+identified compiler products. Prepare is the initial editor of a restricted subset
+of CRISPR intent. The current local Study/RequestRevision is a workspace model;
+it is not IRCOMP's complete normalized request or canonical workflow IR.
+
+IRCOMP owns the declarative language, authoritative structured request contract,
+cartridge semantics, formal goals, planner, compiler, controller and execution.
+Its inspected design selects YAML as the initial human-authored representation,
+with syntax-independent normalized semantics; the exact product schema remains
+provisional. IRCOMP-GUI owns local editing, persistence, presentation and review.
+
+Future flow: **GUI Study/RequestRevision → versioned adapter → IRCOMP normalized
+structured request → compiler**. The adapter must reject unsupported or unmappable
+meaning with diagnostics, preserve identities/constraints and never infer missing
+scientific policy. Workspace annotations remain separate and their exclusion is
+disclosed. The [integration record](ircomp-integration.md) distinguishes object
+kinds and validation authorities and records every currently missing field group.
+
+No YAML editor, full specification schema, graph editor or compiler operation is
+added to the current ITU API. These are gated future capabilities. Existing local
+operations remain independently usable without a compiler.
 
 ## State ownership and reactive updates
 
