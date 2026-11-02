@@ -30,3 +30,7 @@ coverage/
 # Editor/OS residue
 .DS_Store
 *.swp
+
+# Browser acceptance artifacts
+web/test-results/
+web/playwright-report/
