@@ -1,20 +1,39 @@
-# /************************************************************************
-# Name: Lukas (Viridis) Dubsik
-# ************************************************************************/
+# ************************************************************************
+# @file export.py
+# @brief Request and review files prepared from a saved study
+# @author Lukas (Viridis) Dubsik
+# @version 0.1
+#
+# Detailed description:
+#  Exports are always made from the saved study, never from the working
+#  copy, so the file matches a save counter the user can refer to.
+#  The prepared file is kept in memory and downloaded by its export ID.
+#  Only the last MAX_EXPORTS files are kept.
+# ************************************************************************
 
-"""Prepare request and review files from a saved study."""
+"""Prepare the request and review files from a saved study."""
 
 from __future__ import annotations
 
 import hashlib
 from collections import OrderedDict
 from dataclasses import dataclass
-from typing import Any
+from typing import Literal
 
-from ircomp_gui.application.ports import ExchangePort
+from ircomp_gui.application.ports import ExchangePort, SavedStudy
+from ircomp_gui.application.responses import ExportPreviewView
 from ircomp_gui.application.workspace import WorkspaceService
+from ircomp_gui.domain.constants import MAX_EXPORTS
 from ircomp_gui.domain.errors import DomainError
-from ircomp_gui.domain.models import RequestSnapshot, Study
+from ircomp_gui.domain.models import (
+    Collection,
+    EvidenceFile,
+    RequestSnapshot,
+    ReviewPackage,
+    ReviewSourceFile,
+    Revision,
+    Study,
+)
 from ircomp_gui.domain.rules import (
     request_diagnostics,
     revision_by_id,
@@ -26,48 +45,218 @@ from ircomp_gui.domain.serialization import encode_json
 
 @dataclass(frozen=True)
 class ExportFile:
-    """Keep the bytes prepared for one download."""
+    """Keep the bytes prepared for one download.
+
+    Attributes
+    ----------
+    raw : bytes
+        Contents of the file
+    filename : str
+        Name offered to the browser
+    summary : ExportPreviewView
+        Description shown in the export preview
+    """
 
     raw: bytes
     filename: str
-    summary: dict[str, Any]
+    summary: ExportPreviewView
 
 
 def request_snapshot(study: Study, revision_id: str) -> RequestSnapshot:
-    """Build a request file using the selected revision and its labels."""
+    """Build the request file from the chosen revision and its labels.
+
+    Parameters
+    ----------
+    study : Study
+        Study to export from
+    revision_id : str
+        Revision to export
+
+    Returns
+    -------
+    RequestSnapshot
+        The request file
+    """
     revision = revision_by_id(study, revision_id)
+
+    # Only the labels of the exported targets go into the file
+    labels: dict[str, str] = {}
+    for target in revision.targets:
+        labels[target.target_id] = study.target_labels[target.target_id]
+
     return RequestSnapshot(
         study_id=study.study_id,
         request_id=study.request_id,
         title=study.title,
         revision=revision,
-        target_labels={
-            target.target_id: study.target_labels[target.target_id]
-            for target in revision.targets
-        },
+        target_labels=labels,
     )
 
 
+def _used_evidence(
+    study: Study, revision_id: str, selected: list[Collection]
+) -> list[EvidenceFile]:
+    # Evidence of the revision
+    available: list[EvidenceFile] = []
+    for item in study.evidence:
+        if item.bundle.context.revision_id == revision_id:
+            available.append(item)
+    if not available:
+        raise DomainError(
+            "EXPORT_NOT_READY",
+            "Attach evidence before exporting a review package.",
+        )
+
+    # Include the source of each member and every supporting source
+    bundle_ids: set[str] = set()
+    for collection in selected:
+        for member in collection.memberships:
+            bundle_ids.add(member.candidate.bundle_id)
+            for reference in member.evidence_refs:
+                bundle_ids.add(reference.bundle_id)
+
+    # No members means nothing to filter by - include everything
+    if not bundle_ids:
+        return available
+    return [item for item in available if item.bundle.bundle_id in bundle_ids]
+
+
+def _count_dependencies(evidence: list[EvidenceFile]) -> int:
+    # The same dependency declared by more bundles is counted once
+    dependencies: set[tuple[str, str]] = set()
+    for item in evidence:
+        for dependency in item.bundle.dependencies:
+            dependencies.add((dependency.uri, dependency.description))
+    return len(dependencies)
+
+
 class ExportService:
-    """Prepare downloads from saved study data."""
+    """Prepare the downloads from the saved study data.
+
+    Attributes
+    ----------
+    workspace : WorkspaceService
+        Access to the repository, catalogue and lock
+    exchange : ExchangePort
+        Schema check of the generated documents
+    files : OrderedDict[str, ExportFile]
+        Prepared downloads, the oldest first
+    """
 
     def __init__(self, workspace: WorkspaceService, exchange: ExchangePort) -> None:
         self.workspace = workspace
         self.exchange = exchange
         self.files: OrderedDict[str, ExportFile] = OrderedDict()
 
+    def _review_document(
+        self,
+        saved: SavedStudy,
+        request: RequestSnapshot,
+        revision_id: str,
+        collection_ids: list[str],
+        selected: list[Collection],
+    ) -> tuple[ReviewPackage, list[EvidenceFile], int, Literal["draft", "reviewed"]]:
+        # All selected collections have to exist and belong to the revision
+        belongs = True
+        for item in selected:
+            if item.revision_id != revision_id:
+                belongs = False
+        if not collection_ids or len(selected) != len(collection_ids) or not belongs:
+            raise DomainError(
+                "DANGLING_REFERENCE",
+                "Choose collections of this revision.",
+            )
+
+        evidence = _used_evidence(saved.study, revision_id, selected)
+        count = unresolved(selected)
+        status: Literal["draft", "reviewed"] = "draft" if count else "reviewed"
+
+        files: list[ReviewSourceFile] = []
+        for item in evidence:
+            files.append(
+                ReviewSourceFile(
+                    bundle_id=item.bundle.bundle_id,
+                    sha256=item.sha256,
+                    content_base64=item.content_base64,
+                )
+            )
+
+        document = ReviewPackage(
+            kind="review",
+            format_version="1.0",
+            request=request,
+            source_saved_version=saved.saved_version,
+            collections=selected,
+            evidence_files=files,
+            review_status=status,
+            unresolved_count=count,
+        )
+        return document, evidence, count, status
+
+    def _summary(
+        self,
+        raw: bytes,
+        saved: SavedStudy,
+        revision: Revision,
+        kind: Literal["request", "review"],
+        status: Literal["draft", "reviewed"] | None,
+        evidence: list[EvidenceFile],
+        selected: list[Collection],
+        count: int,
+    ) -> ExportPreviewView:
+        study = saved.study
+        candidates = 0
+        for item in evidence:
+            candidates += len(item.bundle.candidates)
+
+        return ExportPreviewView(
+            export_id=self.workspace.new_id(),
+            filename=f"study-{study.study_id[:8]}-{revision.revision_id[:8]}.{kind}.json",
+            sha256=hashlib.sha256(raw).hexdigest(),
+            byte_length=len(raw),
+            study_id=study.study_id,
+            saved_version=saved.saved_version,
+            revision_id=revision.revision_id,
+            kind=kind,
+            review_status=status,
+            target_count=len(revision.targets),
+            candidate_count=candidates,
+            collection_count=len(selected),
+            unresolved_count=count,
+            dependency_count=_count_dependencies(evidence),
+        )
+
     def prepare(
         self,
         study_id: str,
         revision_id: str,
-        kind: str,
+        kind: Literal["request", "review"],
         collection_ids: list[str],
-    ) -> dict[str, Any]:
-        """Prepare the selected saved data and describe the resulting download."""
+    ) -> ExportPreviewView:
+        """Prepare the chosen saved data and describe the resulting download.
+
+        Parameters
+        ----------
+        study_id : str
+            Saved study to export
+        revision_id : str
+            Revision to export
+        kind : str
+            request or review
+        collection_ids : list[str]
+            Collections included in a review, empty for a request
+
+        Returns
+        -------
+        ExportPreviewView
+            Summary of the prepared file, with its export ID
+        """
         with self.workspace.lock:
             saved = self.workspace.repository.load(study_id)
             study = saved.study
             revision = revision_by_id(study, revision_id)
+
+            # The request has to be valid for both kinds of export
             diagnostics = request_diagnostics(study, revision, self.workspace.catalogue)
             if diagnostics:
                 raise DomainError(
@@ -76,116 +265,68 @@ class ExportService:
                     diagnostics=diagnostics,
                 )
             request = request_snapshot(study, revision_id)
+
             unique(collection_ids, "selected collection")
-            selected = [
-                item
-                for item in study.collections
-                if item.collection_id in collection_ids
-            ]
-            evidence = []
+            selected: list[Collection] = []
+            for item in study.collections:
+                if item.collection_id in collection_ids:
+                    selected.append(item)
+
+            # Build the document of the chosen kind
+            evidence: list[EvidenceFile] = []
             count = 0
-            status: str | None = None
-            document: dict[str, Any] = request.model_dump(mode="json")
+            status: Literal["draft", "reviewed"] | None = None
             if kind == "request":
                 if collection_ids:
                     raise DomainError(
                         "SCHEMA_INVALID",
                         "Request exports cannot select review collections.",
                     )
+                document: RequestSnapshot | ReviewPackage = request
             elif kind == "review":
-                if (
-                    not collection_ids
-                    or len(selected) != len(collection_ids)
-                    or any(item.revision_id != revision_id for item in selected)
-                ):
-                    raise DomainError(
-                        "DANGLING_REFERENCE",
-                        (
-                            "Select existing collections belonging to the"
-                            " selected revision."
-                        ),
-                    )
-                available = [
-                    item
-                    for item in study.evidence
-                    if item.bundle.context.revision_id == revision_id
-                ]
-                if not available:
-                    raise DomainError(
-                        "EXPORT_NOT_READY",
-                        "Attach evidence before exporting a review package.",
-                    )
-                # Include the main candidate's source and every supporting source.
-                bundle_ids: set[str] = set()
-                for collection in selected:
-                    for member in collection.memberships:
-                        bundle_ids.add(member.candidate.bundle_id)
-                        for reference in member.evidence_refs:
-                            bundle_ids.add(reference.bundle_id)
-                evidence = [
-                    item
-                    for item in available
-                    if not bundle_ids or item.bundle.bundle_id in bundle_ids
-                ]
-                count = unresolved(selected)
-                status = "draft" if count else "reviewed"
-                document = {
-                    "kind": "review",
-                    "format_version": "1.0",
-                    "request": request.model_dump(mode="json"),
-                    "source_saved_version": saved.saved_version,
-                    "collections": [item.model_dump(mode="json") for item in selected],
-                    "evidence_files": [
-                        {
-                            "bundle_id": item.bundle.bundle_id,
-                            "sha256": item.sha256,
-                            "content_base64": item.content_base64,
-                        }
-                        for item in evidence
-                    ],
-                    "review_status": status,
-                    "unresolved_count": count,
-                }
+                document, evidence, count, status = self._review_document(
+                    saved, request, revision_id, collection_ids, selected
+                )
             else:
                 raise DomainError("SCHEMA_INVALID", "Choose request or review export.")
-            self.exchange.validate_document(document)
-            raw = encode_json(document)
-            export_id = self.workspace.new_id()
-            filename = f"study-{study.study_id[:8]}-{revision_id[:8]}.{kind}.json"
-            summary = {
-                "export_id": export_id,
-                "filename": filename,
-                "sha256": hashlib.sha256(raw).hexdigest(),
-                "byte_length": len(raw),
-                "study_id": study_id,
-                "saved_version": saved.saved_version,
-                "revision_id": revision_id,
-                "kind": kind,
-                "review_status": status,
-                "target_count": len(revision.targets),
-                "candidate_count": sum(
-                    len(item.bundle.candidates) for item in evidence
-                ),
-                "collection_count": len(selected),
-                "unresolved_count": count,
-                "dependency_count": len(
-                    {
-                        (dependency.uri, dependency.description)
-                        for item in evidence
-                        for dependency in item.bundle.dependencies
-                    }
-                ),
-            }
-            self.files[export_id] = ExportFile(raw, filename, summary)
-            while len(self.files) > 5:
-                _ = self.files.popitem(last=False)
+
+            # Check against the schema and encode it
+            payload = document.model_dump(mode="json")
+            self.exchange.validate_document(payload)
+            raw = encode_json(payload)
+
+            summary = self._summary(
+                raw, saved, revision, kind, status, evidence, selected, count
+            )
+            export_id = summary.export_id
+            self.files[export_id] = ExportFile(raw, summary.filename, summary)
+
+            # Drop the oldest prepared files
+            while len(self.files) > MAX_EXPORTS:
+                self.files.popitem(last=False)
             return summary
 
     def download(self, export_id: str) -> ExportFile:
-        """Find the prepared download or ask for a new preview."""
+        """Find the prepared download.
+
+        Parameters
+        ----------
+        export_id : str
+            ID from the export summary
+
+        Returns
+        -------
+        ExportFile
+            The prepared file
+
+        Raises
+        ------
+        DomainError
+            PREVIEW_EXPIRED if the file is not kept anymore
+        """
         with self.workspace.lock:
             if export_id not in self.files:
                 raise DomainError(
-                    "PREVIEW_EXPIRED", "Export preview expired. Generate a new preview."
+                    "PREVIEW_EXPIRED", "The export preview is gone, preview it again."
                 )
             return self.files[export_id]

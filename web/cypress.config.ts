@@ -1,6 +1,13 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file cypress.config.ts
+ * @brief Configuration of the Cypress end to end tests
+ * @author Lukas (Viridis) Dubsik
+ * @version 0.1
+ *
+ * Detailed description:
+ *  The fixtures are the shipped examples in contracts/examples.
+ *  Run through scripts/test.mjs, which starts the service first.
+ */
 import { createHash } from "node:crypto";
 import { defineConfig } from "cypress";
 

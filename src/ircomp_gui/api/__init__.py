@@ -1,5 +1,8 @@
-# /************************************************************************
-# Name: Lukas (Viridis) Dubsik
-# ************************************************************************/
+# ************************************************************************
+# @file __init__.py
+# @brief HTTP interface of the application
+# @author Lukas (Viridis) Dubsik
+# @version 0.1
+# ************************************************************************
 
-"""Connect the application to the web client."""
+"""Expose the application over local HTTP."""

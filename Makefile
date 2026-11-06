@@ -1,10 +1,9 @@
-# /************************************************************************
-# Name: Lukas (Viridis) Dubsik
-# ************************************************************************/
+# IRCOMP-GUI - install, build, run, check, test and pack
+# Author: Lukas (Viridis) Dubsik
 
 PYTHON ?= python3
 
-.PHONY: install install-dev build run check format test pack
+.PHONY: install install-dev build run contracts check format test test-unit pack
 
 install:
 	$(PYTHON) -m venv .venv
@@ -21,7 +20,11 @@ build:
 run:
 	.venv/bin/ircomp-gui
 
+contracts:
+	PYTHONPATH=src .venv/bin/python scripts/generate_contracts.py
+
 check:
+	PYTHONPATH=src .venv/bin/python scripts/generate_contracts.py --check
 	.venv/bin/ruff check src
 	.venv/bin/ruff format --check src
 	.venv/bin/pyright
@@ -31,7 +34,10 @@ format:
 	.venv/bin/ruff format src
 	npm --prefix web run format
 
-test: build
+test-unit:
+	PYTHONPATH=src .venv/bin/python -m unittest discover -s tests
+
+test: build test-unit
 	npm --prefix web run test:e2e
 
 pack:
