@@ -1,8 +1,5 @@
 # /************************************************************************
 # Name: Lukas (Viridis) Dubsik
-# Login: xdubsil00
-# Project: IRCOMP
-# School-Project: ITU-1
 # ************************************************************************/
 
 """Check study data before it is used or saved."""

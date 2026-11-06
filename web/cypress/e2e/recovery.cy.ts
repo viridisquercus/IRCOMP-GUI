@@ -1,8 +1,5 @@
 /*************************************************************************
  * Name: Lukas (Viridis) Dubsik
- * Login: xdubsil00
- * Project: IRCOMP
- * School-Project: ITU-1
  *************************************************************************/
 import type { ExportPreview, Revision } from "../../src/shared/types";
 import { addTarget, createStudy, readWorkspace, saveStudy } from "../helpers";

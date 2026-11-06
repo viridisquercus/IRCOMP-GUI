@@ -1,8 +1,5 @@
 # /************************************************************************
 # Name: Lukas (Viridis) Dubsik
-# Login: xdubsil00
-# Project: IRCOMP
-# School-Project: ITU-1
 # ************************************************************************/
 
 """Check an imported file before adding it to the study."""

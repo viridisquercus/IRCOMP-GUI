@@ -1,8 +1,5 @@
 /*************************************************************************
  * Name: Lukas (Viridis) Dubsik
- * Login: xdubsil00
- * Project: IRCOMP
- * School-Project: ITU-1
  *************************************************************************/
 import { api, ApiError, fileBase64 } from "../shared/api";
 import type {

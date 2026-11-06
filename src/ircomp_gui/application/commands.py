@@ -1,8 +1,5 @@
 # /************************************************************************
 # Name: Lukas (Viridis) Dubsik
-# Login: xdubsil00
-# Project: IRCOMP
-# School-Project: ITU-1
 # ************************************************************************/
 
 """Define the operations that can change a study."""

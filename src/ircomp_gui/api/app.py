@@ -1,8 +1,5 @@
 # /************************************************************************
 # Name: Lukas (Viridis) Dubsik
-# Login: xdubsil00
-# Project: IRCOMP
-# School-Project: ITU-1
 # ************************************************************************/
 
 """Connect the application functions to HTTP and serve the GUI."""

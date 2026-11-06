@@ -1,8 +1,5 @@
 /*************************************************************************
  * Name: Lukas (Viridis) Dubsik
- * Login: xdubsil00
- * Project: IRCOMP
- * School-Project: ITU-1
  *************************************************************************/
 import { createHash } from "node:crypto";
 import { defineConfig } from "cypress";

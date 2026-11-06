@@ -1,55 +1,24 @@
 # IRCOMP-GUI
 
 ### Name: Lukas (Viridis) Dubsik
-### Login: xdubsil00
-### Project: IRCOMP
-### School-Project: ITU-1
 
 ## Overview
 
 IRCOMP-GUI is a local application for preparing CRISPR analysis requests and
-reviewing imported results. It is the first GUI prototype for IRCOMP and the
-project for ITU. The application uses Python for its data and operations, with
-React and TypeScript for the interface.
+reviewing imported results. It provides the initial GUI for IRCOMP. Python handles
+data and operations, with React and TypeScript for the interface.
 
 The application is divided into **Prepare**, **Review** and **Export**. Prepare
 sets the reference and interval targets. Review adds candidates to collections
 and stores decisions about them. Export writes a request or a review package
 from the saved study. No CRISPR computation is performed by this application.
 
-## Temporary checklist
-
-Phase I files are due in Moodle on **6 November 2026 at 23:59**. The checkpoint
-presentation is in the regular lab slot in the week starting **9 November 2026**.
-This is the working list of remaining actions; remove it after completing them.
-
-- [ ] Fill in the regular lab day and time: **________________**.
-- [ ] Conduct and record P01/P02. Add the participant role, relevant experience,
-  date, duration, setting, consent, recent task and materials used. Keep observed
-  steps separate from recollection and opinion.
-- [ ] Evaluate the sessions: record needs, conflicting findings and existing
-  solutions that work. Link N1-N8 to the actual P01/P02 findings and update the
-  competitor comparisons, interface design, task scenarios and priorities.
-- [ ] Review the [contribution record](ai-audit.md) against the course rules for
-  larger generated sections. Record a course-staff exception only if granted.
-- [ ] Update the [report text](docs/report/phase-i.md) and editable document with
-  the findings and lab details. Export the PDF and check every page, contents
-  entry, figure and author heading.
-- [ ] After the final edits, run `make check` and affected browser scenarios with
-  `make test`, commit the changes and run `make pack` from the clean checkout.
-- [ ] Upload `00_xdubsil00_navrh.pdf` and `00_xdubsil00_source.zip` under the personal
-  Moodle account and confirm that Moodle records the submission.
-- [ ] Prepare the checkpoint demonstration: both modules, an interval correction,
-  compatible and mismatching evidence, a collection decision, Save/reopen, Undo
-  and export. Explain shared state, the model/API boundary and the source code.
-- [ ] Attend the checkpoint presentation in the regular lab slot.
-
 ## Installation and execution
 
 Python 3.12 or newer and Node 20.19 or newer are required. The checked environment
 uses Python 3.14.6, Node 20.20.2 and npm 10.8.2 on Linux.
 
-From the project directory, run:
+From the repository root, run:
 
 ```sh
 make install
@@ -127,9 +96,9 @@ The reducer stores shared client state; visual components dispatch changes to it
 
 [Architecture](docs/architecture.md) describes the classes and API.
 [File formats](contracts/README.md) describes the JSON exchange.
-[Wireframes](docs/design/README.md) and the [design report](docs/report/README.md)
-contain the interface design. Longer research notes and future integration work
-are in [IRCOMP Confluence](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29360129).
+[Wireframes and diagrams](docs/design/README.md) describe the interface design.
+Future integration work is recorded in the
+[IRCOMP integration notes](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897).
 
 ## Code checks
 
@@ -174,7 +143,13 @@ working state** and check what was accepted before repeating the operation.
 
 YAML editing, the IRCOMP compiler, workflow graphs and scientific execution are
 future work. The local JSON format is not the IRCOMP specification language.
-The remaining Phase I work is listed in the temporary checklist above.
+
+## Source archive
+
+Run `make pack` from a clean, committed checkout. It creates
+`release/ircomp-gui-source.zip` and its SHA-256 file. The archive contains the
+tracked source, configuration, contracts, examples and documentation. Installed
+dependencies, local databases, build output and generated test files are excluded.
 
 ## Libraries and source information
 

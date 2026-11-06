@@ -16,10 +16,10 @@ Export shows what will be included in the downloaded file.
 
 These files show the initial design, not captures of the running application.
 The examples are synthetic. SVG files can be edited directly in a text or vector
-editor. The report contains selected readable sections of the wireframes.
+editor.
 
-The report also uses editable [navigation](diagrams/navigation.svg) and
-[architecture](diagrams/architecture.svg) diagrams. Their labels are in English.
+Editable [navigation](diagrams/navigation.svg) and
+[architecture](diagrams/architecture.svg) diagrams describe the data flow.
 
 ## Working with input
 
@@ -32,7 +32,6 @@ replace a valid target. Historical evidence keeps its request revision. Scores
 from different sources are not combined into one score.
 
 The [interview plan](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665)
-covers interval entry, candidate decisions and collections. Pending research is
-listed in the [README checklist](../../README.md#temporary-checklist).
+covers interval entry, candidate decisions and collections.
 Engineering checks alone do not establish usability. The data flow is described
 in [implementation details](../architecture.md).

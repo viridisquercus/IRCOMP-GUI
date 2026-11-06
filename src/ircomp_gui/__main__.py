@@ -1,8 +1,5 @@
 # /************************************************************************
 # Name: Lukas (Viridis) Dubsik
-# Login: xdubsil00
-# Project: IRCOMP
-# School-Project: ITU-1
 # ************************************************************************/
 
 """Read the command line arguments and start the local application."""

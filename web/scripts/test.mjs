@@ -1,8 +1,5 @@
 /*************************************************************************
  * Name: Lukas (Viridis) Dubsik
- * Login: xdubsil00
- * Project: IRCOMP
- * School-Project: ITU-1
  *************************************************************************/
 import { spawn } from "node:child_process";
 import { once } from "node:events";

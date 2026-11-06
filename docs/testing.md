@@ -1,13 +1,10 @@
 # Browser tests
 
 ### Name: Lukas (Viridis) Dubsik
-### Login: xdubsil00
-### Project: IRCOMP
-### School-Project: ITU-1
 
 ## Running the tests
 
-From the project directory, after `make install`, run:
+From the repository root, after `make install`, run:
 
 ```sh
 make test
@@ -30,7 +27,7 @@ Each scenario creates or imports a separate study. Browser storage is cleared
 between scenarios by Cypress. The scenarios can run independently and do not
 require an earlier scenario to succeed.
 
-Cypress 15.21.1 is pinned because it supports the project's Node 20 environment.
+Cypress 15.21.1 is pinned because it supports the Node 20 environment.
 The first npm installation also downloads its browser binary. On Linux, Cypress
 needs its documented [system libraries and Xvfb](https://docs.cypress.io/app/get-started/install-cypress#Linux-Prerequisites).
 
@@ -75,6 +72,6 @@ Cypress 15.21.1 and headless Electron on Linux. The production build and strict
 source checks passed on the same revision.
 
 These are functional regression and recovery checks. They do not measure
-concurrent load, prove biological correctness or replace the required real-user
-usability sessions. Cypress is used directly; there is no Cucumber adapter or
+concurrent load, prove biological correctness or replace real-user usability
+evaluation. Cypress is used directly; there is no Cucumber adapter or
 second browser-testing framework.

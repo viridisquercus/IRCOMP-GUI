@@ -1,8 +1,5 @@
 # /************************************************************************
 # Name: Lukas (Viridis) Dubsik
-# Login: xdubsil00
-# Project: IRCOMP
-# School-Project: ITU-1
 # ************************************************************************/
 
 PYTHON ?= python3
@@ -40,6 +37,6 @@ test: build
 pack:
 	git diff --quiet HEAD
 	test -z "$$(git ls-files --others --exclude-standard)"
-	mkdir -p submission
-	git archive --format=zip --prefix=IRCOMP-GUI/ --output=submission/00_xdubsil00_source.zip HEAD
-	cd submission && sha256sum 00_xdubsil00_source.zip > 00_xdubsil00_source.zip.sha256
+	mkdir -p release
+	git archive --format=zip --prefix=IRCOMP-GUI/ --output=release/ircomp-gui-source.zip HEAD
+	cd release && sha256sum ircomp-gui-source.zip > ircomp-gui-source.zip.sha256
