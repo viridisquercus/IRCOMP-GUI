@@ -7,7 +7,7 @@
 
 PYTHON ?= python3
 
-.PHONY: install install-dev build run check format pack
+.PHONY: install install-dev build run check format test pack
 
 install:
 	$(PYTHON) -m venv .venv
@@ -33,6 +33,9 @@ check:
 format:
 	.venv/bin/ruff format src
 	npm --prefix web run format
+
+test: build
+	npm --prefix web run test:e2e
 
 pack:
 	git diff --quiet HEAD

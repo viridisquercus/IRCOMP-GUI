@@ -28,3 +28,8 @@ build/
 
 # Generated Moodle source archive and verification records
 /submission/
+
+# Cypress run output
+web/cypress/downloads/
+web/cypress/screenshots/
+web/cypress/videos/
