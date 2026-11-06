@@ -1,4 +1,8 @@
-"""Request preparation and evidence review for IRCOMP-GUI.
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
 
-Project owner: Lukáš Dubšík; implementation review pending.
-"""
+"""Prepare requests and review imported evidence in IRCOMP-GUI."""

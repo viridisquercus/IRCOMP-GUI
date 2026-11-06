@@ -1,4 +1,9 @@
-// Project owner: Lukáš Dubšík; implementation review pending.
+/*************************************************************************
+ * Name: Lukas (Viridis) Dubsik
+ * Login: xdubsil00
+ * Project: IRCOMP
+ * School-Project: ITU-1
+ *************************************************************************/
 import {
   createContext,
   useContext,
@@ -19,6 +24,7 @@ const Context = createContext<{
   controller: Controller;
 } | null>(null);
 
+/** Keep the shared state available to all three views. */
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const reference = useRef(state);

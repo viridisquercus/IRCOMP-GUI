@@ -1,4 +1,11 @@
-"""Packaged metadata access. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Find the catalogue and example files in the installed project."""
 
 import json
 from pathlib import Path
@@ -7,7 +14,7 @@ from ircomp_gui.domain.catalogue import Catalogue
 
 
 def resource_path(name: str) -> Path:
-    """Resolve retained repository data or its packaged wheel equivalent."""
+    """Find a data file in the checkout or the installed Python package."""
     repository = Path(__file__).resolve().parents[3] / "contracts" / name
     return (
         repository

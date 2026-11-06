@@ -1,4 +1,11 @@
-"""Closed command contracts. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Define the operations that can change a study."""
 
 from typing import Annotated, Literal
 
@@ -45,7 +52,7 @@ class RenameTarget(Value):
 
 
 class SetContext(Value):
-    """Replace context and all retained active target intervals atomically."""
+    """Replace the reference, profile and intervals in one operation."""
 
     type: Literal["set_context"]
     reference_id: Label
@@ -54,14 +61,14 @@ class SetContext(Value):
 
 
 class AttachEvidence(Value):
-    """Accept previously inspected, exactly matching bytes."""
+    """Attach the evidence file selected in an import preview."""
 
     type: Literal["attach_evidence"]
     preview_id: Id
 
 
 class CreateCollection(Value):
-    """Create an empty revision-scoped review collection."""
+    """Create an empty collection for the selected request revision."""
 
     type: Literal["create_collection"]
     revision_id: Id
@@ -100,7 +107,7 @@ class RemoveMember(Value):
 
 
 class SetDecision(Value):
-    """Accept a collection-specific disposition and rationale."""
+    """Apply a disposition, reason and supporting references to one membership."""
 
     type: Literal["set_decision"]
     collection_id: Id

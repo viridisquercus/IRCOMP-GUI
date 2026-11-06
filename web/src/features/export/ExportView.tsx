@@ -1,4 +1,9 @@
-// Project owner: Lukáš Dubšík; implementation review pending.
+/*************************************************************************
+ * Name: Lukas (Viridis) Dubsik
+ * Login: xdubsil00
+ * Project: IRCOMP
+ * School-Project: ITU-1
+ *************************************************************************/
 import { useWorkspace } from "../../app/WorkspaceProvider";
 import {
   collections,
@@ -23,7 +28,7 @@ export function ExportView() {
       <div className="section-intro">
         <div>
           <p className="eyebrow">03 / Export</p>
-          <h1>Hand over an identified snapshot.</h1>
+          <h1>Export the study</h1>
           <p>
             Inspect the saved revision, source records and unresolved decisions
             before downloading.

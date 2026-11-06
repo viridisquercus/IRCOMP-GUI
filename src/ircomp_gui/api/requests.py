@@ -1,4 +1,11 @@
-"""HTTP request contracts. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Define the data received from the web client."""
 
 from typing import Annotated, Literal
 
@@ -44,7 +51,7 @@ CreateInput = Annotated[
 
 
 class CommandInput(Value):
-    """An accepted-state operation and current editor buffers."""
+    """Receive a study operation and the current editor text."""
 
     draft_buffers: DraftBuffers
     command: Command
@@ -89,7 +96,7 @@ ImportInput = Annotated[RequestImport | EvidenceImport, Field(discriminator="kin
 
 
 class ExportInput(Value):
-    """Freeze bytes from one explicitly selected durable revision."""
+    """Select saved request or review data for an export."""
 
     study_id: Id
     revision_id: Id

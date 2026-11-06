@@ -1,4 +1,11 @@
-"""Working copies and explicit save. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Keep the working study and handle Save and Undo."""
 
 from __future__ import annotations
 
@@ -42,7 +49,7 @@ from ircomp_gui.domain.rules import (
 
 @dataclass
 class Session:
-    """A process-local working copy with one saved and one undo snapshot."""
+    """Keep the working study, its saved copy and the last Undo copy."""
 
     workspace_id: str
     study: Study
@@ -52,12 +59,21 @@ class Session:
 
 
 def new_uuid() -> str:
-    """Generate a fresh opaque identity for each new object/revision."""
+    """Create a UUID for a new study object."""
     return str(uuid4())
 
 
 class WorkspaceService:
-    """Own working state with serialized operations and replace-on-success semantics."""
+    """Keep working studies and handle their changes, saves and Undo.
+
+    Attributes:
+        repository: Storage used to load and save complete studies.
+        catalogue: Supported references and profiles used for input checks.
+        sessions: Working copies that exist while the service is running.
+        lock: Local lock used to order changes from HTTP handlers.
+        prepare: Functions for changing request targets and context.
+        review: Functions for changing collections and decisions.
+    """
 
     def __init__(
         self,
@@ -87,7 +103,7 @@ class WorkspaceService:
         return session
 
     def view(self, session: Session) -> dict[str, Any]:
-        """Project public state without original byte payloads."""
+        """Prepare the workspace data sent back to the web client."""
         return {
             "workspace_id": session.workspace_id,
             "base_saved_version": session.base_saved_version,
@@ -116,7 +132,7 @@ class WorkspaceService:
         return session
 
     def create(self, title: str) -> Session:
-        """Create an unsaved, empty study with explicitly synthetic defaults."""
+        """Create an empty study using the demonstration reference and profile."""
         with self.lock:
             revision = Revision(
                 revision_id=self.new_id(),
@@ -138,13 +154,13 @@ class WorkspaceService:
             return self._register(study)
 
     def open(self, study_id: str) -> Session:
-        """Open a separate working copy, preserving saved unapplied draft strings."""
+        """Load a saved study into a working copy, including its editor text."""
         with self.lock:
             saved = self.repository.load(study_id)
             return self._register(saved.study, saved.saved_version)
 
     def import_request(self, request: RequestSnapshot) -> Session:
-        """Preserve imported identities without overwriting any saved study."""
+        """Open an imported request while keeping its IDs."""
         with self.lock:
             collision = self.repository.identity_exists(
                 request.study_id, request.request_id
@@ -174,7 +190,7 @@ class WorkspaceService:
             return self._register(study)
 
     def duplicate(self, workspace_id: str, title: str) -> Session:
-        """Copy active intent with fresh identities and no evidence or drafts."""
+        """Copy the active request into a new study with new IDs."""
         with self.lock:
             source = self.get(workspace_id).study
             revision = active_revision(source)
@@ -211,7 +227,7 @@ class WorkspaceService:
             return self._register(study)
 
     def accept(self, session: Session, changed: Study, previous: Study) -> Session:
-        """Validate the entire replacement before touching accepted state or Undo."""
+        """Check the changed study, then keep the previous one for Undo."""
         if (
             len(changed.collections) > 20
             or len(changed.evidence) > 10
@@ -233,7 +249,7 @@ class WorkspaceService:
         buffers: DraftBuffers,
         command: Command,
     ) -> Session:
-        """Execute a typed local command; attachment is coordinated by ImportService."""
+        """Pass the command to Prepare or Review and accept the result."""
         with self.lock:
             session = self.get(workspace_id)
             previous = session.study.model_copy(update={"draft_buffers": buffers})
@@ -256,7 +272,7 @@ class WorkspaceService:
         workspace_id: str,
         buffers: DraftBuffers,
     ) -> Session:
-        """Publish Saved only after the SQLite transaction commits."""
+        """Save the study and update the saved copy after the database succeeds."""
         with self.lock:
             session = self.get(workspace_id)
             proposed = session.study.model_copy(update={"draft_buffers": buffers})
@@ -268,7 +284,7 @@ class WorkspaceService:
             return session
 
     def undo(self, workspace_id: str) -> Session:
-        """Restore one unsaved accepted action without inventing another revision."""
+        """Restore the study from before the last accepted unsaved change."""
         with self.lock:
             session = self.get(workspace_id)
             if session.previous is None:
@@ -285,7 +301,7 @@ class WorkspaceService:
         revision_id: str,
         target_draft: TargetDraft | None = None,
     ) -> dict[str, Any]:
-        """Report local checks and explicitly unperformed scientific checks."""
+        """Check the local request and list the scientific checks not performed."""
         with self.lock:
             session = self.get(workspace_id)
             revision = revision_by_id(session.study, revision_id)

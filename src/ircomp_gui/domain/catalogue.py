@@ -1,4 +1,11 @@
-"""Pinned reference metadata. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Store the supported references and their chromosome lengths."""
 
 from __future__ import annotations
 
@@ -19,7 +26,7 @@ class Contig(Value):
 
 
 class Reference(Value):
-    """Explicit supported subset and source provenance."""
+    """Describe the supported part of a reference and where its metadata came from."""
 
     reference_id: str
     category: str
@@ -29,7 +36,7 @@ class Reference(Value):
 
 
 class Profile(Value):
-    """Declared intent, not a compiler policy or a scientific result."""
+    """Describe the analysis settings selected for a supported reference."""
 
     profile_id: str
     reference_ids: list[str]
@@ -39,14 +46,14 @@ class Profile(Value):
 
 
 class Catalogue(Value):
-    """The shipped, versioned catalogue used for local checks."""
+    """Keep the reference and analysis profile definitions used by the model."""
 
     catalogue_version: str
     references: list[Reference]
     profiles: list[Profile]
 
     def reference(self, reference_id: str) -> Reference:
-        """Resolve exact identity without inferring aliases."""
+        """Find a reference by its exact catalogue ID."""
         for item in self.references:
             if item.reference_id == reference_id:
                 return item
@@ -57,7 +64,7 @@ class Catalogue(Value):
         )
 
     def profile(self, profile_id: str, reference_id: str) -> Profile:
-        """Resolve the exact supported reference/profile binding."""
+        """Find a profile and check whether it supports the reference."""
         for item in self.profiles:
             if item.profile_id == profile_id and reference_id in item.reference_ids:
                 return item

@@ -1,4 +1,9 @@
-// Project owner: Lukáš Dubšík; implementation review pending.
+/*************************************************************************
+ * Name: Lukas (Viridis) Dubsik
+ * Login: xdubsil00
+ * Project: IRCOMP
+ * School-Project: ITU-1
+ *************************************************************************/
 import { api, ApiError, fileBase64 } from "../shared/api";
 import type {
   Catalogue,
@@ -19,6 +24,7 @@ export function createController(
 ) {
   let running = false;
   const patch = (value: Partial<State>) => dispatch({ type: "patch", value });
+  // Run one operation at a time and show its result in the common status area.
   async function run(work: () => Promise<void>, message = "") {
     if (running) return;
     running = true;
@@ -90,6 +96,7 @@ export function createController(
       await listStudies();
     }, "Study opened.");
   }
+  // Send the current editor text together with the requested change.
   async function command(operation: Command) {
     await run(async () => {
       const before = current();
@@ -147,6 +154,7 @@ export function createController(
         }
       }, "");
     },
+    // Save the accepted study and the unapplied text as separate values.
     async save() {
       await run(async () => {
         const before = current();
@@ -328,6 +336,7 @@ export function createController(
           preview_id: preview.preview_id,
         });
     },
+    // Export saved data only. Newer unsaved work remains in the editor.
     async previewExport(lastSaved: boolean) {
       if (!lastSaved && (dirty(current()) || unapplied(current()))) return;
       await run(async () => {

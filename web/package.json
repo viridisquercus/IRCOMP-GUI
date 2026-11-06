@@ -9,7 +9,8 @@
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.2.0",
     "typescript": "7.0.2",
-    "vite": "8.3.5"
+    "vite": "8.3.5",
+    "prettier": "3.9.10"
   },
   "name": "ircomp-gui-web",
   "version": "0.1.0",
@@ -18,7 +19,10 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write src *.ts *.json index.html",
+    "format:check": "prettier --check src *.ts *.json index.html",
+    "check": "npm run typecheck && npm run format:check"
   },
   "engines": {
     "node": ">=20.19.0"

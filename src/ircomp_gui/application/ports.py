@@ -1,4 +1,11 @@
-"""Application persistence boundary. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Define the storage and JSON functions used by the application."""
 
 from collections.abc import Mapping
 from typing import Protocol
@@ -21,7 +28,7 @@ class SavedStudy(Value):
 
 
 class StudySummary(Value):
-    """Study selector metadata from durable data."""
+    """Hold the saved title, counter and date shown in the study selector."""
 
     study_id: str
     title: str
@@ -30,14 +37,14 @@ class StudySummary(Value):
 
 
 class Repository(Protocol):
-    """Storage operations owned by the application, not the HTTP layer."""
+    """Describe the storage functions required by the application services."""
 
     def list(self) -> list[StudySummary]:
         """Return saved study summaries."""
         ...
 
     def load(self, study_id: str) -> SavedStudy:
-        """Load and verify one saved aggregate."""
+        """Load a complete saved study and check its contents."""
         ...
 
     def save(self, study: Study) -> int:
@@ -45,25 +52,25 @@ class Repository(Protocol):
         ...
 
     def identity_exists(self, study_id: str, request_id: str) -> str | None:
-        """Return a colliding durable study ID if either identity exists."""
+        """Find a saved study using the study ID or request ID."""
         ...
 
 
 class ExchangePort(Protocol):
-    """Versioned local exchange boundary owned by application use cases."""
+    """Describe the JSON functions required by imports, exports and storage."""
 
     def decode(self, raw: bytes, kind: str) -> RequestSnapshot | EvidenceBundle:
-        """Decode a supported request/evidence file without accepted side effects."""
+        """Read and check a request or evidence file."""
         ...
 
     def verify_sources(self, study: Study) -> None:
-        """Require matching original bytes, hashes and parsed observations."""
+        """Check that the stored source bytes match their checksum and parsed data."""
         ...
 
     def evidence_file(self, raw: bytes, bundle: EvidenceBundle) -> EvidenceFile:
-        """Retain complete original evidence bytes and measured provenance."""
+        """Store the original evidence bytes with their checksum."""
         ...
 
     def validate_document(self, document: Mapping[str, object]) -> None:
-        """Require a generated document to match the supported exchange schema."""
+        """Check a generated JSON document against the schema."""
         ...

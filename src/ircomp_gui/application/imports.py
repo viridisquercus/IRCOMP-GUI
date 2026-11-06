@@ -1,4 +1,11 @@
-"""Preview/accept exchange boundary. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Check an imported file before adding it to the study."""
 
 from __future__ import annotations
 
@@ -24,7 +31,7 @@ from ircomp_gui.domain.serialization import decode_base64, parse_json
 
 @dataclass(frozen=True)
 class ImportPreview:
-    """An immutable process-local file, scoped to its creation context."""
+    """Keep an imported file and its inspection result until confirmation."""
 
     preview_id: str
     kind: str
@@ -36,7 +43,7 @@ class ImportPreview:
 
 
 class ImportService:
-    """Parsing never changes accepted data; attachment rechecks under the lock."""
+    """Inspect imported files and add them only after confirmation."""
 
     def __init__(self, workspace: WorkspaceService, exchange: ExchangePort) -> None:
         self.workspace = workspace
@@ -198,7 +205,7 @@ class ImportService:
         buffers: DraftBuffers,
         preview_id: str,
     ) -> Session:
-        """Atomically attach the whole bundle, or preserve all preceding state."""
+        """Check the bundle again and add it together with its original bytes."""
         with self.workspace.lock:
             session = self.workspace.get(workspace_id)
             preview = self._get(preview_id)
@@ -265,12 +272,12 @@ class ImportService:
             return result
 
     def cancel(self, preview_id: str) -> None:
-        """Cancel idempotently; no accepted state changes."""
+        """Remove the preview if it is still present."""
         with self.workspace.lock:
             _ = self.previews.pop(preview_id, None)
 
     def close_workspace(self, workspace_id: str) -> None:
-        """Discard a confirmed session and its owned previews, never saved data."""
+        """Close the working copy and remove its previews; keep saved data."""
         with self.workspace.lock:
             _ = self.workspace.get(workspace_id)
             self.previews = {

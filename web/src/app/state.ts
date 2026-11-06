@@ -1,4 +1,9 @@
-// Project owner: Lukáš Dubšík; implementation review pending.
+/*************************************************************************
+ * Name: Lukas (Viridis) Dubsik
+ * Login: xdubsil00
+ * Project: IRCOMP
+ * School-Project: ITU-1
+ *************************************************************************/
 import type {
   CandidateKey,
   Catalogue,
@@ -67,6 +72,7 @@ export type Action =
       opening?: boolean;
     };
 
+/** Apply a local input change or a response from the Python service. */
 export function reducer(state: State, action: Action): State {
   if (action.type === "patch") return { ...state, ...action.value };
   if (action.type === "field")
@@ -90,15 +96,17 @@ export function reducer(state: State, action: Action): State {
     };
   const workspace = action.workspace;
   const opening = action.opening ?? false;
+  // Keep newer typing if a Save response belongs to an earlier editor state.
   const sameGeneration = opening || state.generation === action.generation;
-  const revisionId =
-    opening ||
-    !workspace.study.revisions.some(
-      (item) => item.revision_id === state.revisionId,
-    ) ||
-    state.revisionId === state.workspace?.study.active_revision_id
-      ? workspace.study.active_revision_id
-      : state.revisionId;
+  // Stay on the selected historical revision unless a new study was opened.
+  let revisionId = state.revisionId;
+  const revisionExists = workspace.study.revisions.some(
+    (item) => item.revision_id === revisionId,
+  );
+  const wasActive = revisionId === state.workspace?.study.active_revision_id;
+  if (opening || !revisionExists || wasActive) {
+    revisionId = workspace.study.active_revision_id;
+  }
   return {
     ...state,
     workspace,

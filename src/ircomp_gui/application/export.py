@@ -1,4 +1,11 @@
-"""Identified saved-snapshot exports. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Prepare request and review files from a saved study."""
 
 from __future__ import annotations
 
@@ -22,7 +29,7 @@ from ircomp_gui.domain.serialization import encode_json
 
 @dataclass(frozen=True)
 class ExportFile:
-    """Frozen bytes ensure preview and download cannot diverge after another Save."""
+    """Keep the bytes prepared for one download."""
 
     raw: bytes
     filename: str
@@ -30,7 +37,7 @@ class ExportFile:
 
 
 def request_snapshot(study: Study, revision_id: str) -> RequestSnapshot:
-    """Project only the selected revision and its current cosmetic labels."""
+    """Build a request file using the selected revision and its labels."""
     revision = revision_by_id(study, revision_id)
     return RequestSnapshot(
         study_id=study.study_id,
@@ -45,7 +52,7 @@ def request_snapshot(study: Study, revision_id: str) -> RequestSnapshot:
 
 
 class ExportService:
-    """Export durable versions only; preparing/downloading never mutates studies."""
+    """Prepare downloads from saved study data."""
 
     def __init__(self, workspace: WorkspaceService, exchange: ExchangePort) -> None:
         self.workspace = workspace
@@ -59,7 +66,7 @@ class ExportService:
         kind: str,
         collection_ids: list[str],
     ) -> dict[str, Any]:
-        """Compute exact source closure, draft state, counts and byte identity."""
+        """Prepare the selected saved data and describe the resulting download."""
         with self.workspace.lock:
             saved = self.workspace.repository.load(study_id)
             study = saved.study
@@ -111,12 +118,13 @@ class ExportService:
                         "EXPORT_NOT_READY",
                         "Attach evidence before exporting a review package.",
                     )
-                bundle_ids = {
-                    key.bundle_id
-                    for collection in selected
-                    for member in collection.memberships
-                    for key in [member.candidate, *member.evidence_refs]
-                }
+                # Include the main candidate's source and every supporting source.
+                bundle_ids: set[str] = set()
+                for collection in selected:
+                    for member in collection.memberships:
+                        bundle_ids.add(member.candidate.bundle_id)
+                        for reference in member.evidence_refs:
+                            bundle_ids.add(reference.bundle_id)
                 evidence = [
                     item
                     for item in available
@@ -177,7 +185,7 @@ class ExportService:
             return summary
 
     def download(self, export_id: str) -> ExportFile:
-        """Return precisely the previewed bytes, or require preview regeneration."""
+        """Find the prepared download or ask for a new preview."""
         with self.workspace.lock:
             if export_id not in self.files:
                 raise DomainError(

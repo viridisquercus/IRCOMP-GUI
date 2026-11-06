@@ -1,4 +1,11 @@
-"""Review editing use cases. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Manage review collections and the decisions in them."""
 
 from __future__ import annotations
 
@@ -18,7 +25,7 @@ from ircomp_gui.domain.rules import resolve_candidate, revision_by_id
 
 
 class ReviewService:
-    """Change only the review layer, never imported source observations."""
+    """Manage collections and decisions without changing imported evidence."""
 
     def __init__(self, new_id: Callable[[], str]) -> None:
         self.new_id = new_id
@@ -33,7 +40,7 @@ class ReviewService:
         | RemoveMember
         | SetDecision,
     ) -> Study:
-        """Apply one revision-scoped collection/membership operation atomically."""
+        """Apply a collection operation and return the resulting study."""
         if isinstance(command, CreateCollection):
             _ = revision_by_id(study, command.revision_id)
             collection = Collection(
@@ -45,14 +52,12 @@ class ReviewService:
             return study.model_copy(
                 update={"collections": [*study.collections, collection]}
             )
-        collection = next(
-            (
-                item
-                for item in study.collections
-                if item.collection_id == command.collection_id
-            ),
-            None,
-        )
+        # Find the collection before changing any of its members.
+        collection: Collection | None = None
+        for item in study.collections:
+            if item.collection_id == command.collection_id:
+                collection = item
+                break
         if collection is None:
             raise DomainError("DANGLING_REFERENCE", "Review collection was not found.")
         buffers = study.draft_buffers
@@ -76,14 +81,11 @@ class ReviewService:
             changed = collection.model_copy(update={"name": command.name})
         else:
             resolve_candidate(study, command.candidate, collection.revision_id)
-            member = next(
-                (
-                    item
-                    for item in collection.memberships
-                    if item.candidate == command.candidate
-                ),
-                None,
-            )
+            member: Membership | None = None
+            for item in collection.memberships:
+                if item.candidate == command.candidate:
+                    member = item
+                    break
             if isinstance(command, AddMember):
                 if member:
                     return study
@@ -131,21 +133,22 @@ class ReviewService:
                     rationale=command.rationale,
                     evidence_refs=command.evidence_refs,
                 )
-                changed = collection.model_copy(
-                    update={
-                        "memberships": [
-                            replacement if item.candidate == command.candidate else item
-                            for item in collection.memberships
-                        ]
-                    }
-                )
+                # Replace the decision in this collection only.
+                memberships: list[Membership] = []
+                for item in collection.memberships:
+                    if item.candidate == command.candidate:
+                        memberships.append(replacement)
+                    else:
+                        memberships.append(item)
+                changed = collection.model_copy(update={"memberships": memberships})
                 buffers = buffers.model_copy(update={"decision": None})
+        # Put the changed collection back without changing the other ones.
+        collections: list[Collection] = []
+        for item in study.collections:
+            if item.collection_id == changed.collection_id:
+                collections.append(changed)
+            else:
+                collections.append(item)
         return study.model_copy(
-            update={
-                "collections": [
-                    changed if item.collection_id == changed.collection_id else item
-                    for item in study.collections
-                ],
-                "draft_buffers": buffers,
-            }
+            update={"collections": collections, "draft_buffers": buffers}
         )

@@ -1,4 +1,11 @@
-"""Local HTTP and static assets. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Connect the application functions to HTTP and serve the GUI."""
 
 from __future__ import annotations
 
@@ -42,7 +49,7 @@ LOG = logging.getLogger(__name__)
 
 
 def error_status(code: str) -> int:
-    """Map local domain failures without making HTTP part of the model."""
+    """Choose the HTTP status for an application error code."""
     if code in {"MALFORMED_JSON", "DUPLICATE_KEY", "INVALID_BASE64"}:
         return 400
     if code in {"NOT_FOUND", "SESSION_EXPIRED", "PREVIEW_EXPIRED"}:
@@ -64,7 +71,7 @@ def error_status(code: str) -> int:
 
 
 def error_response(error: DomainError) -> JSONResponse:
-    """Emit a sanitized, stable error envelope."""
+    """Prepare the JSON error response read by the client."""
     return JSONResponse(
         status_code=error_status(error.code),
         content={
@@ -78,7 +85,7 @@ def error_response(error: DomainError) -> JSONResponse:
 
 
 class LocalBoundary:
-    """Bound request bodies and reject foreign browser origins before route parsing."""
+    """Check local requests before passing their body to a route."""
 
     def __init__(self, app: ASGIApp, origins: set[str]) -> None:
         self.app = app
@@ -86,7 +93,7 @@ class LocalBoundary:
         self.hosts = {urlsplit(origin).netloc for origin in origins}
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """Enforce loopback transport policy without unbounded body buffering."""
+        """Check the local address and request size before reading JSON."""
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
@@ -145,7 +152,7 @@ def create_app(
     web_directory: Path | None = None,
     origins: set[str] | None = None,
 ) -> FastAPI:
-    """Build one local application with injected storage for tests and deployments."""
+    """Create the application using the selected database and web directory."""
     catalogue = load_catalogue()
     exchange = Exchange(catalogue)
     database = database or Path(

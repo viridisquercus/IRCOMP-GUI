@@ -1,4 +1,11 @@
-"""Local invariants and projections. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Check study data before it is used or saved."""
 
 from __future__ import annotations
 
@@ -20,12 +27,12 @@ from ircomp_gui.domain.models import (
 
 
 def active_revision(study: Study) -> Revision:
-    """Return the active context or diagnose broken storage."""
+    """Get the active request revision from the study."""
     return revision_by_id(study, study.active_revision_id)
 
 
 def revision_by_id(study: Study, revision_id: str) -> Revision:
-    """Resolve an explicit retained revision."""
+    """Find the revision with the given ID in the study."""
     for revision in study.revisions:
         if revision.revision_id == revision_id:
             return revision
@@ -33,16 +40,25 @@ def revision_by_id(study: Study, revision_id: str) -> Revision:
 
 
 def same_context(left: Revision, right: Revision) -> bool:
-    """Compare scientific context without depending on target array order."""
-    return left.model_dump(exclude={"targets"}) == right.model_dump(
-        exclude={"targets"}
-    ) and sorted(left.targets, key=lambda target: target.target_id) == sorted(
-        right.targets, key=lambda target: target.target_id
-    )
+    """Check whether two revisions describe the same request.
+
+    Target order can change when a target is edited. Compare the targets by ID
+    after checking the reference, profile and coordinate system.
+    """
+    if left.revision_id != right.revision_id:
+        return False
+    if left.reference_id != right.reference_id or left.profile_id != right.profile_id:
+        return False
+    if left.coordinate_system != right.coordinate_system:
+        return False
+
+    left_targets = sorted(left.targets, key=lambda target: target.target_id)
+    right_targets = sorted(right.targets, key=lambda target: target.target_id)
+    return left_targets == right_targets
 
 
 def unique(values: list[str], subject: str) -> None:
-    """Reject duplicate domain identities instead of merging them."""
+    """Check that an ID occurs only once in the given list."""
     if len(values) != len(set(values)):
         raise DomainError("SCHEMA_INVALID", f"Duplicate {subject} identity.")
 
@@ -50,7 +66,7 @@ def unique(values: list[str], subject: str) -> None:
 def validate_revision(
     revision: Revision, catalogue: Catalogue, *, require_targets: bool = False
 ) -> None:
-    """Check only declared catalogue identities and interval bounds."""
+    """Check the selected reference, profile and target coordinates."""
     reference = catalogue.reference(revision.reference_id)
     _ = catalogue.profile(revision.profile_id, revision.reference_id)
     unique([target.target_id for target in revision.targets], "target")
@@ -77,7 +93,7 @@ def validate_revision(
 
 
 def parse_target(draft: TargetDraft, target_id: str) -> Target:
-    """Parse explicit ASCII decimal coordinates without guessing or coercion."""
+    """Read decimal coordinates from the editor and create a target."""
     for name, value in [("start", draft.start), ("end", draft.end)]:
         if not re.fullmatch(r"[0-9]+", value) or int(value) > 9007199254740991:
             raise DomainError(
@@ -97,11 +113,11 @@ def parse_target(draft: TargetDraft, target_id: str) -> Target:
         start=int(draft.start),
         end=int(draft.end),
         strand=cast(Literal["+", "-", "."], draft.strand),
-    )  # type: ignore[arg-type]
+    )
 
 
 def validate_bundle(bundle: EvidenceBundle, catalogue: Catalogue) -> None:
-    """Validate internal evidence references without asserting scientific validity."""
+    """Check the bundle context, candidate references and metric availability."""
     validate_revision(bundle.context, catalogue)
     if (
         bundle.category == "computational_prediction"
@@ -127,18 +143,16 @@ def validate_bundle(bundle: EvidenceBundle, catalogue: Catalogue) -> None:
 
 
 def resolve_candidate(study: Study, key: CandidateKey, revision_id: str) -> None:
-    """Require a real candidate in evidence attached to this exact revision."""
+    """Check that a candidate belongs to evidence for the selected revision."""
     for evidence in study.evidence:
         bundle = evidence.bundle
-        if (
-            bundle.bundle_id == key.bundle_id
-            and bundle.context.revision_id == revision_id
-            and any(
-                candidate.candidate_id == key.candidate_id
-                for candidate in bundle.candidates
-            )
-        ):
-            return
+        if bundle.bundle_id != key.bundle_id:
+            continue
+        if bundle.context.revision_id != revision_id:
+            continue
+        for candidate in bundle.candidates:
+            if candidate.candidate_id == key.candidate_id:
+                return
     raise DomainError(
         "DANGLING_REFERENCE",
         "Candidate is missing or belongs to another request revision.",
@@ -146,30 +160,37 @@ def resolve_candidate(study: Study, key: CandidateKey, revision_id: str) -> None
 
 
 def unresolved(collections: list[Collection]) -> int:
-    """Count unresolved memberships once each, plus empty collections."""
-    return sum(
-        1
-        if not collection.memberships
-        else sum(
-            member.disposition in {"undecided", "needs_clarification"}
-            or not member.rationale.strip()
-            for member in collection.memberships
-        )
-        for collection in collections
-    )
+    """Count decisions that still need to be completed.
+
+    An empty collection also counts as one unfinished item. A decision needs
+    both a finished disposition and a reason before it can be counted as done.
+    """
+    count = 0
+    for collection in collections:
+        if not collection.memberships:
+            count += 1
+            continue
+        for member in collection.memberships:
+            if member.disposition in {"undecided", "needs_clarification"}:
+                count += 1
+            elif not member.rationale.strip():
+                count += 1
+    return count
 
 
 def validate_study(study: Study, catalogue: Catalogue) -> None:
-    """Validate the complete aggregate before accepting or persisting a change."""
+    """Check all study data and the references between its parts."""
     unique([revision.revision_id for revision in study.revisions], "revision")
     unique([item.bundle.bundle_id for item in study.evidence], "bundle")
     unique([item.collection_id for item in study.collections], "collection")
     _ = active_revision(study)
     for revision in study.revisions:
         validate_revision(revision, catalogue)
-    target_ids = {
-        target.target_id for revision in study.revisions for target in revision.targets
-    }
+    # Collect target IDs from all revisions, including targets removed later.
+    target_ids: set[str] = set()
+    for revision in study.revisions:
+        for target in revision.targets:
+            target_ids.add(target.target_id)
     if set(study.target_labels) != target_ids:
         raise DomainError(
             "DANGLING_REFERENCE",
@@ -236,7 +257,7 @@ def validate_study(study: Study, catalogue: Catalogue) -> None:
 def request_diagnostics(
     study: Study, revision: Revision, catalogue: Catalogue
 ) -> list[Diagnostic]:
-    """Provide export readiness without upgrading local checks to scientific claims."""
+    """Return the local problems that prevent this request from being exported."""
     try:
         validate_revision(revision, catalogue, require_targets=True)
     except DomainError as error:

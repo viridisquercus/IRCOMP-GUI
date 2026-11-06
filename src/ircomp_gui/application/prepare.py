@@ -1,4 +1,11 @@
-"""Request editing use cases. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Edit request targets and their reference context."""
 
 from __future__ import annotations
 
@@ -23,7 +30,7 @@ from ircomp_gui.domain.rules import (
 
 
 class PrepareService:
-    """Pure accepted-state transformations, independent of HTTP and persistence."""
+    """Edit the request while keeping the previous study unchanged."""
 
     def __init__(self, catalogue: Catalogue, new_id: Callable[[], str]) -> None:
         self.catalogue = catalogue
@@ -34,7 +41,7 @@ class PrepareService:
         study: Study,
         command: RenameStudy | ApplyTarget | RemoveTarget | RenameTarget | SetContext,
     ) -> Study:
-        """Return a changed aggregate or reject without mutating the original."""
+        """Apply a request operation and return the resulting study."""
         if isinstance(command, RenameStudy):
             return study.model_copy(update={"title": command.title})
         revision = active_revision(study)

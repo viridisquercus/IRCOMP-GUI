@@ -1,4 +1,11 @@
-"""Atomic SQLite snapshots. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Load and save the study using SQLite."""
 
 from __future__ import annotations
 
@@ -19,7 +26,7 @@ from ircomp_gui.domain.serialization import MAX_DOCUMENT, encode_json, parse_jso
 
 
 class SQLiteRepository:
-    """One aggregate per row prevents partially saved evidence/review state."""
+    """Store a complete study in one SQLite row."""
 
     def __init__(
         self, path: Path, catalogue: Catalogue, exchange: ExchangePort
@@ -96,7 +103,7 @@ class SQLiteRepository:
             connection.close()
 
     def list(self) -> list[StudySummary]:
-        """List saved metadata without loading large source records."""
+        """Read the saved study titles, counters and modification dates."""
         try:
             with self._connection() as connection:
                 rows = connection.execute(
@@ -110,7 +117,7 @@ class SQLiteRepository:
             ) from error
 
     def identity_exists(self, study_id: str, request_id: str) -> str | None:
-        """Check both identity namespaces before accepting an imported request."""
+        """Find whether the study ID or request ID is already saved."""
         try:
             with self._connection() as connection:
                 row = connection.execute(
@@ -124,7 +131,7 @@ class SQLiteRepository:
             ) from error
 
     def load(self, study_id: str) -> SavedStudy:
-        """Fail on corrupt content, mismatched metadata or unsupported versions."""
+        """Read the study and check its format, metadata and evidence."""
         try:
             with self._connection() as connection:
                 row = connection.execute(

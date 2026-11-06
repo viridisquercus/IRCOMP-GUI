@@ -1,4 +1,9 @@
-// Project owner: Lukáš Dubšík; implementation review pending.
+/*************************************************************************
+ * Name: Lukas (Viridis) Dubsik
+ * Login: xdubsil00
+ * Project: IRCOMP
+ * School-Project: ITU-1
+ *************************************************************************/
 import { useWorkspace } from "../../app/WorkspaceProvider";
 import { draftProblems, revision } from "../../app/selectors";
 import type { TargetDraft } from "../../shared/types";
@@ -99,7 +104,7 @@ export function PrepareView() {
       <div className="section-intro">
         <div>
           <p className="eyebrow">01 / Prepare</p>
-          <h1>Make the request explicit.</h1>
+          <h1>Prepare the request</h1>
           <p>
             Define targets and their reference context. Check what can be
             checked locally.

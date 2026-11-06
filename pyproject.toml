@@ -1,3 +1,10 @@
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
 [build-system]
 requires = ["hatchling==1.33.0", "editables==0.6"]
 build-backend = "hatchling.build"
@@ -28,3 +35,38 @@ packages = ["src/ircomp_gui"]
 "contracts/examples/evidence-valid.json" = "ircomp_gui/resources/examples/evidence-valid.json"
 "contracts/examples/evidence-empty.json" = "ircomp_gui/resources/examples/evidence-empty.json"
 "contracts/examples/evidence-context-mismatch.json" = "ircomp_gui/resources/examples/evidence-context-mismatch.json"
+
+[tool.ruff]
+src = ["src"]
+target-version = "py312"
+indent-width = 4
+line-length = 88
+force-exclude = true
+unsafe-fixes = false
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
+line-ending = "lf"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "UP", "ANN", "B", "S", "PTH", "D", "RUF"]
+ignore = ["D107", "D203", "D213"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["ircomp_gui"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+include = ["src"]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+enableTypeIgnoreComments = false
+reportUnnecessaryTypeIgnoreComment = "error"
+reportImportCycles = "error"
+reportUnusedCallResult = "error"

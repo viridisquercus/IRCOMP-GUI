@@ -1,4 +1,9 @@
-// Project owner: Lukáš Dubšík; implementation review pending.
+/*************************************************************************
+ * Name: Lukas (Viridis) Dubsik
+ * Login: xdubsil00
+ * Project: IRCOMP
+ * School-Project: ITU-1
+ *************************************************************************/
 import { useWorkspace } from "../../app/WorkspaceProvider";
 import {
   candidates,
@@ -24,16 +29,17 @@ export function ReviewView() {
   const member = collection?.memberships.find((item) =>
     keyEqual(item.candidate, record?.key ?? null),
   );
-  const ownDraft =
-    state.buffers.decision?.collection_id === collection?.collection_id &&
-    keyEqual(state.buffers.decision?.candidate ?? null, record?.key ?? null)
-      ? state.buffers.decision
-      : null;
-  const decision =
-    ownDraft ??
-    (member && collection
-      ? { ...member, collection_id: collection.collection_id }
-      : null);
+  // First try the unapplied text for this candidate, then its saved decision.
+  let decision: DecisionDraft | null = null;
+  const draft = state.buffers.decision;
+  if (
+    draft?.collection_id === collection?.collection_id &&
+    keyEqual(draft?.candidate ?? null, record?.key ?? null)
+  ) {
+    decision = draft;
+  } else if (member && collection) {
+    decision = { ...member, collection_id: collection.collection_id };
+  }
   const attached = state.workspace!.study.evidence.filter(
     (item) => item.bundle.context.revision_id === state.revisionId,
   );

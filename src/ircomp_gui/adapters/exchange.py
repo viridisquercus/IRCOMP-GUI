@@ -1,4 +1,11 @@
-"""Bounded local JSON exchange. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Read request and evidence files using the local JSON format."""
 
 from __future__ import annotations
 
@@ -25,7 +32,7 @@ from ircomp_gui.domain.serialization import decode_base64, parse_json
 
 
 class SchemaValidator(Protocol):
-    """Narrow typed surface around jsonschema's dynamically overloaded validator."""
+    """Describe the validator methods used by this adapter."""
 
     def iter_errors(self, instance: object) -> Iterator[object]:
         """Yield structural violations."""
@@ -37,7 +44,7 @@ class SchemaValidator(Protocol):
 
 
 class Exchange:
-    """Own wire parsing and measured byte identities, not scientific semantics."""
+    """Read the local exchange files and keep their original evidence bytes."""
 
     def __init__(self, catalogue: Catalogue) -> None:
         self.catalogue = catalogue
@@ -50,7 +57,7 @@ class Exchange:
         )
 
     def decode(self, raw: bytes, kind: str) -> RequestSnapshot | EvidenceBundle:
-        """Require both the structural schema and local semantic rules."""
+        """Read the file, then check its schema and model rules."""
         document = parse_json(raw)
         if document.get("format_version") != "1.0":
             raise DomainError(
@@ -86,7 +93,7 @@ class Exchange:
             ) from error
 
     def verify_sources(self, study: Study) -> None:
-        """Check original bytes, hashes and parsed contents on save/load."""
+        """Check the retained evidence before saving or after loading."""
         for item in study.evidence:
             raw = decode_base64(item.content_base64)
             decoded = self.decode(raw, "evidence")
@@ -97,7 +104,7 @@ class Exchange:
                 )
 
     def evidence_file(self, raw: bytes, bundle: EvidenceBundle) -> EvidenceFile:
-        """Preserve exact source bytes; no reserialization of imported evidence."""
+        """Keep the imported bytes unchanged and calculate their checksum."""
         return EvidenceFile(
             bundle=bundle,
             sha256=hashlib.sha256(raw).hexdigest(),
@@ -105,5 +112,5 @@ class Exchange:
         )
 
     def validate_document(self, document: Mapping[str, object]) -> None:
-        """Validate a generated local exchange document through the adapter port."""
+        """Check the generated JSON document before exporting it."""
         self.validator.validate(document)

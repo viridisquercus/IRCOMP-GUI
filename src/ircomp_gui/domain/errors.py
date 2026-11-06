@@ -1,4 +1,11 @@
-"""Transport-independent failures. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Pass error information from the model to the user interface."""
 
 from __future__ import annotations
 
@@ -6,7 +13,7 @@ from ircomp_gui.domain.models import Diagnostic
 
 
 class DomainError(Exception):
-    """Reject an operation with stable code and sanitized field diagnostics."""
+    """Report an operation error with a code, message and optional field."""
 
     def __init__(
         self,

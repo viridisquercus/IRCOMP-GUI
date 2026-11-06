@@ -1,6 +1,16 @@
-// Project owner: Lukáš Dubšík; implementation review pending.
+/*************************************************************************
+ * Name: Lukas (Viridis) Dubsik
+ * Login: xdubsil00
+ * Project: IRCOMP
+ * School-Project: ITU-1
+ *************************************************************************/
 import type { State } from "./state";
-import type { CandidateKey, Collection } from "../shared/types";
+import type {
+  Bundle,
+  Candidate,
+  CandidateKey,
+  Collection,
+} from "../shared/types";
 
 export const keyEqual = (
   left: CandidateKey | null,
@@ -24,38 +34,58 @@ export const selectedCollection = (state: State) =>
   collections(state).find(
     (item) => item.collection_id === state.collectionId,
   ) ?? collections(state)[0];
+/** Count the decisions that still need a disposition or a reason. */
 export function unresolvedCount(items: Collection[]): number {
-  return items.reduce(
-    (count, item) =>
-      count +
-      (item.memberships.length
-        ? item.memberships.filter(
-            (member) =>
-              member.disposition === "undecided" ||
-              member.disposition === "needs_clarification" ||
-              !member.rationale.trim(),
-          ).length
-        : 1),
-    0,
-  );
-}
-export function candidates(state: State) {
-  return (
-    state.workspace?.study.evidence
-      .filter((item) => item.bundle.context.revision_id === state.revisionId)
-      .flatMap((item) =>
-        item.bundle.candidates.map((candidate) => ({
-          candidate,
-          bundle: item.bundle,
-          key: {
-            bundle_id: item.bundle.bundle_id,
-            candidate_id: candidate.candidate_id,
-          },
-        })),
-      ) ?? []
-  );
+  let count = 0;
+  for (const collection of items) {
+    // An empty collection also means there is unfinished review work.
+    if (collection.memberships.length === 0) {
+      count += 1;
+      continue;
+    }
+    for (const member of collection.memberships) {
+      if (
+        member.disposition === "undecided" ||
+        member.disposition === "needs_clarification" ||
+        !member.rationale.trim()
+      ) {
+        count += 1;
+      }
+    }
+  }
+  return count;
 }
 
+type CandidateRecord = {
+  candidate: Candidate;
+  bundle: Bundle;
+  key: CandidateKey;
+};
+
+/** Get candidates from the evidence belonging to the selected revision. */
+export function candidates(state: State): CandidateRecord[] {
+  const records: CandidateRecord[] = [];
+  if (!state.workspace) return records;
+
+  for (const evidence of state.workspace.study.evidence) {
+    const bundle = evidence.bundle;
+    if (bundle.context.revision_id !== state.revisionId) continue;
+
+    for (const candidate of bundle.candidates) {
+      records.push({
+        candidate,
+        bundle,
+        key: {
+          bundle_id: bundle.bundle_id,
+          candidate_id: candidate.candidate_id,
+        },
+      });
+    }
+  }
+  return records;
+}
+
+/** Check typed coordinates before sending them to the model. */
 export function draftProblems(
   state: State,
   draft: import("../shared/types").TargetDraft | null,

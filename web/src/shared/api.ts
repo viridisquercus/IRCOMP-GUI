@@ -1,4 +1,9 @@
-// Project owner: Lukáš Dubšík; implementation review pending.
+/*************************************************************************
+ * Name: Lukas (Viridis) Dubsik
+ * Login: xdubsil00
+ * Project: IRCOMP
+ * School-Project: ITU-1
+ *************************************************************************/
 import type { Diagnostic } from "./types";
 
 export class ApiError extends Error {
@@ -11,6 +16,7 @@ export class ApiError extends Error {
   }
 }
 
+/** Send JSON to the local service and pass its error information to the view. */
 export async function api<T>(
   path: string,
   body?: unknown,
@@ -43,6 +49,7 @@ export async function api<T>(
     : ((await response.json()) as T);
 }
 
+/** Read the selected file after checking the supported import size. */
 export async function fileBase64(file: File): Promise<string> {
   if (file.size > 1048576)
     throw new ApiError("LIMIT_EXCEEDED", "Choose a file no larger than 1 MiB.");

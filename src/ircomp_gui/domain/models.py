@@ -1,4 +1,11 @@
-"""Strict local data contracts. Project owner: Lukáš Dubšík; review pending."""
+# /************************************************************************
+# Name: Lukas (Viridis) Dubsik
+# Login: xdubsil00
+# Project: IRCOMP
+# School-Project: ITU-1
+# ************************************************************************/
+
+"""Define the study, request and review data."""
 
 from __future__ import annotations
 
@@ -19,7 +26,7 @@ Disposition = Literal[
 
 
 class Value(BaseModel):
-    """Reject coercions and unknown fields at every model boundary."""
+    """Keep model values typed and reject unknown fields."""
 
     model_config = ConfigDict(
         strict=True, extra="forbid", frozen=True, allow_inf_nan=False
@@ -27,7 +34,7 @@ class Value(BaseModel):
 
 
 class Diagnostic(Value):
-    """A source-local, field-addressable diagnostic."""
+    """Describe a problem and the field to which it belongs."""
 
     code: str
     severity: Literal["error", "warning", "info"] = "error"
@@ -36,7 +43,7 @@ class Diagnostic(Value):
 
 
 class Target(Value):
-    """An accession-qualified, zero-based half-open interval."""
+    """Store one target interval using an exact contig accession."""
 
     target_id: Id
     contig: Label
@@ -46,7 +53,7 @@ class Target(Value):
 
 
 class Revision(Value):
-    """Immutable analysis context; labels are separate cosmetic state."""
+    """Keep the reference and targets for one request revision."""
 
     revision_id: Id
     reference_id: Label
@@ -56,7 +63,7 @@ class Revision(Value):
 
 
 class RequestSnapshot(Value):
-    """Local exchange, not an IRCOMP normalized specification."""
+    """Store one request revision in the local exchange format."""
 
     kind: Literal["request"] = "request"
     format_version: Literal["1.0"] = "1.0"
@@ -68,7 +75,7 @@ class RequestSnapshot(Value):
 
 
 class Metric(Value):
-    """A source observation with explicit availability and interpretation metadata."""
+    """Store a score together with its meaning and availability."""
 
     name: Label
     model: Text | None
@@ -80,7 +87,7 @@ class Metric(Value):
 
 
 class CandidateKey(Value):
-    """Bundle-scoped candidate identity, never inferred from a label."""
+    """Identify a candidate by its bundle ID and candidate ID."""
 
     bundle_id: Id
     candidate_id: Annotated[
@@ -90,7 +97,7 @@ class CandidateKey(Value):
 
 
 class Candidate(Value):
-    """Immutable evidence with lossless original records retained separately."""
+    """Describe a candidate and retain the original producer record."""
 
     candidate_id: Annotated[
         str,
@@ -103,7 +110,7 @@ class Candidate(Value):
 
 
 class Source(Value):
-    """Declared external producer; importing does not verify its execution."""
+    """Describe the producer declared by an evidence file."""
 
     name: Label
     version: Label
@@ -111,14 +118,14 @@ class Source(Value):
 
 
 class Dependency(Value):
-    """External dependency declaration; never automatically fetched."""
+    """Record an external file or resource without downloading it."""
 
     uri: Annotated[str, Field(min_length=1, max_length=2000)]
     description: Annotated[str, Field(min_length=1, max_length=1000)]
 
 
 class EvidenceBundle(Value):
-    """An immutable, exactly contextualized local evidence file."""
+    """Group candidates with the request context used by their producer."""
 
     kind: Literal["evidence"] = "evidence"
     format_version: Literal["1.0"] = "1.0"
@@ -132,7 +139,7 @@ class EvidenceBundle(Value):
 
 
 class EvidenceFile(Value):
-    """Original bytes and measured identity, separate from review decisions."""
+    """Keep the original evidence file together with its checksum."""
 
     bundle: EvidenceBundle
     sha256: Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
@@ -140,7 +147,7 @@ class EvidenceFile(Value):
 
 
 class Membership(Value):
-    """One collection-specific decision over an immutable candidate."""
+    """Store the decision about a candidate in one collection."""
 
     candidate: CandidateKey
     disposition: Disposition
@@ -149,7 +156,7 @@ class Membership(Value):
 
 
 class Collection(Value):
-    """An explicitly revision-scoped many-to-many review collection."""
+    """Group candidate decisions belonging to one request revision."""
 
     collection_id: Id
     revision_id: Id
@@ -158,7 +165,7 @@ class Collection(Value):
 
 
 class TargetDraft(Value):
-    """Unapplied strings; invalid values remain recoverable."""
+    """Keep target input as text before it is accepted."""
 
     target_id: Id | None
     label: Text
@@ -169,7 +176,7 @@ class TargetDraft(Value):
 
 
 class DecisionDraft(Value):
-    """Unapplied review buffer stored independently from accepted decisions."""
+    """Keep an unfinished decision separate from an accepted one."""
 
     collection_id: Id
     candidate: CandidateKey
@@ -179,14 +186,14 @@ class DecisionDraft(Value):
 
 
 class DraftBuffers(Value):
-    """At most one editor buffer per substantive module."""
+    """Keep the current target and decision text before it is applied."""
 
     target: TargetDraft | None = None
     decision: DecisionDraft | None = None
 
 
 class Study(Value):
-    """The local aggregate saved atomically; no compiler products are synthesized."""
+    """Keep all data that belongs to one study."""
 
     study_id: Id
     request_id: Id
