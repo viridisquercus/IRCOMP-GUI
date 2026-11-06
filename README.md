@@ -114,10 +114,22 @@ make check
 ```
 
 This runs Ruff linting and formatting checks, strict Pyright, strict TypeScript
-and Prettier. Use `make format` to apply formatting. Python uses typed functions,
+and Prettier, including the Cypress source and test runner. Use `make format` to apply formatting. Python uses typed functions,
 four spaces and double quotes. TypeScript uses two spaces and double quotes.
 The configuration is in `pyproject.toml`, `web/tsconfig.json` and
 `web/.prettierrc.json`.
+
+## Browser tests
+
+Run `make test` after installation. It builds the client, starts a separate local
+server and runs 11 Cypress scenarios against a temporary SQLite database. Your
+saved studies are not used. The server and temporary database are removed when
+the run finishes.
+
+The tests cover editing, draft recovery, Undo, imports, collection decisions,
+review downloads and failed or delayed requests. Use
+`npm --prefix web run test:e2e:open` after building to work in the Cypress window.
+See [testing](docs/testing.md) for the scenarios and failure simulation.
 
 ## Local storage and limitations
 

@@ -394,9 +394,9 @@ Without Make, create `.venv`, install `requirements.txt`, install the package wi
 
 Save is explicit. The default database is ~/.local/share/ircomp-gui/workspace.sqlite3; IRCOMP_GUI_DATABASE selects another file. Restarting the server loses unsaved sessions and previews. Reopening the last saved copy does not recover every unsent keystroke.
 
-`make install-dev` installs the Python quality tools. `make check` runs Ruff lint/format, strict Pyright, strict TypeScript and Prettier. `make format` applies formatting. These controls remain even though the standalone package has no test-suite dependency. Behavioural checks use temporary tools outside the submitted source.
+`make install-dev` installs the Python quality tools. `make check` runs Ruff lint/format, strict Pyright, strict TypeScript and Prettier, including the browser test source and runner. `make format` applies formatting. `make test` builds the client and runs Cypress against a temporary database.
 
-The rewritten source passes Ruff lint/format, strict Pyright, strict TypeScript, Prettier and a production build. Seven temporary browser workflows and an API/persistence check also pass. These cover both modules, invalid drafts, Save/reopen, Undo, original evidence, separate collections, historical context, manual connection recovery and saved exports. They use synthetic data, not real research participants. Earlier results remain in Confluence [16] with their original revisions.
+All source checks and the production build pass. Eleven Cypress scenarios cover target correction, saved draft recovery, Undo, malformed imports, evidence matching and duplicates, separate decisions, retained history, review downloads, failed and delayed Save, lost command responses and the last saved export. The suite is under `web/cypress`; `docs/testing.md` describes its scope. Tests use synthetic data and do not replace real-user sessions. Earlier temporary checks remain in Confluence [16] with their original revisions.
 
 <!-- page -->
 
@@ -404,7 +404,7 @@ The rewritten source passes Ruff lint/format, strict Pyright, strict TypeScript,
 
 | Item | State |
 | --- | --- |
-| Local model/API and editable GUI | Implemented; source checks and temporary API/browser workflows pass |
+| Local model/API and editable GUI | Implemented; source checks and 11 Cypress scenarios pass |
 | Four comparisons, wireframes and architecture | Prepared; mapping to primary research still pending |
 | P01/P02 sessions | TODO conduct, record and apply findings |
 | Name and login | Lukas (Viridis) Dubsik; xdubsil00 |

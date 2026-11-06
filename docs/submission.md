@@ -16,6 +16,7 @@ chosen scope. The assignment requires one real user per actual team member.
 - [x] Prepare and Review both change application data.
 - [x] Shared state, Save/Undo and JSON import/export are implemented.
 - [x] Strict Python/client checks and formatting are configured.
+- [x] Eleven Cypress scenarios pass with a temporary database; see [testing](testing.md).
 - [x] The English report describes the data, GUI, architecture and API.
 - [ ] Complete P01/P02 with actual participants.
 - [ ] Update needs, competitor comparisons and design using those findings.
