@@ -17,6 +17,33 @@ sets the reference and interval targets. Review adds candidates to collections
 and stores decisions about them. Export writes a request or a review package
 from the saved study. No CRISPR computation is performed by this application.
 
+## Temporary checklist
+
+Phase I files are due in Moodle on **6 November 2026 at 23:59**. The checkpoint
+presentation is in the regular lab slot in the week starting **9 November 2026**.
+This is the working list of remaining actions; remove it after completing them.
+
+- [ ] Fill in the regular lab day and time: **________________**.
+- [ ] Conduct and record P01/P02. Add the participant role, relevant experience,
+  date, duration, setting, consent, recent task and materials used. Keep observed
+  steps separate from recollection and opinion.
+- [ ] Evaluate the sessions: record needs, conflicting findings and existing
+  solutions that work. Link N1-N8 to the actual P01/P02 findings and update the
+  competitor comparisons, interface design, task scenarios and priorities.
+- [ ] Review the [contribution record](ai-audit.md) against the course rules for
+  larger generated sections. Record a course-staff exception only if granted.
+- [ ] Update the [report text](docs/report/phase-i.md) and editable document with
+  the findings and lab details. Export the PDF and check every page, contents
+  entry, figure and author heading.
+- [ ] After the final edits, run `make check` and affected browser scenarios with
+  `make test`, commit the changes and run `make pack` from the clean checkout.
+- [ ] Upload `00_xdubsil00_navrh.pdf` and `00_xdubsil00_source.zip` under the personal
+  Moodle account and confirm that Moodle records the submission.
+- [ ] Prepare the checkpoint demonstration: both modules, an interval correction,
+  compatible and mismatching evidence, a collection decision, Save/reopen, Undo
+  and export. Explain shared state, the model/API boundary and the source code.
+- [ ] Attend the checkpoint presentation in the regular lab slot.
+
 ## Installation and execution
 
 Python 3.12 or newer and Node 20.19 or newer are required. The checked environment
@@ -114,7 +141,8 @@ make check
 ```
 
 This runs Ruff linting and formatting checks, strict Pyright, strict TypeScript
-and Prettier, including the Cypress source and test runner. Use `make format` to apply formatting. Python uses typed functions,
+and Prettier, including the Cypress source and test runner. Use `make format` to
+apply formatting. Python uses typed functions,
 four spaces and double quotes. TypeScript uses two spaces and double quotes.
 The configuration is in `pyproject.toml`, `web/tsconfig.json` and
 `web/.prettierrc.json`.
@@ -146,8 +174,7 @@ working state** and check what was accepted before repeating the operation.
 
 YAML editing, the IRCOMP compiler, workflow graphs and scientific execution are
 future work. The local JSON format is not the IRCOMP specification language.
-Real research interviews and the final academic review are still pending; see
-[submission](docs/submission.md).
+The remaining Phase I work is listed in the temporary checklist above.
 
 ## Libraries and source information
 
@@ -156,11 +183,5 @@ Hatchling and editables are used for Python installation. External dependencies
 retain their licences. The catalogue includes NCBI reference metadata and keeps
 its original source report and checksum.
 
-Code and documentation were developed with AI assistance. The actual contribution
-and the course restriction on larger generated sections still need review before
-assessed submission. Identification headers name the project owner; they do not
-establish independent authorship.
-
-The [AI contribution audit](ai-audit.md) records the scope, source references and
-selected inline markers. AI assistance included core functionality; the markers
-are not an exhaustive attribution.
+Code and documentation were developed with substantial AI assistance, including
+core functionality. The [contribution record](ai-audit.md) describes its scope.

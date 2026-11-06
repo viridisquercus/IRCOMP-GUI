@@ -11,21 +11,10 @@ The checkpoint presentation is in the regular lab slot in the week starting
 Solo participation is agreed; two modules and two planned interviews are the
 chosen scope. The assignment requires one real user per actual team member.
 
-## Current work
+## Submission checklist
 
-- [x] Prepare and Review both change application data.
-- [x] Shared state, Save/Undo and JSON import/export are implemented.
-- [x] Strict Python/client checks and formatting are configured.
-- [x] Eleven Cypress scenarios pass with a temporary database; see [testing](testing.md).
-- [x] The English report describes the data, GUI, architecture and API.
-- [ ] Complete P01/P02 with actual participants.
-- [ ] Update needs, competitor comparisons and design using those findings.
-- [ ] Fill the regular lab day/time in the report.
-- [ ] Review actual contribution and the course restriction on larger generated
-  sections. Code and documentation were developed with AI assistance; see the
-  [AI contribution audit](../ai-audit.md).
-- [ ] Check the final report and regenerate the archive after the last changes.
-- [ ] Upload personally and confirm the Moodle submission status.
+The current actions and editable lab field are in the
+[temporary README checklist](../README.md#temporary-checklist).
 
 ## Creating the archive
 
@@ -38,13 +27,6 @@ The report PDF is submitted separately as `00_xdubsil00_navrh.pdf`. The required
 are excluded from the source ZIP by `.gitattributes`. Source, schemas, examples,
 reference metadata, installation files and essential documentation are included.
 Installed packages, databases and build output are excluded.
-
-## Before the presentation
-
-Run the application and demonstrate a target edit, an invalid interval and its
-correction, compatible and mismatching evidence, a collection decision,
-Save/reopen, one Undo action and a saved export. Explain the shared state and how
-the GUI calls the model through the HTTP interface.
 
 All Phase I parts and the presentation are required. The supplied Moodle text
 states zero points for missing required work/demonstration and a five-point late

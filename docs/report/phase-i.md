@@ -6,7 +6,7 @@ Name: Lukas (Viridis) Dubsik
 Login: xdubsil00
 Project: IRCOMP
 School-Project: ITU-1
-Lab day and time: TODO fill in the regular lab slot
+Lab day and time: not recorded
 Report date: 6 November 2026
 
 ## Project topic
@@ -19,7 +19,7 @@ The application supports editing, local validation, SQLite storage and JSON exch
 
 Solo participation was agreed beforehand. The chosen scope covers two modules and two planned research sessions. This is a voluntary workload choice; the assignment requires at least one real user per actual team member.
 
-TODO before submission: complete the interviews, update the design from their findings and fill the lab slot. Code and documentation were developed with AI assistance. Actual contribution and acceptance under the course rules remain to review; identification labels do not establish independent authorship.
+Code and documentation were developed with AI assistance, including core functionality. The contribution record is in ai-audit.md. Pending actions and the editable lab field are in the temporary README checklist.
 
 <!-- page -->
 
@@ -47,10 +47,10 @@ No completed primary sessions are recorded in this report. P01 and P02 are plann
 
 | Session | Information to add after the actual meeting |
 | --- | --- |
-| P01 | TODO role, relevant experience, date, duration, setting, consent, recent task and materials used |
-| P02 | TODO role, relevant experience, date, duration, setting, consent, recent task and materials used |
-| Observation | TODO separate observed steps from recollection and opinion; link each finding to the session |
-| Evaluation | TODO record needs, conflicting findings, existing solutions that work and resulting design changes |
+| P01 | Not conducted; participant and session details are not recorded |
+| P02 | Not conducted; participant and session details are not recorded |
+| Observation | No primary observations recorded |
+| Evaluation | No primary-session evaluation recorded |
 
 Use exact quotations only where a permitted record supports them. The research guide [3] recommends open questions about past work rather than asking whether the participant likes a proposed feature.
 
@@ -75,7 +75,7 @@ Support here describes the basis for a problem or technical rule, not its freque
 
 ### 1.4 How the interviews will change the design
 
-TODO: link each retained need to a specific P01/P02 record and mark whether the session supports, contradicts or leaves it unresolved. Keep the observed step, its effect and the design interpretation separate. A hypothesis must not be relabelled as an interview result.
+The links between working needs and actual P01/P02 findings are not yet recorded. Observed steps, effects and design interpretations remain separate categories. The research actions are listed in the temporary README checklist.
 
 The main questions are whether the user starts with intervals, decides about individual candidates, needs alternative collections and can provide the expected metadata without much extra work. If an existing notebook or script already solves the problem, the scope should be reduced or the existing handover reused.
 
@@ -352,7 +352,7 @@ IRCOMP will own the formal specification, goals, constraints, cartridge rules, p
 
 ### 5.1 Source organisation
 
-Both editable modules belong to the agreed solo scope of Lukas (Viridis) Dubsik. The table describes project responsibilities. External libraries remain third-party software. Source headers use the requested project identification; actual contribution and the AI-assisted development record still need academic review.
+Both editable modules belong to the agreed solo scope of Lukas (Viridis) Dubsik. The table describes project responsibilities. External libraries remain third-party software. Source headers identify the project owner; development contributions are recorded in ai-audit.md.
 
 Python paths below are relative to `src/ircomp_gui`. The shared code supports both modules and does not represent a second student.
 
@@ -406,12 +406,12 @@ All source checks and the production build pass. Eleven Cypress scenarios cover 
 | --- | --- |
 | Local model/API and editable GUI | Implemented; source checks and 11 Cypress scenarios pass |
 | Four comparisons, wireframes and architecture | Prepared; mapping to primary research still pending |
-| P01/P02 sessions | TODO conduct, record and apply findings |
+| P01/P02 sessions | Not conducted |
 | Name and login | Lukas (Viridis) Dubsik; xdubsil00 |
-| Lab day/time | TODO fill in the regular slot |
-| Actual contribution and course AI conditions | TODO review; headers alone do not resolve them |
-| Source archive and PDF | Regenerate from the final checked version |
-| Moodle upload | TODO upload personally and confirm the status |
+| Lab day/time | Not recorded |
+| Actual contribution and course AI conditions | Unresolved; contribution record in ai-audit.md |
+| Source archive and PDF | Generated from the recorded source revision |
+| Moodle upload | No upload recorded |
 
 Phase I is due on 6 November 2026 at 23:59. The checkpoint is in the regular lab slot in the week beginning 9 November. Demonstrate both modules, reactive state, correction, persistence and the API boundary. The supplied Moodle text states zero points for missing required work/demonstration and a five-point late penalty.
 

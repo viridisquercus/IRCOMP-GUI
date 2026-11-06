@@ -13,7 +13,5 @@ Edit the Word document directly and update the Markdown text when the content
 changes. Export a new PDF and check page numbers, tables, figures and headings
 before upload. Editable wireframes are in [design](../design/README.md).
 
-TODO: complete the real interviews and update the needs, comparison and design.
-The lab day/time is still to fill in. Actual contribution and course acceptance
-of the AI-assisted work also remain to review. Use the
-[submission checklist](../submission.md) before uploading anything.
+The remaining actions and editable lab field are in the
+[temporary README checklist](../../README.md#temporary-checklist).

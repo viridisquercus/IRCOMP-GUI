@@ -1,7 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://viridisquercus.github.io/IRCOMP-GUI/contracts/exchange-1.0.schema.json",
-  "$comment": "AI-assisted schema generation and revision. See ai-audit.md at the repository root for the broader contribution, including core functionality. This annotation is not a percentage or compliance claim.",
   "title": "IRCOMP-GUI local exchange 1.0",
   "description": "Local GUI exchange; not the IRCOMP compiler contract. Semantic rules also apply.",
   "oneOf": [

@@ -32,6 +32,7 @@ replace a valid target. Historical evidence keeps its request revision. Scores
 from different sources are not combined into one score.
 
 The [interview plan](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665)
-still needs real sessions to check interval entry, candidate decisions and the use
-of collections. Engineering checks alone do not establish usability. The data
-flow is described in [implementation details](../architecture.md).
+covers interval entry, candidate decisions and collections. Pending research is
+listed in the [README checklist](../../README.md#temporary-checklist).
+Engineering checks alone do not establish usability. The data flow is described
+in [implementation details](../architecture.md).
