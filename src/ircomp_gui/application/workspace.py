@@ -42,12 +42,11 @@ from ircomp_gui.domain.rules import (
 
 @dataclass
 class Session:
-    """A process-local working copy; accepted and durable versions are distinct."""
+    """A process-local working copy with one saved and one undo snapshot."""
 
     workspace_id: str
     study: Study
     base_saved_version: int = 0
-    version: int = 1
     saved: Study | None = None
     previous: Study | None = None
 
@@ -74,8 +73,8 @@ class WorkspaceService:
         self.prepare = PrepareService(catalogue, new_id)
         self.review = ReviewService(new_id)
 
-    def get(self, workspace_id: str, expected_version: int | None = None) -> Session:
-        """Resolve a session and reject stale changes before evaluating commands."""
+    def get(self, workspace_id: str) -> Session:
+        """Resolve a local working session."""
         session = self.sessions.get(workspace_id)
         if session is None:
             raise DomainError(
@@ -85,18 +84,12 @@ class WorkspaceService:
                     " unsaved changes may be lost."
                 ),
             )
-        if expected_version is not None and expected_version != session.version:
-            raise DomainError(
-                "WORKSPACE_CONFLICT",
-                "The working copy changed. Refresh its state before retrying.",
-            )
         return session
 
     def view(self, session: Session) -> dict[str, Any]:
         """Project public state without original byte payloads."""
         return {
             "workspace_id": session.workspace_id,
-            "version": session.version,
             "base_saved_version": session.base_saved_version,
             "dirty": session.study != session.saved,
             "can_undo": session.previous is not None,
@@ -180,12 +173,10 @@ class WorkspaceService:
             )
             return self._register(study)
 
-    def duplicate(
-        self, workspace_id: str, expected_version: int, title: str
-    ) -> Session:
+    def duplicate(self, workspace_id: str, title: str) -> Session:
         """Copy active intent with fresh identities and no evidence or drafts."""
         with self.lock:
-            source = self.get(workspace_id, expected_version).study
+            source = self.get(workspace_id).study
             revision = active_revision(source)
             replacements = {
                 target.target_id: self.new_id() for target in revision.targets
@@ -234,19 +225,17 @@ class WorkspaceService:
         if changed != session.study:
             session.previous = previous
             session.study = changed
-            session.version += 1
         return session
 
     def command(
         self,
         workspace_id: str,
-        expected_version: int,
         buffers: DraftBuffers,
         command: Command,
     ) -> Session:
         """Execute a typed local command; attachment is coordinated by ImportService."""
         with self.lock:
-            session = self.get(workspace_id, expected_version)
+            session = self.get(workspace_id)
             previous = session.study.model_copy(update={"draft_buffers": buffers})
             validate_study(previous, self.catalogue)
             if isinstance(command, AttachEvidence):
@@ -265,38 +254,29 @@ class WorkspaceService:
     def save(
         self,
         workspace_id: str,
-        expected_version: int,
-        expected_saved_version: int,
         buffers: DraftBuffers,
     ) -> Session:
-        """Publish Saved only after the compare-and-save transaction commits."""
+        """Publish Saved only after the SQLite transaction commits."""
         with self.lock:
-            session = self.get(workspace_id, expected_version)
-            if session.base_saved_version != expected_saved_version:
-                raise DomainError(
-                    "SAVE_CONFLICT",
-                    "The saved version no longer matches this working copy.",
-                )
+            session = self.get(workspace_id)
             proposed = session.study.model_copy(update={"draft_buffers": buffers})
-            version = self.repository.save(proposed, expected_saved_version)
+            version = self.repository.save(proposed)
             session.study = proposed
             session.saved = proposed
             session.base_saved_version = version
-            session.version += 1
             session.previous = None
             return session
 
-    def undo(self, workspace_id: str, expected_version: int) -> Session:
+    def undo(self, workspace_id: str) -> Session:
         """Restore one unsaved accepted action without inventing another revision."""
         with self.lock:
-            session = self.get(workspace_id, expected_version)
+            session = self.get(workspace_id)
             if session.previous is None:
                 raise DomainError(
                     "UNDO_UNAVAILABLE", "There is no unsaved accepted action to undo."
                 )
             session.study = session.previous
             session.previous = None
-            session.version += 1
             return session
 
     def validate(
@@ -348,7 +328,6 @@ class WorkspaceService:
                     }
                 )
             return {
-                "workspace_version": session.version,
                 "revision_id": revision_id,
                 "export_ready": not diagnostics,
                 "checks": checks,

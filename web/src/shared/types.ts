@@ -86,7 +86,6 @@ export type Diagnostic = {
 };
 export type Workspace = {
   workspace_id: string;
-  version: number;
   base_saved_version: number;
   dirty: boolean;
   can_undo: boolean;

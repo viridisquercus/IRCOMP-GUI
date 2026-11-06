@@ -7,9 +7,6 @@ from pydantic import Field
 from ircomp_gui.application.commands import Command
 from ircomp_gui.domain.models import DraftBuffers, Id, Label, TargetDraft, Value
 
-Version = Annotated[int, Field(ge=1)]
-SavedVersion = Annotated[int, Field(ge=0)]
-
 
 class NewWorkspace(Value):
     """Create an independently usable local request."""
@@ -30,7 +27,6 @@ class DuplicateWorkspace(Value):
 
     source: Literal["duplicate"]
     workspace_id: Id
-    expected_version: Version
     title: Label
 
 
@@ -48,28 +44,19 @@ CreateInput = Annotated[
 
 
 class CommandInput(Value):
-    """A version-checked accepted-state operation and current editor buffers."""
+    """An accepted-state operation and current editor buffers."""
 
-    expected_version: Version
     draft_buffers: DraftBuffers
     command: Command
 
 
 class SaveInput(Value):
-    """Explicit Save with both concurrency boundaries."""
+    """Explicit Save of accepted data and current editor buffers."""
 
-    expected_version: Version
-    expected_saved_version: SavedVersion
     draft_buffers: DraftBuffers
 
 
-class VersionInput(Value):
-    """Check a session version before Undo."""
-
-    expected_version: Version
-
-
-class CloseInput(VersionInput):
+class CloseInput(Value):
     """Explicit confirmation of working-copy discard."""
 
     discard: Literal[True]
@@ -95,7 +82,6 @@ class EvidenceImport(Value):
     kind: Literal["evidence"]
     content_base64: Annotated[str, Field(max_length=1398104)]
     workspace_id: Id
-    expected_version: Version
     revision_id: Id
 
 
@@ -106,7 +92,6 @@ class ExportInput(Value):
     """Freeze bytes from one explicitly selected durable revision."""
 
     study_id: Id
-    saved_version: Version
     revision_id: Id
     kind: Literal["request", "review"]
     collection_ids: Annotated[list[Id], Field(max_length=20)]

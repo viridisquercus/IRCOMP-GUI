@@ -88,7 +88,7 @@ class SQLiteRepository:
 
     @contextmanager
     def _connection(self) -> Generator[sqlite3.Connection, None, None]:
-        connection = sqlite3.connect(self.path, isolation_level=None, timeout=5)
+        connection = sqlite3.connect(self.path, timeout=5)
         connection.row_factory = sqlite3.Row
         try:
             yield connection
@@ -169,71 +169,40 @@ class SQLiteRepository:
                 "PERSISTENCE_UNAVAILABLE", "Cannot read the saved study."
             ) from error
 
-    def save(self, study: Study, expected_saved_version: int) -> int:
-        """Compare-and-save in an explicit transaction; rollback every failed write."""
+    def save(self, study: Study) -> int:
+        """Save a complete snapshot with an ordinary SQLite transaction."""
         validate_study(study, self.catalogue)
         self.exchange.verify_sources(study)
         raw = encode_json(
             {"storage_version": 1, "study": study.model_dump(mode="json")}
         ).decode("utf-8")
         updated_at = datetime.now(UTC).isoformat()
-        version = expected_saved_version + 1
         try:
-            with self._connection() as connection:
-                _ = connection.execute("BEGIN IMMEDIATE")
-                try:
-                    if expected_saved_version == 0:
-                        _ = connection.execute(
-                            "INSERT INTO studies VALUES (?, ?, ?, ?, ?, ?)",
-                            (
-                                study.study_id,
-                                study.request_id,
-                                version,
-                                study.title,
-                                updated_at,
-                                raw,
-                            ),
-                        )
-                    else:
-                        cursor = connection.execute(
-                            "UPDATE studies SET saved_version = ?, title = ?, "
-                            "updated_at = ?, document_json = ? "
-                            "WHERE study_id = ? AND request_id = ? "
-                            "AND saved_version = ?",
-                            (
-                                version,
-                                study.title,
-                                updated_at,
-                                raw,
-                                study.study_id,
-                                study.request_id,
-                                expected_saved_version,
-                            ),
-                        )
-                        if cursor.rowcount != 1:
-                            raise DomainError(
-                                "SAVE_CONFLICT",
-                                "A newer saved study exists. Keep your work "
-                                "and resolve the conflict explicitly.",
-                            )
-                    _ = connection.execute("COMMIT")
-                except Exception:
-                    _ = connection.execute("ROLLBACK")
-                    raise
+            with self._connection() as connection, connection:
+                row = connection.execute(
+                    "INSERT INTO studies VALUES (?, ?, 1, ?, ?, ?) "
+                    "ON CONFLICT(study_id) DO UPDATE SET "
+                    "saved_version = studies.saved_version + 1, "
+                    "title = excluded.title, updated_at = excluded.updated_at, "
+                    "document_json = excluded.document_json "
+                    "WHERE studies.request_id = excluded.request_id "
+                    "RETURNING saved_version",
+                    (study.study_id, study.request_id, study.title, updated_at, raw),
+                ).fetchone()
+                if row is None:
+                    raise DomainError(
+                        "IDENTITY_CONFLICT",
+                        "The saved study has a different request ID.",
+                    )
+                return int(row["saved_version"])
         except sqlite3.IntegrityError as error:
             raise DomainError(
-                "SAVE_CONFLICT",
-                (
-                    "This study/request identity is already saved. Open it or "
-                    "duplicate the request."
-                ),
+                "IDENTITY_CONFLICT",
+                "This request identity belongs to another saved study.",
             ) from error
         except sqlite3.Error as error:
             raise DomainError(
                 "PERSISTENCE_UNAVAILABLE",
-                (
-                    "Save failed. Your working changes are still available; retry"
-                    " when storage is writable."
-                ),
+                "Save failed. Working changes remain available; "
+                "retry when storage is writable.",
             ) from error
-        return version

@@ -32,8 +32,6 @@ class ImportPreview:
     raw: bytes
     parsed: RequestSnapshot | EvidenceBundle | None
     workspace_id: str | None
-    version: int | None
-    revision_id: str | None
     response: dict[str, Any]
 
 
@@ -50,7 +48,6 @@ class ImportService:
         kind: str,
         content_base64: str,
         workspace_id: str | None = None,
-        expected_version: int | None = None,
         revision_id: str | None = None,
     ) -> dict[str, Any]:
         """Inspect exact bytes, report incompatibility and retain at most five files."""
@@ -64,11 +61,7 @@ class ImportService:
                         "(maximum five)."
                     ),
                 )
-            session = (
-                self.workspace.get(workspace_id, expected_version)
-                if workspace_id
-                else None
-            )
+            session = self.workspace.get(workspace_id) if workspace_id else None
             expected = (
                 revision_by_id(session.study, revision_id)
                 if session and revision_id
@@ -172,8 +165,6 @@ class ImportService:
                 raw,
                 parsed,
                 workspace_id,
-                session.version if session else None,
-                revision_id,
                 response,
             )
             return response
@@ -204,26 +195,17 @@ class ImportService:
     def attach(
         self,
         workspace_id: str,
-        expected_version: int,
         buffers: DraftBuffers,
         preview_id: str,
     ) -> Session:
         """Atomically attach the whole bundle, or preserve all preceding state."""
         with self.workspace.lock:
-            session = self.workspace.get(workspace_id, expected_version)
+            session = self.workspace.get(workspace_id)
             preview = self._get(preview_id)
             if preview.workspace_id != workspace_id or preview.kind != "evidence":
                 raise DomainError(
                     "CONTEXT_MISMATCH",
                     "The evidence preview belongs to another workspace.",
-                )
-            if preview.version != session.version:
-                raise DomainError(
-                    "PREVIEW_STALE",
-                    (
-                        "The study changed after preview. Inspect the file again "
-                        "before attaching."
-                    ),
                 )
             if preview.status == "blocked" or not isinstance(
                 preview.parsed, EvidenceBundle
@@ -231,10 +213,23 @@ class ImportService:
                 raise DomainError(
                     "CONTEXT_MISMATCH", "Resolve the preview problems before attaching."
                 )
-            if preview.status == "duplicate":
+            bundle = preview.parsed
+            existing = next(
+                (
+                    item
+                    for item in session.study.evidence
+                    if item.bundle.bundle_id == bundle.bundle_id
+                ),
+                None,
+            )
+            if existing is not None:
+                if existing.sha256 != hashlib.sha256(preview.raw).hexdigest():
+                    raise DomainError(
+                        "BUNDLE_ID_COLLISION",
+                        "Bundle identity already has different bytes.",
+                    )
                 del self.previews[preview_id]
                 return session
-            bundle = preview.parsed
             revision = revision_by_id(session.study, bundle.context.revision_id)
             if bundle.request_id != session.study.request_id or not same_context(
                 revision, bundle.context
@@ -274,10 +269,10 @@ class ImportService:
         with self.workspace.lock:
             _ = self.previews.pop(preview_id, None)
 
-    def close_workspace(self, workspace_id: str, expected_version: int) -> None:
+    def close_workspace(self, workspace_id: str) -> None:
         """Discard a confirmed session and its owned previews, never saved data."""
         with self.workspace.lock:
-            _ = self.workspace.get(workspace_id, expected_version)
+            _ = self.workspace.get(workspace_id)
             self.previews = {
                 key: preview
                 for key, preview in self.previews.items()

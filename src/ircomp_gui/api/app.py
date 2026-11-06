@@ -30,7 +30,6 @@ from ircomp_gui.api.requests import (
     SavedWorkspace,
     SaveInput,
     ValidateInput,
-    VersionInput,
 )
 from ircomp_gui.application.commands import AttachEvidence
 from ircomp_gui.application.export import ExportService
@@ -49,9 +48,6 @@ def error_status(code: str) -> int:
     if code in {"NOT_FOUND", "SESSION_EXPIRED", "PREVIEW_EXPIRED"}:
         return 404
     if code in {
-        "WORKSPACE_CONFLICT",
-        "SAVE_CONFLICT",
-        "PREVIEW_STALE",
         "IDENTITY_EXISTS",
         "IDENTITY_CONFLICT",
         "BUNDLE_ID_COLLISION",
@@ -77,7 +73,6 @@ def error_response(error: DomainError) -> JSONResponse:
                 "message": error.message,
                 "diagnostics": [item.model_dump() for item in error.diagnostics],
             },
-            "workspace_version": None,
         },
     )
 
@@ -251,9 +246,7 @@ def create_app(
             elif isinstance(payload, SavedWorkspace):
                 session = workspace.open(payload.study_id)
             elif isinstance(payload, DuplicateWorkspace):
-                session = workspace.duplicate(
-                    payload.workspace_id, payload.expected_version, payload.title
-                )
+                session = workspace.duplicate(payload.workspace_id, payload.title)
             else:
                 session = imports.accept_request(payload.preview_id)
             return workspace.view(session)
@@ -265,7 +258,7 @@ def create_app(
 
     @app.delete("/api/v1/workspaces/{workspace_id}", status_code=204)
     def close(workspace_id: str, payload: CloseInput) -> Response:
-        imports.close_workspace(workspace_id, payload.expected_version)
+        imports.close_workspace(workspace_id)
         return Response(status_code=204)
 
     @app.post("/api/v1/workspaces/{workspace_id}/commands")
@@ -275,14 +268,12 @@ def create_app(
             if isinstance(operation, AttachEvidence):
                 session = imports.attach(
                     workspace_id,
-                    payload.expected_version,
                     payload.draft_buffers,
                     operation.preview_id,
                 )
             else:
                 session = workspace.command(
                     workspace_id,
-                    payload.expected_version,
                     payload.draft_buffers,
                     operation,
                 )
@@ -294,18 +285,14 @@ def create_app(
             return workspace.view(
                 workspace.save(
                     workspace_id,
-                    payload.expected_version,
-                    payload.expected_saved_version,
                     payload.draft_buffers,
                 )
             )
 
     @app.post("/api/v1/workspaces/{workspace_id}/undo")
-    def undo(workspace_id: str, payload: VersionInput) -> dict[str, Any]:
+    def undo(workspace_id: str) -> dict[str, Any]:
         with workspace.lock:
-            return workspace.view(
-                workspace.undo(workspace_id, payload.expected_version)
-            )
+            return workspace.view(workspace.undo(workspace_id))
 
     @app.post("/api/v1/workspaces/{workspace_id}/validate")
     def validate(workspace_id: str, payload: ValidateInput) -> dict[str, Any]:
@@ -320,7 +307,6 @@ def create_app(
                 payload.kind,
                 payload.content_base64,
                 payload.workspace_id,
-                payload.expected_version,
                 payload.revision_id,
             )
         return imports.preview(payload.kind, payload.content_base64)
@@ -334,7 +320,6 @@ def create_app(
     def export(payload: ExportInput) -> dict[str, Any]:
         return exports.prepare(
             payload.study_id,
-            payload.saved_version,
             payload.revision_id,
             payload.kind,
             payload.collection_ids,

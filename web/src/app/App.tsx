@@ -123,7 +123,6 @@ function StudyControls() {
                     void controller.create({
                       source: "duplicate",
                       workspace_id: state.workspace!.workspace_id,
-                      expected_version: state.workspace!.version,
                       title: `${state.workspace!.study.title.slice(0, 180)} (copy)`,
                     });
                 }}

@@ -18,30 +18,13 @@ export function createController(
   dispatch: (action: Action) => void,
 ) {
   let running = false;
-  let reconciliationRequired = false;
   const patch = (value: Partial<State>) => dispatch({ type: "patch", value });
-  async function run(
-    work: () => Promise<void>,
-    message = "",
-    reconnect = false,
-  ) {
+  async function run(work: () => Promise<void>, message = "") {
     if (running) return;
-    if (!reconnect && reconciliationRequired) {
-      patch({
-        error: {
-          code: "CONNECTION_FAILED",
-          message:
-            "Refresh working state before changing it again; the previous response was lost.",
-          diagnostics: [],
-        },
-      });
-      return;
-    }
     running = true;
     patch({ busy: true, error: null, status: "" });
     try {
       await work();
-      if (reconnect) reconciliationRequired = false;
       if (message) patch({ status: message });
     } catch (error) {
       const failure =
@@ -53,7 +36,6 @@ export function createController(
                 ? error.message
                 : "The operation could not complete.",
             );
-      if (failure.code === "CONNECTION_FAILED") reconciliationRequired = true;
       patch({
         error: {
           code: failure.code,
@@ -92,25 +74,21 @@ export function createController(
   }
   async function create(body: unknown) {
     if (!guardStudy()) return;
-    await run(
-      async () => {
-        const previous = current().workspace;
-        const result = await api<Workspace>("/workspaces", body);
-        received(result, current().generation, true);
-        if (previous && previous.workspace_id !== result.workspace_id) {
-          // The leave guard already confirmed discarding this working session.
-          await api(
-            `/workspaces/${previous.workspace_id}`,
-            { expected_version: previous.version, discard: true },
-            "DELETE",
-          ).catch(() => undefined);
-        }
-        patch({ view: "prepare" });
-        await listStudies();
-      },
-      "Study opened.",
-      true,
-    );
+    await run(async () => {
+      const previous = current().workspace;
+      const result = await api<Workspace>("/workspaces", body);
+      received(result, current().generation, true);
+      if (previous && previous.workspace_id !== result.workspace_id) {
+        // The leave guard already confirmed discarding this working session.
+        await api(
+          `/workspaces/${previous.workspace_id}`,
+          { discard: true },
+          "DELETE",
+        ).catch(() => undefined);
+      }
+      patch({ view: "prepare" });
+      await listStudies();
+    }, "Study opened.");
   }
   async function command(operation: Command) {
     await run(async () => {
@@ -119,7 +97,6 @@ export function createController(
       const result = await api<Workspace>(
         `/workspaces/${workspace.workspace_id}/commands`,
         {
-          expected_version: workspace.version,
           draft_buffers: before.buffers,
           command: operation,
         },
@@ -153,26 +130,22 @@ export function createController(
     create,
     listStudies,
     async boot() {
-      await run(
-        async () => {
-          patch({ catalogue: await api<Catalogue>("/catalogue") });
-          await listStudies();
-          const id = sessionStorage.getItem("ircomp.workspace");
-          if (id) {
-            try {
-              received(await api<Workspace>(`/workspaces/${id}`), 0, true);
-            } catch {
-              sessionStorage.removeItem("ircomp.workspace");
-              patch({
-                status:
-                  "Previous session is unavailable. Open a saved study; unsaved work may be lost.",
-              });
-            }
+      await run(async () => {
+        patch({ catalogue: await api<Catalogue>("/catalogue") });
+        await listStudies();
+        const id = sessionStorage.getItem("ircomp.workspace");
+        if (id) {
+          try {
+            received(await api<Workspace>(`/workspaces/${id}`), 0, true);
+          } catch {
+            sessionStorage.removeItem("ircomp.workspace");
+            patch({
+              status:
+                "Previous session is unavailable. Open a saved study; unsaved work may be lost.",
+            });
           }
-        },
-        "",
-        true,
-      );
+        }
+      }, "");
     },
     async save() {
       await run(async () => {
@@ -181,8 +154,6 @@ export function createController(
         const result = await api<Workspace>(
           `/workspaces/${workspace.workspace_id}/save`,
           {
-            expected_version: workspace.version,
-            expected_saved_version: workspace.base_saved_version,
             draft_buffers: before.buffers,
           },
         );
@@ -191,22 +162,18 @@ export function createController(
       }, "Study saved. Unapplied drafts are retained separately.");
     },
     async refresh() {
-      await run(
-        async () => {
-          const workspace = current().workspace;
-          if (workspace)
-            received(
-              await api<Workspace>(`/workspaces/${workspace.workspace_id}`),
-              -1,
-            );
-          else {
-            patch({ catalogue: await api<Catalogue>("/catalogue") });
-            await listStudies();
-          }
-        },
-        "Working state refreshed; local editor text retained. Inspect accepted changes before retrying.",
-        true,
-      );
+      await run(async () => {
+        const workspace = current().workspace;
+        if (workspace)
+          received(
+            await api<Workspace>(`/workspaces/${workspace.workspace_id}`),
+            -1,
+          );
+        else {
+          patch({ catalogue: await api<Catalogue>("/catalogue") });
+          await listStudies();
+        }
+      }, "Working state refreshed; local editor text retained. Inspect accepted changes before retrying.");
     },
     async reopen() {
       const workspace = current().workspace;
@@ -219,7 +186,7 @@ export function createController(
         const workspace = current().workspace!;
         await api(
           `/workspaces/${workspace.workspace_id}`,
-          { expected_version: workspace.version, discard: true },
+          { discard: true },
           "DELETE",
         );
         sessionStorage.removeItem("ircomp.workspace");
@@ -237,9 +204,10 @@ export function createController(
         const before = current();
         const workspace = before.workspace!;
         received(
-          await api<Workspace>(`/workspaces/${workspace.workspace_id}/undo`, {
-            expected_version: workspace.version,
-          }),
+          await api<Workspace>(
+            `/workspaces/${workspace.workspace_id}/undo`,
+            {},
+          ),
           before.generation,
         );
       }, "Last accepted action undone.");
@@ -314,7 +282,6 @@ export function createController(
                 kind,
                 content_base64: await fileBase64(file),
                 workspace_id: before.workspace!.workspace_id,
-                expected_version: before.workspace!.version,
                 revision_id: before.revisionId,
               };
         patch({ importPreview: await api<ImportPreview>("/imports", body) });
@@ -332,7 +299,6 @@ export function createController(
           file,
         );
       } catch {
-        reconciliationRequired = true;
         patch({
           error: {
             code: "CONNECTION_FAILED",
@@ -375,11 +341,6 @@ export function createController(
               source: "saved",
               study_id: workspace.study.study_id,
             });
-            if (source.base_saved_version !== workspace.base_saved_version)
-              throw new ApiError(
-                "SAVE_CONFLICT",
-                "The saved version changed in another session. Resolve the conflict before exporting.",
-              );
             if (
               !source.study.revisions.some(
                 (item) => item.revision_id === revisionId,
@@ -390,7 +351,6 @@ export function createController(
           patch({
             exportPreview: await api<ExportPreview>("/exports", {
               study_id: workspace.study.study_id,
-              saved_version: workspace.base_saved_version,
               revision_id: revisionId,
               kind: before.exportKind,
               collection_ids:
@@ -403,7 +363,7 @@ export function createController(
           if (source)
             await api(
               `/workspaces/${source.workspace_id}`,
-              { expected_version: source.version, discard: true },
+              { discard: true },
               "DELETE",
             ).catch(() => undefined);
         }

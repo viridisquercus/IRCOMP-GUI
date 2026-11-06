@@ -55,7 +55,6 @@ class ExportService:
     def prepare(
         self,
         study_id: str,
-        saved_version: int,
         revision_id: str,
         kind: str,
         collection_ids: list[str],
@@ -63,14 +62,6 @@ class ExportService:
         """Compute exact source closure, draft state, counts and byte identity."""
         with self.workspace.lock:
             saved = self.workspace.repository.load(study_id)
-            if saved.saved_version != saved_version:
-                raise DomainError(
-                    "SAVE_CONFLICT",
-                    (
-                        "The selected saved version changed. Refresh the workspace "
-                        "before exporting."
-                    ),
-                )
             study = saved.study
             revision = revision_by_id(study, revision_id)
             diagnostics = request_diagnostics(study, revision, self.workspace.catalogue)
@@ -137,7 +128,7 @@ class ExportService:
                     "kind": "review",
                     "format_version": "1.0",
                     "request": request.model_dump(mode="json"),
-                    "source_saved_version": saved_version,
+                    "source_saved_version": saved.saved_version,
                     "collections": [item.model_dump(mode="json") for item in selected],
                     "evidence_files": [
                         {
@@ -162,7 +153,7 @@ class ExportService:
                 "sha256": hashlib.sha256(raw).hexdigest(),
                 "byte_length": len(raw),
                 "study_id": study_id,
-                "saved_version": saved_version,
+                "saved_version": saved.saved_version,
                 "revision_id": revision_id,
                 "kind": kind,
                 "review_status": status,

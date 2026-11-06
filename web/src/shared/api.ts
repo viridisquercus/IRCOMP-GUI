@@ -27,7 +27,7 @@ export async function api<T>(
   } catch {
     throw new ApiError(
       "CONNECTION_FAILED",
-      "The local service is unavailable. Keep your inputs. Reconnect and refresh working state before retrying a change.",
+      "The local service is unavailable. Keep your inputs and refresh working state before retrying.",
     );
   }
   if (!response.ok) {

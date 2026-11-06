@@ -13,7 +13,7 @@ from ircomp_gui.domain.models import (
 
 
 class SavedStudy(Value):
-    """One verified durable version."""
+    """One verified saved snapshot."""
 
     study: Study
     saved_version: int
@@ -40,8 +40,8 @@ class Repository(Protocol):
         """Load and verify one saved aggregate."""
         ...
 
-    def save(self, study: Study, expected_saved_version: int) -> int:
-        """Atomically compare and save, or preserve the preceding version."""
+    def save(self, study: Study) -> int:
+        """Save one snapshot atomically and return its save counter."""
         ...
 
     def identity_exists(self, study_id: str, request_id: str) -> str | None:
