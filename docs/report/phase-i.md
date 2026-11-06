@@ -1,479 +1,466 @@
 # CRISPR Study Workspace
 
-Návrh rozhraní a architektury pro Fázi I projektu ITU 2026
+Phase I design report for ITU 2026
 
-Kapitán a jediný člen: Lukáš Dubšík.
+Name: Lukas (Viridis) Dubsik
+Login: xdubsil00
+Project: IRCOMP
+School-Project: ITU-1
+Lab day and time: TODO fill in the regular lab slot
+Report date: 6 November 2026
 
-Login: TODO DOPLNIT LOGIN. Cvičení: TODO DOPLNIT DEN A ČAS CVIČENÍ.
+## Project topic
 
-Moduly: Prepare, Review a společná infrastruktura. Samostatná účast dohodnuta; rozsah odpovídá dvěma členům.
+IRCOMP-GUI is a local application for preparing CRISPR analysis requests and reviewing imported evidence. It is also an initial interface for the larger IRCOMP project. The standalone application has two editable modules: Prepare changes request targets and reference context, while Review manages candidate collections and decisions. Export provides their common file output.
 
-## Téma projektu
+The intended user is a computational biologist, bioinformatician or research assistant working with analysis inputs and results. An experimental collaborator may receive the selected candidates. These roles are the starting assumption; real interviews still need to check the actual workflow.
 
-Pracovní prostředí pro přípravu CRISPR analýz a revizi výpočetních výsledků. Aplikace umožňuje připravit identifikovaný požadavek, připojit kompatibilní podklady a uchovat výběr kandidátů s odůvodněním. Obsahuje dva moduly s aktivní změnou dat: Prepare pro požadavky a Review pro rozhodnutí v kolekcích. Export je jejich společný výstup.
+The application supports editing, local validation, SQLite storage and JSON exchange. CRISPR scoring, biological validation and the IRCOMP compiler are not implemented. The local request file is separate from IRCOMP's future specification language.
 
-Cílovým operátorem je výpočetně orientovaný biolog, bioinformatik nebo výzkumný asistent. Experimentální spolupracovník může přebírat výsledný výběr. Jde zatím o pracovní vymezení rolí; jejich skutečný postup musí ověřit rozhovory.
+Solo participation was agreed beforehand. The chosen scope covers two modules and two planned research sessions. This is a voluntary workload choice; the assignment requires at least one real user per actual team member.
 
-Lokální aplikace již provádí editaci, validaci podporovaných pravidel, ukládání a import/export. Neprovádí výpočet CRISPR skóre, biologické ověření ani běh kompilátoru IRCOMP. Její JSON není kanonickým jazykem IRCOMP.
-
-TODO před odevzdáním: doplnit dva skutečné rozhovory a jejich dopad do návrhu, login a termín cvičení; zkontrolovat autorství a pravidla využití AI. Tento stav není dokončením povinného primárního výzkumu.
-
-Obsah a čísla stran jsou v editovatelném dokumentu.
+TODO before submission: complete the interviews, update the design from their findings and fill the lab slot. Code and documentation were developed with AI assistance. Actual contribution and acceptance under the course rules remain to review; identification labels do not establish independent authorship.
 
 <!-- page -->
 
-## 1 Výzkum uživatelských potřeb
+## Contents
 
-### 1.1 Provedený sekundární výzkum a hranice zjištění
+<!-- contents -->
 
-Sekundární rešerše z 1. listopadu 2026 zahrnuje 16 zdrojů: sedm veřejných diskusí či hlášení problémů, šest dokumentací a tři původní odborné práce. Zaměřuje se na význam skóre, identitu reference, opravu vstupů, obnovu kontextu a předání výsledků. Úplný registr E01 až E16 je v Confluence, GUI research sources and interview plan [14].
+<!-- page -->
 
-Diskuse dokládají popsanou zkušenost konkrétního pisatele, nikoli četnost problému. Dokumentace vysvětluje chování nástroje; neprokazuje obtíže uživatele. Návrhové závěry jsou interpretací těchto podkladů. Rešerše není rozhovorem ani testem použitelnosti.
+## 1 User research
 
-Konkrétní podklady: autor diskuse o CRISPR skóre uvádí rozdílná hodnocení stejných sekvencí v několika nástrojích [4]. V CRISPOR issue 69 vedla oprava identifikátoru h38 na hg38 k vyřešení hlášeného problému [5]. Galaxy Help obsahuje vyřešený případ nesouladu názvů chromozomů [6]. CHOPCHOP dokumentuje různé významy nul a přetrvávající pokročilá nastavení [8]. Tyto případy odůvodňují zkoumání kontextu a interpretace; neprokazují poruchu všech současných verzí nástrojů.
+### 1.1 Research completed so far
 
-Existuje i opačná evidence: uživatelům vyhovují zavedená integrovaná prostředí a část výpočetních pracovníků preferuje terminál. Samostatné GUI proto musí přinést užitek větší než převod dat do jeho lokálního formátu. Požadavek na více kolekcí a rozhodování po kandidátech je dosud slabě podložený.
+The secondary research recorded on 1 November 2026 covers 16 sources: seven public discussions or issue reports, six documentation sources and three original papers. It looks at score interpretation, reference identity, input correction, returning to earlier work and handing over results. The full E01-E16 register and interview plan are kept in Confluence [14].
 
-### 1.2 Primární výzkum k doplnění
+A discussion describes the experience of its author, not how often a problem occurs. Documentation describes a tool, but does not prove that users have difficulty with it. The needs below are interpretations of these sources and have not been confirmed by interviews.
 
-Pro dobrovolně zvolený rozsah odpovídající dvěma členům jsou plánováni dva skuteční účastníci. K datu této verze nejsou evidována dokončená sezení. Záznamy níže proto nejsou výsledky výzkumu.
+For example, a discussion compares different scores for the same CRISPR sequences [4]. CRISPOR issue 69 was resolved after correcting a reference identifier from h38 to hg38 [5]. A Galaxy Help discussion concerns inconsistent chromosome names [6]. CHOPCHOP documents score interpretation and advanced settings [8]. These are reasons to investigate context and interpretation; they are not evidence that every current tool has the same problem.
 
-| Záznam | Doplnit po skutečném sezení |
+There is also evidence against adding another application. Some users already work well in integrated environments, and some computational users prefer a terminal. The GUI must offer enough value to justify converting data into its local format. Candidate-level decisions and multiple collections are still weakly supported assumptions.
+
+### 1.2 Real sessions still to complete
+
+No completed primary sessions are recorded in this report. P01 and P02 are planned sessions, not research results. The proposed interview takes 35-45 minutes: discuss a recent task, walk through the files and tools, examine identity and handover, then show the concept at the end.
+
+| Session | Information to add after the actual meeting |
 | --- | --- |
-| P01 | TODO role a relevantní zkušenost, datum, délka, prostředí, souhlas, konkrétní nedávný úkol, použité podklady |
-| P02 | TODO role a relevantní zkušenost, datum, délka, prostředí, souhlas, konkrétní nedávný úkol, použité podklady |
-| Pozorování | TODO oddělit přímo pozorované kroky od vzpomínek a názorů; odkázat na záznam P01/P02 |
-| Vyhodnocení | TODO doložit potřeby, rozpory, funkční současná řešení a skutečné změny návrhu |
+| P01 | TODO role, relevant experience, date, duration, setting, consent, recent task and materials used |
+| P02 | TODO role, relevant experience, date, duration, setting, consent, recent task and materials used |
+| Observation | TODO separate observed steps from recollection and opinion; link each finding to the session |
+| Evaluation | TODO record needs, conflicting findings, existing solutions that work and resulting design changes |
 
-Připravený scénář má 35 až 45 minut: poslední úkol, průchod soubory, identita a předání. Koncept se ukazuje až na konci. Osnova je v Confluence [14]; citace vyžadují přesný povolený záznam.
+Use exact quotations only where a permitted record supports them. The research guide [3] recommends open questions about past work rather than asking whether the participant likes a proposed feature.
 
 <!-- page -->
 
-### 1.3 Pracovní lidské a procesní potřeby
+### 1.3 Working user needs
 
-Následující potřeby jsou hypotézy odvozené ze sekundárních zdrojů, nikoli potřeby potvrzené rozhovory. Formulace popisují situaci člověka; konkrétní funkce aplikace následují až v kapitole 3.
+These are human and process needs inferred from secondary research. They describe what the person needs to achieve and why. Specific application functions are discussed later, in the UI design.
 
-| ID | Potřeba a důvod | Podklad a jistota |
+| ID | Working need | Evidence and remaining uncertainty |
 | --- | --- | --- |
-| N1 | Rozumět původu a významu pozorování, aby rozdílné metriky nebyly zaměněny za stejnou veličinu. | E01, E08, E09, E14; střední |
-| N2 | Určit přesný cíl, referenci a konvenci souřadnic, aby výsledek patřil ke správnému vstupu. | E02 až E04, E11; silný technický podklad |
-| N3 | Odlišit chybějící informaci od nepříznivého výsledku a přijetí souboru od provedení analýzy. | E08 až E10; dokumentované případy |
-| N4 | Poznat opravitelný vstup a zachovat již hotovou práci při opravě. | E03, E04, E10; konkrétní hlášení |
-| N5 | Při návratu k práci dohledat vstupy a podklady tehdejšího rozhodnutí. | E06, E15; přenos do této domény neověřen |
-| N6 | Předat výběr tak, aby příjemce rozuměl kontextu a nevyřešeným otázkám. | E08, E12; formát předání neověřen |
-| N7 | Zapojit nástroj do stávající práce bez nadbytečného převodu a opakovaného zadávání. | E05, E07, E13, E16; také protiváha novému GUI |
-| N8 | Zachovat důvod ponechání, vyřazení nebo odložení položky. | Slabá přímá evidence; ověřit granularitu rozhodování |
+| N1 | Understand where an observation came from and what it means, so different metrics are not treated as the same quantity. | E01, E08, E09, E14; moderate secondary support |
+| N2 | Identify the target, reference and coordinate convention, so the result belongs to the correct input. | E02-E04, E11; strong technical basis |
+| N3 | Distinguish missing information from an unfavourable value, and file acceptance from completed analysis. | E08-E10; documented examples |
+| N4 | Find and correct input problems without losing already completed work. | E03, E04, E10; specific issue reports |
+| N5 | Recover the inputs and evidence behind an earlier decision when returning to the task. | E06, E15; transfer to this workflow unconfirmed |
+| N6 | Pass a selection to another person with enough context to understand unresolved questions. | E08, E12; actual handover format unconfirmed |
+| N7 | Use the tool within existing work without unnecessary conversion or repeated input. | E05, E07, E13, E16; also an argument against another GUI |
+| N8 | Keep the reason for including, excluding or postponing a candidate. | Weak direct evidence; decision granularity needs an interview |
 
-Jistota označuje podporu existence problému nebo technického pravidla, nikoli statistickou četnost. Identifikátory E odkazují na úplný registr v rešerši; klíčové veřejné zdroje jsou uvedeny i v seznamu literatury.
+Support here describes the basis for a problem or technical rule, not its frequency. E identifiers refer to the research register [14].
 
-### 1.4 Převod skutečných zjištění do návrhu
+### 1.4 How the interviews will change the design
 
-TODO po rozhovorech: ke každé ponechané potřebě připojit konkrétní záznam P01 nebo P02; označit potvrzení, rozpor či neověřený předpoklad. Samostatně uvést pozorovaný krok, jeho dopad a návrhovou interpretaci. Potřeba bez podpory nesmí být přejmenována na výsledek rozhovoru.
+TODO: link each retained need to a specific P01/P02 record and mark whether the session supports, contradicts or leaves it unresolved. Keep the observed step, its effect and the design interpretation separate. A hypothesis must not be relabelled as an interview result.
 
-Nejrizikovější otázky: začíná operátor skutečně intervaly, rozhoduje po kandidátech, potřebuje alternativní kolekce a dokáže levně dodat očekávaná metadata? Pokud současný notebook nebo skript problém řeší, návrh musí zúžit rozsah nebo využít existující předání. Změny se mají promítnout i do porovnání konkurence, scénářů a priorit, ne pouze do textu této kapitoly.
+The main questions are whether the user starts with intervals, decides about individual candidates, needs alternative collections and can provide the expected metadata without much extra work. If an existing notebook or script already solves the problem, the scope should be reduced or the existing handover reused.
 
-Pozdější test použitelnosti se soustředí na přípravu cíle, opravu diagnostiky, rozlišení nuly od absence, kompatibilitu revize, změnu rozhodnutí a vysvětlení exportu. Technické kontroly z kapitoly 5 tento výzkum nenahrazují.
+Any findings must also update the competitor comparison, interaction scenarios and priorities. Later usability testing will cover target entry, correction, zero versus absence, revision matching, a review decision and explaining the export. Engineering checks do not replace those sessions.
 
 <!-- page -->
 
-## 2 Analýza konkurenčních řešení
+## 2 Existing applications
 
-### 2.1 Metoda a mapování na potřeby
+### 2.1 Method
 
-Posouzení z 1. listopadu 2026 zahrnuje CRISPOR, CHOPCHOP, Benchling a Galaxy. První dva jsou přímé doménové alternativy, Benchling integrované laboratorní prostředí a Galaxy obecná alternativa pro organizaci analýz. O značí pozorování veřejného rozhraní, D dokumentované chování a I návrhovou interpretaci. Nebyly prováděny výpočty ani měřeny časy úloh. Vazby N1 až N8 zůstávají pracovní do dokončení rozhovorů.
+The comparison recorded on 1 November 2026 covers CRISPOR, CHOPCHOP, Benchling and Galaxy. CRISPOR and CHOPCHOP are direct domain alternatives. Benchling is an integrated laboratory environment; Galaxy is a broader environment for organising analyses. O means observed public UI, D documented behaviour, and I design interpretation. No scientific calculation or task timing was performed. N1-N8 remain provisional until the interviews.
 
 ### 2.2 CRISPOR
 
-Veřejný vstupní formulář verze 5.2 a oficiální manuál [7].
+The inspected material was the public input form, labelled version 5.2, and the official manual [7].
 
-| Hodnocení | Zjištění ve vztahu k tomuto projektu | Potřeby |
+| Item | Observation or interpretation | Needs |
 | --- | --- | --- |
-| Pro 1 O | Tři číslované skupiny spojují cíl, genom a PAM. | N2, N7 |
-| Pro 2 D | Odkazy propojují anotovanou sekvenci s řádky kandidátů. | N1, N2 |
-| Pro 3 D | Výsledky lze stáhnout pro další práci a archivaci. | N5, N6 |
-| Proti 1 D/I | Zapamatovaný genom vyžaduje kontrolu zděděného kontextu. | N2, N4 |
-| Proti 2 O/I | Hlavní formulář omezuje jednu sekvenci pod 2300 bp; dávková cesta je oddělená. | N7 |
-| Proti 3 D/I | Dlouhodobé uchování vyžaduje vědomé stažení výsledku. | N5, N6 |
+| Pro 1 O | Three numbered groups bring the target, genome and PAM together. | N2, N7 |
+| Pro 2 D | Links connect the annotated sequence to candidate rows. | N1, N2 |
+| Pro 3 D | Results can be downloaded for later work and storage. | N5, N6 |
+| Con 1 D/I | A remembered genome needs to be checked as inherited context. | N2, N4 |
+| Con 2 O/I | The main form limits a single sequence to under 2300 bp; batch input is separate. | N7 |
+| Con 3 D/I | Long-term retention requires the user to download the result deliberately. | N5, N6 |
 
-Ponaučení: zachovat společný kontext a provázaný detail, ale viditelně oddělit uloženou práci od dočasného výsledku. Posouzení neprokazuje nepřítomnost všech forem poznámek ani nepodporu dávkových úloh.
+For this project, the useful parts are common context and a connected detail view. Saved work should be clearly distinguished from temporary results. This comparison does not establish that CRISPOR lacks every annotation or batch option.
 
 ### 2.3 CHOPCHOP
 
-Veřejný formulář s rozbalenými Options a oficiální instrukce [8].
+The inspected material was the public form with Options expanded and the official instructions [8].
 
-| Hodnocení | Zjištění ve vztahu k tomuto projektu | Potřeby |
+| Item | Observation or interpretation | Needs |
 | --- | --- | --- |
-| Pro 1 O | Cíl, organismus, nástroj a účel jsou pohromadě. | N2, N7 |
-| Pro 2 O | Options oddělují pokročilé volby do tematických záložek. | N7 |
-| Pro 3 O | Nabízí identifikátory, souřadnice i vloženou sekvenci. | N2, N7 |
-| Proti 1 D/I | Pokročilé volby mohou přetrvat změnu režimu. | N2, N4 |
-| Proti 2 D/I | Nula má podle metriky a nastavení různé významy. | N1, N3 |
-| Proti 3 O/I | Rozbalené volby vyžadují mnoho doménových rozhodnutí. | N4, N7 |
+| Pro 1 O | Target, organism, tool and purpose are shown together. | N2, N7 |
+| Pro 2 O | Options group advanced choices into tabs. | N7 |
+| Pro 3 O | Input supports identifiers, coordinates and pasted sequence. | N2, N7 |
+| Con 1 D/I | Advanced settings may remain after a mode change. | N2, N4 |
+| Con 2 D/I | A zero can have different meanings depending on the metric and settings. | N1, N3 |
+| Con 3 O/I | Expanded options require many domain decisions. | N4, N7 |
 
-Ponaučení: postupné odhalování voleb nesmí skrýt účinná nastavení. Uchovat původní nulu a uvést její doložený význam. Třetí nevýhoda je odborný odhad zátěže, nikoli změřené selhání uživatele.
+Advanced options can be hidden initially, but the settings that are actually applied must remain visible. Keep an original zero and its source meaning. The estimated decision burden is an interpretation, not a measured usability failure.
 
 <!-- page -->
 
 ### 2.4 Benchling
 
-Posouzen je dokumentovaný CRISPR postup aktualizovaný 26. září 2024 [9]. Přihlášená aplikace nebyla ověřována; všechny funkční popisy níže mají úroveň D.
+This comparison uses the documented CRISPR procedure updated on 26 September 2024 [9]. A signed-in application was not inspected. Functional descriptions therefore have level D.
 
-| Hodnocení | Zjištění ve vztahu k tomuto projektu | Potřeby |
+| Item | Documented behaviour or interpretation | Needs |
 | --- | --- | --- |
-| Pro 1 D | Import, analýza a uložené výsledky patří do společného prostředí. | N5, N7 |
-| Pro 2 D | Split Workspace propojuje výběr v tabulce s kontextem sekvence. | N1, N2 |
-| Pro 3 D | Lze exportovat všechny nebo vybrané guides. | N6, N7 |
-| Proti 1 D/I | Popsaná cesta předpokládá účet a prostředí Benchling. | N7 |
-| Proti 2 D/I | Příprava přechází mezi importem, parametry a analýzou. | N2, N7 |
-| Proti 3 D/I | Popsaný přenos do notebooku zahrnuje TSV a ruční vložení do tabulky. | N6, N8 |
+| Pro 1 D | Import, analysis and saved results belong to one environment. | N5, N7 |
+| Pro 2 D | Split Workspace connects table selection to sequence context. | N1, N2 |
+| Pro 3 D | All guides or a selected set can be exported. | N6, N7 |
+| Con 1 D/I | The described procedure assumes an account and Benchling workspace. | N7 |
+| Con 2 D/I | Preparation moves between import, parameters and analysis. | N2, N7 |
+| Con 3 D/I | The documented notebook transfer uses TSV and manual table insertion. | N6, N8 |
 
-Ponaučení: udržet související objekty spolu a před exportem ukázat kontext i rozhodnutí. Nevýhody se týkají popsané cesty; nejsou tvrzením o všech možnostech produktu. Integrovanost je také argument proti zbytečnému dalšímu organizéru.
+Related objects should stay together, with context and decisions visible before export. The disadvantages concern the documented procedure, not every product capability. Its integrated environment is also a reason to question whether another organiser is needed.
 
 ### 2.5 Galaxy
 
-Veřejné anonymní prostředí Galaxy Europe a oficiální návody pro historie a workflow [10, 11].
+The inspected material was the anonymous Galaxy Europe interface and official history/workflow tutorials [10, 11].
 
-| Hodnocení | Zjištění ve vztahu k tomuto projektu | Potřeby |
+| Item | Observation or interpretation | Needs |
 | --- | --- | --- |
-| Pro 1 D | Historie sdružují práci, anotace a značky. | N5, N8 |
-| Pro 2 D | Workflow a nástroje mají dohledatelné verze. | N5 |
-| Pro 3 D | Historie lze archivovat a sdílet. | N6 |
-| Proti 1 O/I | Obecný katalog a navigace přesahují úzký úkol revize. | N7 |
-| Proti 2 D/I | Kontext workflow, verze nástrojů a historie jsou na různých místech. | N2, N5 |
-| Proti 3 O | Anonymní relace na posouzeném serveru omezuje správu historií. | N5, N7 |
+| Pro 1 D | Histories organise work, annotations and tags. | N5, N8 |
+| Pro 2 D | Workflows and tools have traceable versions. | N5 |
+| Pro 3 D | Histories can be archived and shared. | N6 |
+| Con 1 O/I | General catalogue and navigation exceed the narrow review task. | N7 |
+| Con 2 D/I | Workflow context, tool versions and history are in different places. | N2, N5 |
+| Con 3 O | The anonymous session on the inspected server limits history management. | N5, N7 |
 
-Ponaučení: převzít dohledatelnost, nikoli rozsah obecné platformy. Omezení anonymní relace není vlastností každého nasazení Galaxy.
+The useful principle is traceability, while the scope can remain much smaller. An anonymous-session restriction is not a property of every Galaxy deployment.
 
-### 2.6 Syntéza
+### 2.6 Lessons for the application
 
-Společné návrhové důsledky: viditelný kontext, provázané panely, zřetelný stav uložení a export zachovávající původ podkladů. Nejistá zůstává hodnota nového formátu a kolekcí. Rozsah inspekce vymezují popisy produktů a jejich dokumentace [7 až 11]; nejde o test dokončených uživatelských úloh. Žádná z převzatých interakcí nepřenáší do IRCOMP-GUI vědecké schopnosti těchto produktů.
+The comparison supports visible request context, connected panels, an explicit save state and exports that preserve their source information. The benefit of another file format and candidate collections is less certain. The interviews must decide whether those parts help the actual workflow.
+
+These tools perform work that IRCOMP-GUI does not perform. Reusing an interaction does not give the prototype their scientific capabilities.
 
 <!-- page -->
 
-## 3 Návrh uživatelského rozhraní
+## 3 Interface design
 
-### 3.1 Zdůvodnění informační struktury
+### 3.1 Main views and data
 
-Prepare řeší vyjádření a opravu požadavku (N2, N4). Review řeší význam přijatých podkladů a oddělené rozhodnutí (N1, N3, N8). Export zpřístupňuje uložený kontext pro předání (N5, N6). Trvalý pruh s referencí, profilem, revizí a stavem uložení omezuje nutnost dohledávat souvislosti mezi obrazovkami.
+Prepare handles entering and correcting the request (N2, N4). Review handles interpreting imported evidence and recording a separate decision (N1, N3, N8). Export provides saved context for handover (N5, N6). A common strip shows the reference, profile, selected revision and save state.
 
-Obrázek 1 Navigace a tok dat z pohledu uživatele. Obrázek je vložen v editovatelném dokumentu.
+![Figure 1 Navigation and data flow](../design/diagrams/navigation.svg)
 
-Přechody mezi třemi pohledy jsou možné bez nového načtení stránky. Výběr zobrazené historické revize mění navigaci, nikoli aktivní požadavek. Výpočet mimo aplikaci je v diagramu hranicí, ne dostupnou funkcí Run.
+Changing a view does not reload the page. Selecting a historical revision changes what is displayed, while edits still address the active request. Computation is outside the application and is not represented by a working Run button.
 
-| Data viditelná pro uživatele | Aktivní operace nad modelem |
+| Data shown | Operations that change the model |
 | --- | --- |
-| Studie, cíl, reference, profil a interval | Vytvořit, přejmenovat, duplikovat; přidat, změnit a odebrat cíl; explicitně nahradit kontext |
-| Identita a obsah přijatého evidence bundle | Prohlédnout import a připojit jej ke shodné revizi; originál zůstává neměnný |
-| Kolekce, kandidát, stav a zdůvodnění | Vytvořit kolekci, změnit členství M:N, přijmout rozhodnutí a odkazy |
-| Pracovní a uložený stav, exportovaný výběr | Save, jednokrokové Undo, znovuotevření; vytvoření konkrétního exportu |
+| Study, targets, reference, profile and intervals | Create, rename or duplicate a study; add/edit/remove targets; explicitly replace context |
+| Evidence identity and contents | Inspect a file and attach it to matching context; original bytes stay unchanged |
+| Collections and candidate decisions | Create a collection, change membership, set a disposition, reason and supporting references |
+| Working and saved state | Save, restore one accepted action with Undo, reopen and prepare an export |
 
-Filtrování a volba položky nejsou počítány jako aktivní změny dat. Podstatnými moduly jsou editace požadavku a editace členství/rozhodnutí.
+Filtering and selecting items are supporting interactions. The two main editable modules change request data and collection membership/decisions.
 
-Běžné úpravy zůstávají v panelech. Diagnostika odkazuje na konkrétní pole; barvu vždy doplňuje text. Na užší obrazovce se oblasti skládají pod sebe. Dodatečné kolekce a technické detaily jsou méně výrazné než první použitelné rozhodnutí. Skutečná srozumitelnost těchto voleb musí projít uživatelským ověřením.
-
-<!-- page -->
-
-### 3.2 Návrhy obou modulů
-
-#### 3.2.1 Prepare a oprava požadavku
-
-Uspořádání tvoří seznam cílů vlevo, editor uprostřed a kontroly vpravo. Seznam udržuje přehled při editaci jedné položky. U vstupů je výslovně uvedena konvence 0-based, end-exclusive; reference a profil jsou společným kontextem.
-
-Obrázek 2 Drátěný model editoru cíle ze S4 čitelný výřez. Obrázek je vložen v editovatelném dokumentu.
-
-Celý drátěný model je v docs/design/wireframes/01-prepare.svg. Výřez ukazuje editovaná data a explicitní souřadnice. Návrhový stav ze S4 není snímkem hotové aplikace.
-
-Scénář A: vytvořit studii, přidat dva cíle a změnit interval. Psaní mění textový buffer. Apply přijme konzistentní hodnoty; změna souřadnic vytvoří novou revizi a současně se aktualizují seznam, souhrn a připravenost exportu. Pouhé přejmenování novou vědeckou revizi netvoří.
-
-Scénář B: zadat neplatný konec intervalu. Přijatá data zůstanou zachována, diagnostika zaměří pole a uživatel opraví vlastní rozepsaný vstup. Save může uložit i neaplikovaný neplatný buffer; tento buffer se po otevření ukazuje odděleně a nevstupuje do exportu.
-
-Scénář C: změnit referenci či profil. Změna vyžaduje explicitní úplnou náhradu kontextu a platných intervalů, bez skryté konverze souřadnic. Dřívější podklady zůstávají přiřazeny původní revizi. Kontrola accession a mezí podle katalogu neověřuje obsah externí FASTA ani biologickou vhodnost.
+Errors remain near the input and use text as well as colour. On narrow screens the panels stack. Extra collections and technical details are secondary to completing the first useful decision. The clarity of this arrangement still needs real-user testing.
 
 <!-- page -->
 
-#### 3.2.2 Review a rozhodnutí v kolekci
+### 3.2 Prepare
 
-Seznam kandidátů vybírá středový detail neměnných pozorování. Vpravo je samostatná editovatelná vrstva kolekce a rozhodnutí. Uživatel tak nemusí přepisovat původní pozorování, aby zaznamenal vlastní úsudek.
+The view contains a target list, editor and checks. The list keeps other targets visible while one is edited. Reference and profile apply to the whole request. Coordinate fields state the zero-based, end-exclusive convention directly.
 
-Obrázek 3 Drátěný model rozhodnutí a odůvodnění výřez ze S4. Obrázek je vložen v editovatelném dokumentu.
+![Figure 2 Prepare editor from the initial wireframe](../design/wireframes/01-prepare.svg)
 
-Zdrojové hodnoty zůstávají oddělené; nevzniká průměr ani univerzální procento spolehlivosti. Nula je hodnota, absence je jiný stav. Celý návrh je v docs/design/wireframes/03-review.svg.
+The complete editable source is `docs/design/wireframes/01-prepare.svg`. This is an initial design image with synthetic input, not a capture of the finished application.
 
-Scénář D: nejprve zkontrolovat import. Náhled ukáže očekávaný a přijatý kontext, zdroj a kategorii. Připojení je atomické a vyžaduje shodu request ID i celé vybrané revize. Neshodný soubor nelze opravit pouhým přejmenováním reference. Chyba nezpůsobí částečné připojení.
+Scenario A: create a study, add two targets and edit an interval. Typing changes the editor text first. Apply parses and validates it, then changes the accepted request. An analytical change creates a revision and updates the list, summary and export readiness. Renaming a target alone keeps the revision.
 
-Scénář E: přidat kandidáta do kolekce, zvolit undecided, include for further review, exclude nebo needs clarification a doplnit důvod. Po Apply decision se současně změní řádek, detail i počet nevyřešených položek. Stejný kandidát může mít v jiné kolekci jiné rozhodnutí; jde o vztah M:N.
+Scenario B: enter an invalid interval end. Accepted data stays unchanged; the diagnostic identifies the input. The user can correct the existing text. Save can also preserve an invalid unapplied draft for recovery, but that draft does not enter an export.
 
-Scénář F: odstranit členství omylem a použít Undo. Změní se jen rozhodovací vrstva; původní evidence se nemaže. Save uchová studii a samostatné rozepsané buffery pro opětovné otevření. Rozhodnutí není souhlasem k experimentu ani oprávněním spustit výpočet.
+Scenario C: change the reference or profile. This requires an explicit replacement of the whole context and valid intervals, with the same target IDs. There is no hidden coordinate conversion. Earlier evidence stays attached to its original revision. Catalogue bounds do not verify an external FASTA file or biological suitability.
 
 <!-- page -->
 
-### 3.3 Export a chybové stavy
+### 3.3 Review
 
-Export není třetím samostatným modulem. Sdílí uložený požadavek a výběr kolekcí. Náhled pojmenuje uloženou verzi, revizi, zahrnuté zdroje, závislosti a počet nevyřešených položek. Změny po vytvoření náhledu již jeho bajty nemění.
+The candidate list chooses the immutable detail. The decision editor belongs to the selected collection. The user can record an interpretation without replacing the original observation. Figure 3 shows the decision part of the initial wireframe.
 
-Obrázek 4 Drátěný model náhledu exportu výřez ze S4. Obrázek je vložen v editovatelném dokumentu.
 
-Při neuložených změnách je nutné Save nebo výslovné Export last saved. Export požadavku obsahuje jednu revizi, nikoli celou historii či buffery. Review export zachovává vybraná rozhodnutí a úplné původní bajty potřebných podkladů s hashi. Stav reviewed znamená dokončenou evidenci rozhodnutí, nikoli vědecké schválení. Nevyřešené položky vedou ke stavu draft.
 
-| Stav | Zobrazení a zotavení |
+![Figure 3 Review decision editor from the initial wireframe](../design/wireframes/03-review.svg)
+
+The full source is `docs/design/wireframes/03-review.svg`. Source scores are kept separately. No mean or universal confidence percentage is calculated. Zero is a value; absence is a different state.
+
+Scenario D: inspect evidence before attaching it. The preview shows expected and received context, source and category. Acceptance requires the request ID and complete selected revision to match. Renaming the reference cannot repair a mismatching file. Failure does not partly attach the bundle.
+
+Scenario E: add a candidate to a collection, choose undecided, include for review, exclude or needs clarification, and enter a reason. Apply changes the decision, list status and unfinished count. Another collection can hold a different decision about that same candidate.
+
+Scenario F: remove a membership by mistake, then use Undo. Only the review layer changes; original evidence is retained. Save keeps the study and separate draft text for reopening. A review disposition is not experimental approval or permission to execute a workflow.
+
+<!-- page -->
+
+### 3.4 Export and recovery
+
+Export uses the saved request and selected collections. The preview states the save counter, request revision, source records, dependencies and unresolved decisions. Once prepared, its bytes remain fixed even if a later Save occurs.
+
+![Figure 4 Export preview from the initial wireframe](../design/wireframes/05-export.svg)
+
+With unsaved work, use Save or explicitly choose Export last saved. A request export contains one revision, not all workspace history or editor buffers. A review package includes selected decisions and complete source files needed by them. Reviewed means the decision records are complete; it is not scientific approval.
+
+| Situation | Response |
 | --- | --- |
-| Prázdná studie / žádné podklady | Konkrétní další krok; žádný vymyšlený výsledek analýzy |
-| Neplatný vstup | Diagnostika u pole, zachování bufferu a dříve přijatých dat |
-| Selhání Save | Trvalá zpráva, zachování práce, opakování; stav Saved až po potvrzení |
-| Zastaralý importní náhled | Nová kontrola vůči vybrané revizi, bez částečné změny |
-| Ztracená odpověď příkazu | Obnovit pracovní stav a zkontrolovat přijaté změny před opakováním |
-| Starší podklady | Zobrazit původní revizi, nepřeznačit je na aktuální |
+| Empty study or no evidence | Explain the next step; show no invented calculation |
+| Invalid input | Identify the field and retain the typed text |
+| Save failure | Keep working changes; report success only after storage succeeds |
+| Changed import context | Check again against the selected revision before attaching |
+| Lost command response | Refresh working state and inspect accepted changes before retrying |
+| Historical evidence | Show its original revision; do not relabel it as current |
 
-Klávesnice používá nativní popsané ovládací prvky a viditelné zaměření. Nevyžádané kontroly nepřesouvají fokus. Rozsah technických kontrol je uveden v kapitole 5; úplný audit přístupnosti ani reálné testy použitelnosti dosud provedeny nejsou.
-
-<!-- page -->
-
-## 4 Softwarová architektura GUI a kódový základ
-
-### 4.1 Oddělení pohledů aplikační logiky a dat
-
-React a TypeScript vykreslují sdílený prezentační model. Kontrolér převádí uživatelský záměr na asynchronní HTTP příkaz. Python služby a doména vlastní přijatá data i pravidla. FastAPI zajišťuje transport; SQLite a výměnný formát jsou adaptéry implementující aplikační porty.
-
-Obrázek 5 Vrstvy a tok změny stavu v implementované aplikaci. Obrázek je vložen v editovatelném dokumentu.
-
-Doména ani aplikační služby neimportují React, FastAPI nebo konkrétní SQLite adaptér. Lze je volat bez GUI a používat přímo z Pythonu. Šipky zobrazují volání při obsluze, zatímco porty vlastní aplikační vrstva a adaptéry na ně závisejí.
-
-| Stav | Vlastník a způsob změny |
-| --- | --- |
-| Přijatá pracovní studie | Python Session; příkazy pod jedním lokálním zámkem |
-| Trvale uložená studie a buffery | SQLite; výslovný atomický Save |
-| Zrcadlo přijatých dat | TypeScript reducer; náhrada úspěšnou odpovědí |
-| Rozepsané řetězce a navigace | Sdílený klientský stav; události z ovládacích prvků |
-| Počty a připravenost | Odvozené projekce a selectors; samostatně se nezapisují |
-
-DOM není zdrojem aplikačních dat. Událost Apply vede přes kontrolér a API k doméně; úspěšná odpověď aktualizuje sdílené zrcadlo a všechny závislé panely. Generace bufferu chrání novější psaní před opožděným Save.
+Native labelled controls support keyboard input and visible focus. Routine checks do not move focus without an action. Engineering checks are described later; no full accessibility audit or completed usability study is claimed.
 
 <!-- page -->
 
-### 4.2 Specifikace dat a rozhraní modulů
+## 4 Software architecture
 
-#### 4.2.1 Prepare a jeho datový model
+### 4.1 Views and application data
 
-| Typ | Podstatná data a invariant |
+React renders the shared client state. The controller translates user actions into asynchronous HTTP requests. Python services and domain classes own accepted data and rules. FastAPI handles transport; SQLite and JSON handling implement the storage and exchange protocols.
+
+![Figure 5 Application structure and update flow](../design/diagrams/architecture.svg)
+
+Domain and application modules do not import React, FastAPI or the concrete SQLite adapter. They can be used directly from Python. The arrows show calls; the protocols belong to the application layer and are implemented by the adapters.
+
+| State | Where it is kept |
 | --- | --- |
-| Study | study_id, request_id, název, aktivní revize, historie, evidence a kolekce |
-| RequestRevision | revision_id, reference_id, profile_id, konvence a cíle; neměnný analytický kontext |
-| Target | target_id, accession, start, end, strand; identita přetrvává mezi revizemi |
-| TargetDraft | Stejné editované položky jako řetězce; neúplný vstup není přijatým intervalem |
-| WorkspaceView | workspace_id, base_saved_version, dirty, can_undo, study, diagnostics |
+| Accepted working study | Python Session, with one local lock ordering operations |
+| Saved study and submitted editor text | SQLite, after explicit Save |
+| Client copy of accepted data | Shared reducer, replaced from a successful response |
+| Typed text and navigation | Shared client state updated by input events |
+| Counts and readiness | Calculated from data, not stored as independent values |
 
-UUID identifikuje studii, požadavek, revizi a cíl. Čítač uložení identifikuje snímek; UUID revize identifikuje analytický kontext. Pracovní relace nepoužívá verzovací zámky. Diagnostika má code, severity, location jako JSON Pointer a message; zaměření pole nezávisí na překladu zprávy.
+An Apply action goes through controller, API and model. The returned state updates all dependent panels. A small editor counter prevents a delayed Save response from erasing newer typing. DOM attributes are not the source of accepted model data.
 
-| Příkaz či služba | Vstup | Účinek |
+<!-- page -->
+
+### 4.2 Prepare data and operations
+
+| Type | Main fields and meaning |
+| --- | --- |
+| Study | study_id, request_id, title, active revision, history, evidence and collections |
+| Revision | revision_id, reference_id, profile_id, coordinate_system and targets |
+| Target | target_id, contig accession, start, end and strand |
+| TargetDraft | Editable values kept as strings until Apply |
+| Workspace response | workspace_id, base_saved_version, dirty, can_undo, study and diagnostics |
+
+UUIDs identify the study, request, revision and targets. The save counter identifies a stored snapshot; the revision ID identifies analytical context. There are no expected-version locks. Diagnostics carry code, severity, JSON Pointer location and message, allowing a field to be focused without parsing the English message.
+
+| Operation | Input | Effect |
 | --- | --- | --- |
-| rename_study | title | Kosmetický název, beze změny kontextu |
-| apply_target | draft: TargetDraft | Přidání/změna, úplná lokální kontrola; nová revize jen při analytické změně |
-| remove_target | target_id | Nová aktivní revize; starší data zůstanou |
-| rename_target | target_id, label | Změna popisku bez nové revize |
-| set_context | reference_id, profile_id, targets | Atomická náhrada pro stejnou množinu target ID |
-| validate_request | revision_id, target_draft | Kontroly passed/failed/not_performed; bez přijetí draftu |
-| preview_request / accept_request | přesné bajty / preview_id | Kontrola a otevření nové neuložené studie bez přepsání identity |
+| rename_study | title | Change the title without changing request context |
+| apply_target | TargetDraft | Add/edit a target; create a revision only for analytical change |
+| remove_target | target_id | Create the active revision without that target; keep history |
+| rename_target | target_id, label | Rename without changing analytical context |
+| set_context | reference_id, profile_id, targets | Replace context with the same target ID set |
+| validate | revision_id, target_draft | Report local checks without accepting a draft |
+| preview/accept request | original bytes, then preview_id | Inspect a file and open a new unsaved study with its identity |
 
-PrepareView.tsx vyvolává záměry přes app/controller.ts. Ten používá shared/api.ts a nahrazuje přijaté zrcadlo v app/state.ts. PrepareService v application/prepare.py používá doménové modely a pravidla; pole se nevynucují až v komponentě. Přesné uzavřené datové struktury jsou v application/commands.py a api/requests.py. Názvy zdrojů jsou relativní ke kořeni repozitáře, Python moduly k src/ircomp_gui.
+`PrepareView.tsx` sends intent through `app/controller.ts` and `shared/api.ts`. Responses update `app/state.ts`. `PrepareService` checks values through domain rules, so validity does not depend on a particular component. Operation types are in `application/commands.py` and HTTP input classes in `api/requests.py`.
 
 <!-- page -->
 
-#### 4.2.2 Review a jeho datový model
+### 4.3 Review data and operations
 
-| Typ | Podstatná data a invariant |
-| --- | --- |
-| EvidenceBundle | bundle_id, request ID, celá revize, kategorie, zdroj, kandidáti, závislosti; originální bajty a SHA-256 |
-| CandidateKey | bundle_id a candidate_id; shodný název není shodná identita |
-| ReviewCollection | collection_id, název, revision_id a členství |
-| MembershipDecision | Klíč kandidáta, disposition, rationale, evidence_refs; jedna položka v jedné kolekci |
+EvidenceBundle holds source candidates and exact request context. EvidenceFile adds the original bytes and SHA-256. CandidateKey combines bundle ID and candidate ID. Collection holds a revision ID and memberships. Each Membership holds its candidate, disposition, rationale and supporting evidence references.
 
-Pozorování je neměnné, úsudek patří členství. Podpůrné odkazy musejí ukazovat na připojené kandidáty stejné revize. Nepodložené slučování kandidátů z různých zdrojů není podporováno.
 
-| Příkaz | Vstup | Účinek |
+
+| Operation | Input | Effect |
 | --- | --- | --- |
-| attach_evidence | preview_id | Opětovná kontrola kontextu a atomické připojení bajtů |
-| create_collection | revision_id, name | Prázdná kolekce v konkrétní revizi |
-| rename_collection | collection_id, name | Změna názvu bez změny členství |
-| remove_collection | collection_id | Odstranění kolekce a rozhodnutí, zachování evidence |
-| add_member | collection_id, candidate | Nové nerozhodnuté členství; opakování je beze změny |
-| remove_member | collection_id, candidate | Odstranění členství a jeho rozhodnutí |
-| set_decision | collection_id, candidate, disposition, rationale, evidence_refs | Změna úsudku odděleně od původního záznamu |
+| attach_evidence | preview_id | Check context/identity again and attach the original bytes |
+| create_collection | revision_id, name | Create a collection for that revision |
+| rename_collection | collection_id, name | Change the collection name only |
+| remove_collection | collection_id | Remove its memberships and decisions, keeping evidence |
+| add_member | collection_id, CandidateKey | Add an undecided membership; repeated addition is harmless |
+| remove_member | collection_id, CandidateKey | Remove that membership and decision only |
+| set_decision | collection_id, candidate, disposition, rationale, evidence_refs | Change the decision kept by that membership |
 
-ReviewView.tsx používá stejný kontrolér a reducer jako Prepare. ReviewService v application/review.py řeší členství a rozhodnutí; application/imports.py koordinuje náhledy. Neplatný náhled nemění studii; při připojení se znovu ověřuje kontext i duplicity. Shodné bundle ID a přesně stejné bajty jsou duplicitou; jiné bajty pod stejným ID jsou blokovanou kolizí.
-
-Všechny měnící příkazy používají POST /api/v1/workspaces/{w}/commands s draft_buffers a uzavřeným command. Úspěchem je celý nový WorkspaceView. Serverové operace serializuje lokální zámek; návrh počítá s jedním procesem, nikoli s distribuovanou kolaborací.
+`ReviewView.tsx` uses the same controller and reducer. `ReviewService` handles membership and decisions; `ImportService` inspects and attaches files. Supporting references must resolve to attached candidates from the same revision. Same bundle ID and bytes means duplicate; different bytes under the ID are rejected.
 
 <!-- page -->
 
-### 4.3 Společné API a trvalé uložení
+### 4.4 Common HTTP interface and storage
 
-| Cesta pod /api/v1 | Operace a výsledek |
+Routes use `/api/v1`; changes return a workspace response. Exact schemas are at `/openapi.json`; source documentation is in `docs/architecture.md`.
+
+| Route | Purpose |
 | --- | --- |
-| GET /catalogue; GET /studies | Podporované reference/profily; seznam uložených studií |
-| POST /workspaces | source new, saved, duplicate nebo request_import; 201 WorkspaceView |
-| GET nebo DELETE /workspaces/{w} | Čtení relace nebo potvrzené zavření; uloženou studii nemaže |
-| POST /workspaces/{w}/commands | Typovaný příkaz; 200 WorkspaceView |
-| POST /workspaces/{w}/validate | Lokální kontroly přijaté revize a samostatného draftu |
-| POST /workspaces/{w}/save; /undo | Atomický Save; jednokrokové Undo |
-| POST /imports; DELETE /imports/{id} | Neměnný náhled / jeho zrušení, bez částečné změny studie |
-| POST /exports; GET /exports/{id}/file | Zmrazený náhled a přesně jeho bajty |
-| GET /examples/{name} | Čtyři předem označené syntetické příklady, nikoli výsledky běhu |
+| GET /catalogue; GET /studies | Read supported metadata and saved studies |
+| POST /workspaces | Open a new, saved, duplicated or imported request |
+| GET/DELETE /workspaces/{id} | Read or close a working copy; saved data remains |
+| POST /workspaces/{id}/commands | Apply {draft_buffers, command} |
+| POST /workspaces/{id}/save; /undo | Save {draft_buffers}; restore one unsaved accepted action |
+| POST /workspaces/{id}/validate | Run local checks for a revision and optional target draft |
+| POST /imports; DELETE /imports/{id} | Inspect or cancel a file preview |
+| POST /exports; GET /exports/{id}/file | Prepare and download fixed saved bytes |
 
-Přehled rozhraní je v docs/architecture.md, přesné běhové typy v /openapi.json. HTTP adaptér pouze převádí typy a chyby; pravidla kompatibility, intervalů a dokončenosti patří službám a doméně.
+SQLite keeps one study per row: study_id, unique request_id, saved_version, title, updated_at and document_json. Layout version is 1. Save uses one transaction; the latest Save wins. Use one process and tab per study. A failed Save preserves working and earlier stored data.
 
-Save zapisuje celý omezený agregát v jedné SQLite transakci. Jediná tabulka studies obsahuje study_id, unikátní request_id, saved_version, title, updated_at a document_json. SQL verze je PRAGMA user_version = 1; vztahy mezi objekty ověřuje doména, nejsou vydávány za samostatné SQL tabulky. Save nahrazuje celý snímek; poslední výslovné uložení platí. Používá se jeden proces a jedna karta na studii. Chyba zachová dosavadní uložený stav.
-
-Po načtení se kontrolují verze, obálka, identity, odkazy a hashe původních bajtů. Neznámý či poškozený formát se nepřepisuje automatickou opravou. Undo vrací poslední přijatý pracovní snímek včetně bufferů; po Save se historie Undo čistí.
-
-Chyba má error.code, message a diagnostics. Stav 409 označuje kolizi identity nebo nedostupné Undo. Validační chyba 422 vede ke konkrétnímu vstupu; překročení limitu 413 k menším datům. Při selhání persistence 503 zůstává práce k opakování. Po ztracené odpovědi má uživatel obnovit pracovní stav a zkontrolovat přijaté změny před opakováním příkazu; klient neprovádí automatické smíření verzí.
+Errors contain a code, message and diagnostics. HTTP 422 covers invalid input, 409 identity/Undo conflicts, 413 limits and 503 storage. Refresh after a lost response. Undo restores one unsaved accepted action and is cleared by Save.
 
 <!-- page -->
 
-### 4.4 Výměnné formáty a hranice vůči IRCOMP
+### 4.5 File formats and IRCOMP integration
 
-Lokální formát 1.0 je UTF-8 JSON s JSON Schema 2020-12. request obsahuje jednu identifikovanou revizi, evidence deklarovaný zdroj a kandidáty, review vybrané kolekce a úplné potřebné source soubory jako base64 s SHA-256. Import review balíčku není součástí této verze; export požadavku není úplná záloha pracovní studie.
+The local format is UTF-8 JSON with JSON Schema 2020-12 and format version 1.0. A request contains one revision. Evidence declares its producer and candidates. A review package contains selected collections and the necessary original evidence files as base64 with SHA-256. Review package import is not implemented. Request export is not a complete workspace backup.
 
-Kompatibilita evidence vyžaduje request ID a celou revizi: UUID, referenci, profil, konvenci i cíle s identitami a intervaly. Pořadí cílů se ignoruje; popisky nejsou vědeckým kontextem. Starší podklady lze otevřít jen vůči výslovně vybrané uchované revizi.
+Matching evidence requires request ID and complete revision: UUID, reference, profile, coordinate convention and targets with their IDs and intervals. Target order is ignored. Labels are not part of analytical context. Older evidence can be viewed against its explicitly retained revision.
 
-| Omezení lokální aplikace | Hodnota a význam |
+| Local limit | Value |
 | --- | --- |
-| Import / hloubka JSON | 1 MiB dekódovaných bajtů / 32 úrovní |
-| Cíle / revize | 50 / 200 na studii |
-| Evidence / kandidáti / metriky | 10 bundles; 200 kandidátů na bundle; 20 metrik na kandidáta |
-| Kolekce / členství | 20 kolekcí; 1000 členství ve studii |
-| Uložený snímek / review export | Nejvýše 20 MiB výsledné serializace |
+| Decoded import / JSON nesting | 1 MiB / 32 levels |
+| Targets / request revisions | 50 / 200 per study |
+| Evidence / candidates / metrics | 10 bundles; 200 candidates per bundle; 20 metrics per candidate |
+| Collections / memberships | 20 collections; 1000 memberships per study |
+| Saved document / review export | At most 20 MiB of serialized data |
 
-Jde o zvolené meze malého lokálního projektu, nikoli výsledky výkonnostního měření. Parser odmítá duplicitní klíče, ne konečná čísla, neznámé verze a neplatné odkazy. Přijatý JSON samotný neprokazuje správný kontext.
+These limits keep the local application bounded; they are not measured performance claims. Parsing rejects duplicate keys, nonfinite numbers, unsupported versions and invalid references. Passing the JSON schema does not prove the correct request context.
 
-Katalog obsahuje syntetický demo_contig a explicitní podmnožinu GRCh38.p14: 24 jaderných chromozomů, accession a délky z NCBI assembly reportu [12]. Neobsahuje mitochondrii, alternativní ani patch sekvence. Neověřuje FASTA. Profily deklarují SpCas9/NGG a preexperimentální záměr, neprovádějí výpočet.
+The catalogue contains a synthetic demo contig and an explicit GRCh38.p14 subset: 24 nuclear chromosome accessions and lengths from NCBI [12]. It excludes mitochondria, alternatives and patches. It does not verify sequence files. Profiles describe SpCas9/NGG and pre-experiment intent but run no calculation.
 
-IRCOMP vlastní formální jazyk, normalizovaný request, cartridge, cíle, omezení, plánovač, kompilátor a řízení spuštění [13]. GUI vlastní pracovní editaci a revizi. Budoucí verzovaný adaptér smí předat pouze úplný podporovaný význam; chybějící cartridge verzi, cíle, obecná omezení a AI pravidla nesmí domyslet. YAML editor, workflow graf, compile/execute a vědecké běhy jsou odloženy v integračním záznamu v Confluence [15]. Současné validace nemají autoritu kompilátoru.
-
-<!-- page -->
-
-## 5 Zdrojové kódy a funkční základ
-
-### 5.1 Implementované rozhraní a ověření
-
-Zjednodušená implementace odpovídá commitu 5494d9f z 6. listopadu 2026. Testovací nástroje nejsou součástí odevzdání. Starší ověření zůstává u přesné původní revize v Confluence [16]; nejde o uživatelský výzkum.
-
-Obrázek 6 Implementovaný Review výřez původních metrik ze syntetického příkladu S6. Obrázek je vložen v editovatelném dokumentu.
-
-Snímek skutečné aplikace ukazuje numerickou nulu a samostatné not supplied. Editor rozhodnutí mění rozhodovací vrstvu, nikoli původní hodnoty. Výřez je přímo součástí této zprávy.
-
-| Kontrola při zjednodušení | Zjištěný výsledek a hranice |
-| --- | --- |
-| Backend | Průchod editací, Save, Undo, importem, rozhodnutím, exportem a restartem; kontrola chyby uložení |
-| Klient | TypeScript a produkční Vite build; sedm prohlížečových scénářů před odstraněním testovacího nástroje |
-| Statické kontroly | Typová kontrola Pythonu bez chyb; kontrola syntaxe a importů |
-| Kontrakty | Import kontroluje schema, shodu revize, duplicity a původní bajty evidence |
-| Instalace | Čisté prostředí s requirements.txt; npm ci/build bez testovacích závislostí |
-
-Při zjednodušení byly ověřeny oba editovatelné moduly, neplatné buffery, dvě kolekce, starší evidence, oprava vstupu, Save/otevření a export posledního uloženého stavu. Po ztracené odpovědi funguje ruční obnova stavu. Kontroly neprokazují obecnou použitelnost ani úplnou přístupnost.
+IRCOMP will own the formal specification, goals, constraints, cartridge rules, planning, compilation and execution policy [13]. The GUI owns editing and review. The future adapter must report missing or unsupported meaning; it cannot invent a cartridge version, goals, constraints or AI permissions. YAML editing, graphs and compiler calls remain future work [15]. The F01-F10 integration checks are plans, not executed tests.
 
 <!-- page -->
 
-### 5.2 Rozdělení zdrojových souborů
+## 5 Source code and execution
 
-Oba moduly spadají do dohodnuté samostatné práce Lukáše Dubšíka. Níže jsou odpovědnosti zdrojů, nikoli tvrzení, že externí knihovny byly vytvořeny v projektu. TODO před odevzdáním: ověřit vlastní porozumění, skutečný autorský podíl a požadované hlavičky; současné hlavičky ještě uvádějí review pending.
+### 5.1 Source organisation
 
-Python soubory níže jsou relativní ke src/ircomp_gui. Sdílený základ označuje infrastrukturu společnou oběma modulům, nikoli dalšího člena týmu.
+Both editable modules belong to the agreed solo scope of Lukas (Viridis) Dubsik. The table describes project responsibilities. External libraries remain third-party software. Source headers use the requested project identification; actual contribution and the AI-assisted development record still need academic review.
 
-| Část | Zdrojové soubory a odpovědnosti |
+Python paths below are relative to `src/ircomp_gui`. The shared code supports both modules and does not represent a second student.
+
+| Part | Source files |
 | --- | --- |
 | Prepare GUI | web/src/features/prepare/PrepareView.tsx |
-| Prepare logika | application/prepare.py; domain/catalogue.py, rules.py; sdílené modely |
+| Prepare logic | application/prepare.py; domain/catalogue.py and rules.py |
 | Review GUI | web/src/features/review/ReviewView.tsx |
-| Review logika | application/review.py, imports.py; sdílené modely a validace |
+| Review logic | application/review.py and imports.py |
 | Export | web/src/features/export/ExportView.tsx; application/export.py |
-| Klientský model a řízení | web/src/app/App.tsx, WorkspaceProvider.tsx, controller.ts, state.ts, selectors.ts |
-| Klientská hranice | web/src/shared/api.ts, types.ts, ImportPreview.tsx; web/src/main.tsx, styles.css; web/index.html |
-| Doména | domain/models.py, rules.py, errors.py, catalogue.py, serialization.py |
-| Aplikační základ | application/workspace.py, commands.py, ports.py |
-| Adaptéry a HTTP | adapters/sqlite.py, exchange.py, resources.py; api/app.py, requests.py; __main__.py |
-| Návrhové podklady | docs/design/wireframes/*.svg; docs/architecture.md |
-| Kontrakty a konfigurace | contracts/exchange.schema.json, catalogue.json, examples; pyproject.toml, requirements.txt; web/package.json, package-lock.json, vite.config.ts; balíčkové __init__.py |
+| Shared client state | web/src/app/App.tsx, WorkspaceProvider.tsx, controller.ts, state.ts, selectors.ts |
+| Client communication | web/src/shared/api.ts, types.ts, ImportPreview.tsx; main.tsx, styles.css and index.html |
+| Data and checks | domain/models.py, rules.py, errors.py, catalogue.py, serialization.py |
+| Working studies | application/workspace.py, commands.py and ports.py |
+| Storage and HTTP | adapters/sqlite.py, exchange.py, resources.py; api/app.py, requests.py; __main__.py |
+| Formats and build | contracts; pyproject.toml; requirements.txt and requirements-dev.txt; Makefile; web package/TypeScript/Prettier/Vite configuration |
 
-Přesná veřejná API a návratové typy jsou popsány v kapitole 4 a v běhovém OpenAPI. Revizi zdrojového archivu a kontrolní součet eviduje S8 v adresáři submission; postup a další kontroly jsou v docs/submission.md. Závislosti zůstávají externími projekty se svými licencemi.
+The source archive is `00_xdubsil00_source.zip`. The generated manifest records its commit and checksum. It contains source, formats, examples, reference provenance and essential documentation. Dependencies, local databases, generated builds and report binaries are excluded. The PDF is submitted separately as `00_xdubsil00_navrh.pdf`; the required filename is retained with English content.
 
 <!-- page -->
 
-### 5.3 Spuštění a stav odevzdání
+### 5.2 Implemented behaviour
 
-Ověřené prostředí je Linux, Python 3.14.6, Node 20.20.2 a npm 10.8.2. Deklarováno je Python nejméně 3.12 a Node nejméně 20.19; jiné verze nebyly tímto záznamem ověřeny. Z kořene zdrojů:
+The application runs locally and connects its two editable modules to the complete supported model/API. Figure 6 shows original metrics from the labelled synthetic example. The decision editor changes separate review data, not those observations.
+
+Figure 6 Implemented Review metric display with synthetic data (image embedded in the editable report).
+
+### 5.3 Installation and code checks
+
+The checked environment is Linux with Python 3.14.6, Node 20.20.2 and npm 10.8.2. The package declares Python at least 3.12 and Node at least 20.19. From the extracted project directory:
 
 ```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python -m pip install --no-build-isolation --no-deps -e .
-npm --prefix web ci
-npm --prefix web run build
-.venv/bin/ircomp-gui
+make install
+make build
+make run
 ```
 
-Prohlížeč otevře http://127.0.0.1:8000; interaktivní API je /docs. Server běží v jediném procesu. Uložené studie jsou standardně v ~/.local/share/ircomp-gui/workspace.sqlite3. Proměnná IRCOMP_GUI_DATABASE volí jinou databázi; instalační postup vyžaduje dostupné deklarované balíčky.
+Without Make, create `.venv`, install `requirements.txt`, install the package with `pip install --no-build-isolation --no-deps -e .`, then run `npm --prefix web ci` and `npm --prefix web run build`. Start `.venv/bin/ircomp-gui` and open http://127.0.0.1:8000. The full commands are in the README. API documentation is at /docs.
 
-Save je výslovný. Restart serveru ztratí neuložené relace a náhledy. Obnovení stránky se může připojit k existující relaci, ale samotné dosud neodeslané psaní nemá zaručenou obnovu. Načtení posledního uloženého stavu není totéž co obnova veškeré neuložené práce.
+Save is explicit. The default database is ~/.local/share/ircomp-gui/workspace.sqlite3; IRCOMP_GUI_DATABASE selects another file. Restarting the server loses unsaved sessions and previews. Reopening the last saved copy does not recover every unsent keystroke.
 
-| Výstup nebo kontrola | Stav této verze |
+`make install-dev` installs the Python quality tools. `make check` runs Ruff lint/format, strict Pyright, strict TypeScript and Prettier. `make format` applies formatting. These controls remain even though the standalone package has no test-suite dependency. Behavioural checks use temporary tools outside the submitted source.
+
+The rewritten source passes Ruff lint/format, strict Pyright, strict TypeScript, Prettier and a production build. Seven temporary browser workflows and an API/persistence check also pass. These cover both modules, invalid drafts, Save/reopen, Undo, original evidence, separate collections, historical context, manual connection recovery and saved exports. They use synthetic data, not real research participants. Earlier results remain in Confluence [16] with their original revisions.
+
+<!-- page -->
+
+### 5.4 Remaining submission work
+
+| Item | State |
 | --- | --- |
-| Lokální model/API a klíčové GUI | Implementováno; ověřeno po zjednodušení |
-| Čtyři konkurenti, wireframes, architektura | Připraveno; vazby na skutečný výzkum čekají na rozhovory |
-| Dva skutečné rozhovory | TODO provést, zapsat a promítnout do návrhu |
-| Login a termín cvičení | TODO doplnit na identifikační straně |
-| Autorské označení a pravidla AI | TODO věcná kontrola; samotný název v nadpisu ji nenahrazuje |
-| 00_DOPLNIT_LOGIN_source.zip | S8: zdrojový archiv a kontrolní součet v adresáři submission; ověřit aktuální revizi |
-| Finální kontrola a Moodle | TODO doplnit povinné části a nahrát; termín 6. 11. 2026 ve 23:59 |
+| Local model/API and editable GUI | Implemented; source checks and temporary API/browser workflows pass |
+| Four comparisons, wireframes and architecture | Prepared; mapping to primary research still pending |
+| P01/P02 sessions | TODO conduct, record and apply findings |
+| Name and login | Lukas (Viridis) Dubsik; xdubsil00 |
+| Lab day/time | TODO fill in the regular slot |
+| Actual contribution and course AI conditions | TODO review; headers alone do not resolve them |
+| Source archive and PDF | Regenerate from the final checked version |
+| Moodle upload | TODO upload personally and confirm the status |
 
-Kontrolní prezentace proběhne v termínu cvičení v týdnu od 9. listopadu 2026. Předvede oba moduly, změny sdíleného stavu, opravu chyby, Save/otevření a odpovídající API. Konkrétní slot je k doplnění. Podle dodaného Moodle záznamu jsou všechny části a demonstrace povinné; neúplnost může vést k 0 bodům a pozdní odevzdání k penalizaci 5 bodů. Tato zpráva nenahrazuje záznam skutečného odevzdání.
-
-<!-- page -->
-
-## 6 Zdroje a podklady
-
-### 6.1 Zadání a původ projektových podkladů
-
-[1] ITU. Zadání a pokyny k projektu 2026. Dodaný soubor DOCX; zejména výzkum, rozhraní a model, autorství a pravidla AI. Moodle výpis dodaný z přístupu studenta uvádí termín Fáze I 6. listopadu 2026 ve 23:59 a prezentace od 9. listopadu.
-
-[2] ITU. Fáze I Design report šablona. Dodaný DOCX; struktura této zprávy, identifikace, výzkum, konkurence, UI, architektura a související kódy.
-
-[3] ITU. Průvodce uživatelským výzkumem a testováním použitelnosti. Dodaný DOCX; příprava a záznam reálných sezení. Veřejné diskuse nejsou náhradními respondenty.
-
-Lokální podklady: docs/design/README.md a SVG návrhy, docs/architecture.md, contracts a docs/submission.md. Výzkumné poznámky, budoucí integrace a historická ověření jsou v IRCOMP Confluence [14–16]. Běhové datové typy jsou v /openapi.json.
-
-### 6.2 Veřejné podklady výzkumu a srovnání
-
-Níže jsou klíčové zdroje z rešerše a posouzení provedených 1. listopadu 2026. Datum se vztahuje k zaznamenané inspekci, nikoli k tvrzení o novém měření. Úplný registr dalších zdrojů a jejich limitů zůstává v uvedených pracovních podkladech.
-
-[4] r/labrats. Why are on/off target scores so variable. Zkušenost autora diskuse; přesné datum příspěvku nebylo ověřeno. https://www.reddit.com/r/labrats/comments/tlaqhf/why_are_onoff_target_scores_so_variable_from/
-
-[5] CRISPOR GitHub issue 69. Záznam od 7. srpna 2024; v závěru oprava identifikátoru reference. https://github.com/maximilianh/crisporWebsite/issues/69
-
-[6] Galaxy Help. Help with VCF annotation. Diskuse 4. až 10. ledna 2024; odlišné pojmenování chromozomů. https://help.galaxyproject.org/t/help-with-vcf-annotation/11407
-
-[7] CRISPOR. Veřejný formulář a oficiální manuál. https://crispor.gi.ucsc.edu/ a https://github.com/maximilianh/crisporWebsite/blob/master/manual/manual.md
+Phase I is due on 6 November 2026 at 23:59. The checkpoint is in the regular lab slot in the week beginning 9 November. Demonstrate both modules, reactive state, correction, persistence and the API boundary. The supplied Moodle text states zero points for missing required work/demonstration and a five-point late penalty.
 
 <!-- page -->
 
-### 6.3 Dokumentace nástrojů a technické hranice
+## 6 Sources
 
-[8] CHOPCHOP. Veřejný formulář, Options a Instructions. https://chopchop.cbu.uib.no/ a https://chopchop.cbu.uib.no/instructions
+### 6.1 Assignment and project material
 
-[9] Benchling. CRISPR Knockouts. Oficiální postup aktualizovaný 26. září 2024; dokumentační, nikoli přihlášená inspekce. https://help.benchling.com/hc/en-us/articles/9684226093197-CRISPR-Knockouts
+[1] ITU. Project assignment and instructions 2026. Supplied DOCX; research, complete model/API, active GUI state, contribution and AI rules. The supplied Moodle assignment detail gives the Phase I deadline and checkpoint week stated in this report.
 
-[10] Galaxy Europe a Galaxy Training Network. Historie a jejich správa. https://usegalaxy.eu/ a https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/history/tutorial.html
+[2] ITU. Phase I design report template. Supplied DOCX; identification, research, comparisons, UI, architecture and source handover. The report retains the template's Letter page size, one-inch margins and heading hierarchy.
 
-[11] Galaxy Training Network. Workflow editor a verze nástrojů. https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/workflow-editor/tutorial.html
+[3] ITU. User research and usability testing guide. Supplied DOCX; preparation, open questions and records of actual sessions. Public discussions do not replace participants.
 
-[12] NCBI. GRCh38.p14 assembly report, GCF_000001405.40. Podklad accession a délek 24 jaderných chromozomů; stažený originál a jeho SHA-256 jsou v contracts/references a katalogu. https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_assembly_report.txt
+Local project sources are `docs/architecture.md`, editable wireframes under `docs/design`, executable exchange definitions under `contracts` and the README/submission instructions. Confluence holds longer research and future integration records [14-16].
 
-[13] IRCOMP. Návrh input/output/error contract, inspekce revize ffde336832dfa8250e4051b9c7f785009ff1e4e8. Navrhovaný, nikoli zmrazený běhový kontrakt. https://github.com/viridisquercus/IRCOMP/blob/ffde336832dfa8250e4051b9c7f785009ff1e4e8/docs/architecture/contracts/input-output-error-contract.md
+### 6.2 Research and comparison sources
 
+These are sources from the research/inspection recorded on 1 November 2026. That date describes the recorded inspection, not a new measurement or a claim that every current product feature was checked.
 
-[14] IRCOMP Confluence. GUI research sources and interview plan. Sekundární rešerše a osnova skutečných sezení; přesunuto 6. listopadu 2026. https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665
+[4] r/labrats. Why are on/off target scores so variable. One author's experience; exact posting date was not verified. https://www.reddit.com/r/labrats/comments/tlaqhf/why_are_onoff_target_scores_so_variable_from/
 
-[15] IRCOMP Confluence. GUI integration boundary and future gates. Neimplementovaná budoucí integrace. https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897
+[5] CRISPOR issue 69. Record starting 7 August 2024, ending with a reference identifier correction. https://github.com/maximilianh/crisporWebsite/issues/69
 
-[16] IRCOMP Confluence. GUI verification and submission history. Historické výsledky u příslušných Git revizí. https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29458433
+[6] Galaxy Help. Help with VCF annotation. Discussion, 4-10 January 2024, concerning chromosome naming. https://help.galaxyproject.org/t/help-with-vcf-annotation/11407
 
-Obrázky 1 a 5 jsou projektová schémata. Obrázky 2 až 4 jsou výřezy návrhů S4, obrázek 6 je výřez implementace S6. Veškerá zobrazená kandidátní data jsou syntetická. Obrázky nejsou výsledkem provedeného genomického výpočtu ani uživatelského testu.
+[7] CRISPOR. Public form and official manual. https://crispor.gi.ucsc.edu/ and https://github.com/maximilianh/crisporWebsite/blob/master/manual/manual.md
+
+<!-- page -->
+
+### 6.3 Tool documentation and technical context
+
+[8] CHOPCHOP. Public form, Options and Instructions. https://chopchop.cbu.uib.no/ and https://chopchop.cbu.uib.no/instructions
+
+[9] Benchling. CRISPR Knockouts. Official procedure updated 26 September 2024; documentation-based comparison, not a signed-in inspection. https://help.benchling.com/hc/en-us/articles/9684226093197-CRISPR-Knockouts
+
+[10] Galaxy Europe and Galaxy Training Network. Histories and their management. https://usegalaxy.eu/ and https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/history/tutorial.html
+
+[11] Galaxy Training Network. Workflow editor and tool versions. https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/workflow-editor/tutorial.html
+
+[12] NCBI. GRCh38.p14 assembly report, GCF_000001405.40. Source of accessions and lengths for the 24 nuclear chromosome subset. Original bytes and SHA-256 are retained with the catalogue. https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_assembly_report.txt
+
+[13] IRCOMP. Draft input/output/error contract, inspected at ffde336832dfa8250e4051b9c7f785009ff1e4e8. Proposed contract, not a frozen runtime interface. https://github.com/viridisquercus/IRCOMP/blob/ffde336832dfa8250e4051b9c7f785009ff1e4e8/docs/architecture/contracts/input-output-error-contract.md
+
+[14] IRCOMP Confluence. GUI research sources and interview plan. https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665
+
+[15] IRCOMP Confluence. GUI integration boundary and future gates. Unimplemented future integration. https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897
+
+[16] IRCOMP Confluence. GUI verification and submission history. Earlier results apply to the Git revisions named there. https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29458433
+
+Figures 1 and 5 are project diagrams. Figures 2-4 are sections of the initial wireframes; Figure 6 is a section of the implemented synthetic-data display. None of the candidate data is a genomic calculation or a user-test result.

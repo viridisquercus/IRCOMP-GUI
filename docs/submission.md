@@ -1,46 +1,53 @@
 # ITU Phase I submission
 
-Due **6 November 2026, 23:59**, in Moodle. Checkpoint presentation: the regular lab
-slot in the week beginning **9 November 2026**; exact day/time to fill in.
+### Name: Lukas (Viridis) Dubsik
+### Login: xdubsil00
+### Project: IRCOMP
+### School-Project: ITU-1
+
+The supplied Moodle assignment gives **6 November 2026, 23:59** as the deadline.
+The checkpoint presentation is in the regular lab slot in the week starting
+**9 November 2026**. The exact lab day/time still needs to be filled in.
 Solo participation is agreed; two modules and two planned interviews are the
-chosen scope. The assignment requires at least one real user per actual member.
+chosen scope. The assignment requires one real user per actual team member.
 
-## Before upload
+## Current work
 
-- [ ] Complete P01/P02 and update needs, competitor comparisons and design from
-  actual findings. The report currently contains clearly labelled placeholders.
-- [ ] Fill login/lab and use `00_<login>_navrh.pdf` and `00_<login>_source.zip`.
-- [ ] Resolve actual authorship and the course restriction on larger AI-generated
-  contributions. Cleanup does not change the provenance of the existing draft/code.
-- [ ] Review both report representations and export/inspect the final PDF.
-- [ ] Run the app, edit a target, attach compatible evidence, record a decision,
-  Save/reopen, Undo an unsaved edit and inspect request/review exports.
-- [ ] Commit the final changes and regenerate the source ZIP below.
-- [ ] Upload PDF and ZIP personally and confirm the Moodle submission state.
+- [x] Prepare and Review both change application data.
+- [x] Shared state, Save/Undo and JSON import/export are implemented.
+- [x] Strict Python/client checks and formatting are configured.
+- [x] The English report describes the data, GUI, architecture and API.
+- [ ] Complete P01/P02 with actual participants.
+- [ ] Update needs, competitor comparisons and design using those findings.
+- [ ] Fill the regular lab day/time in the report.
+- [ ] Review actual contribution and the course restriction on larger generated
+  sections. Code and documentation were developed with AI assistance.
+- [ ] Check the final report and regenerate the archive after the last changes.
+- [ ] Upload personally and confirm the Moodle submission status.
 
-## Package
+## Creating the archive
 
-From a clean committed checkout:
+Use `make pack` from a clean, committed checkout. It creates
+`submission/00_xdubsil00_source.zip`. This is a snapshot of the current Git commit,
+so commit any changes that should be included before packaging.
 
-```sh
-mkdir -p submission
-git archive --format=zip --prefix=IRCOMP-GUI/ \
-  --output=submission/00_DOPLNIT_LOGIN_source.zip HEAD
-sha256sum submission/00_DOPLNIT_LOGIN_source.zip
-```
+The report PDF is submitted separately as `00_xdubsil00_navrh.pdf`. The required
+`_navrh` filename is kept even though the content is in English. Report binaries
+are excluded from the source ZIP by `.gitattributes`. Source, schemas, examples,
+reference metadata, installation files and essential documentation are included.
+Installed packages, databases and build output are excluded.
 
-Replace the login placeholder before upload. The report is submitted separately;
-`.gitattributes` excludes its binary outputs from the source ZIP. Source, schemas,
-examples, reference provenance and setup files stay included. Installed packages,
-SQLite databases and build output are ignored. Rebuild the ZIP after source edits.
+## Before the presentation
 
-The repository contains the standalone application and required report/design
-sources. Longer research notes, integration plans and earlier verification records
+Run the application and demonstrate a target edit, an invalid interval and its
+correction, compatible and mismatching evidence, a collection decision,
+Save/reopen, one Undo action and a saved export. Explain the shared state and how
+the GUI calls the model through the HTTP interface.
+
+All Phase I parts and the presentation are required. The supplied Moodle text
+states zero points for missing required work/demonstration and a five-point late
+penalty. No completed Moodle upload is recorded here.
+
+Longer research notes, future compiler integration and earlier engineering records
 are in [IRCOMP Confluence](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29360129).
-Earlier automated results describe their exact old Git revision, not this cleanup.
-
-The checkpoint must demonstrate both editable modules, reactive shared state,
-input correction, persistence and API separation. All Phase I parts and the
-presentation are required; the supplied Moodle text states zero points for missing
-required work/demonstration and a five-point late penalty. No Moodle upload is
-recorded here.
+Historical results belong to the Git revisions named in those records.
