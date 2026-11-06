@@ -22,7 +22,8 @@ chosen scope. The assignment requires one real user per actual team member.
 - [ ] Update needs, competitor comparisons and design using those findings.
 - [ ] Fill the regular lab day/time in the report.
 - [ ] Review actual contribution and the course restriction on larger generated
-  sections. Code and documentation were developed with AI assistance.
+  sections. Code and documentation were developed with AI assistance; see the
+  [AI contribution audit](../ai-audit.md).
 - [ ] Check the final report and regenerate the archive after the last changes.
 - [ ] Upload personally and confirm the Moodle submission status.
 

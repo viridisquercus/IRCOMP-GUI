@@ -60,6 +60,9 @@ describe("Recovering from failed requests and keeping saved exports stable", () 
     });
   });
 
+  /* AI-GENERATED BLOCK START: lost-response recovery scenario.
+   * Selected marker only; the broader contribution is recorded in ai-audit.md.
+   */
   it("refreshes accepted state after a command response is lost", () => {
     createStudy("Lost command response");
     cy.contains("button", "+ Add target").click();
@@ -93,6 +96,8 @@ describe("Recovering from failed requests and keeping saved exports stable", () 
       expect(workspace.study.revisions.at(-1)?.targets[0].end).to.equal(200);
     });
   });
+
+  /* AI-GENERATED BLOCK END: lost-response recovery scenario. */
 
   it("exports the saved interval while a newer accepted edit is unsaved", () => {
     createStudy("Saved export");

@@ -906,6 +906,9 @@ pre {
   font-size: 10px;
   color: var(--muted);
 }
+/* AI-GENERATED BLOCK START: responsive layout rules.
+ * Selected marker only; the broader contribution is recorded in ai-audit.md.
+ */
 @media (max-width: 1200px) {
   main {
     padding: 25px 24px 0;
@@ -1026,3 +1029,4 @@ pre {
     gap: 0;
   }
 }
+/* AI-GENERATED BLOCK END: responsive layout rules. */

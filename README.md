@@ -160,3 +160,7 @@ Code and documentation were developed with AI assistance. The actual contributio
 and the course restriction on larger generated sections still need review before
 assessed submission. Identification headers name the project owner; they do not
 establish independent authorship.
+
+The [AI contribution audit](ai-audit.md) records the scope, source references and
+selected inline markers. AI assistance included core functionality; the markers
+are not an exhaustive attribution.

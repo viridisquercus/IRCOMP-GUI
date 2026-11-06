@@ -80,6 +80,9 @@ describe("Reviewing evidence and exporting decisions", () => {
     });
   });
 
+  /* AI-GENERATED BLOCK START: review download and integrity scenario.
+   * Selected marker only; the broader contribution is recorded in ai-audit.md.
+   */
   it("downloads a draft review with the original evidence bytes and checksum", () => {
     importStudy().then(({ evidence }) => {
       attachEvidence(evidence);
@@ -124,4 +127,5 @@ describe("Reviewing evidence and exporting decisions", () => {
       });
     });
   });
+  /* AI-GENERATED BLOCK END: review download and integrity scenario. */
 });
