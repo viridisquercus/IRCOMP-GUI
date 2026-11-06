@@ -17,13 +17,12 @@ These are the initial design sources, not live application captures. All shown
 candidate data are synthetic. Edit the SVG directly in a vector or text editor.
 The report contains the rationale and interaction scenarios in chapter 3, with
 readable figure excerpts. Exact runtime state and validation rules are in the
-[architecture](../architecture/overview.md).
+[architecture](../architecture.md).
 
 Ordinary edits use inline panels; diagnostics focus the relevant field. Text
 accompanies status colors, native controls have labels, and narrow layouts stack
 regions. A typed draft is separate from an accepted value. Historical evidence
 retains its revision, and source scores are never combined into a universal score.
 
-The [real interviews](../research/s2-interview-plan.md) must still validate interval
-entry, candidate-level decisions and collection granularity. Automated browser
-checks in [verification](../verification.md) do not establish measured usability.
+The [real interviews](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665) must still validate interval
+entry, candidate-level decisions and collection granularity. Engineering checks do not establish measured usability.

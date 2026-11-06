@@ -1,29 +1,18 @@
-# ITU Phase I report
+# Phase I report
 
-The report covers scope, research status, four competing applications, UI design,
-architecture, per-module APIs and source responsibilities. Chapter headings name
-the responsible project owner. It is a review draft with pending primary research.
+Editable report: `output/00_DOPLNIT_LOGIN_navrh.docx`.
+Submitted PDF: `output/00_DOPLNIT_LOGIN_navrh.pdf`.
+Text mirror: [phase-i.md](phase-i.md).
 
-The editable Word document and PDF are in `output/00_DOPLNIT_LOGIN_navrh.docx` and
-`output/00_DOPLNIT_LOGIN_navrh.pdf` in the repository checkout. They are distributed
-separately from the source ZIP. `DOPLNIT_LOGIN` is an intentional placeholder.
-The first page also leaves the regular lab day/time to fill in.
+The report covers scope, research, four competitors, wireframes, architecture,
+module APIs and source responsibilities. Edit Word directly, mirror substantive
+changes in Markdown and export/inspect the PDF. Figures are embedded in Word;
+editable wireframes remain in [design](../design/README.md).
 
-[phase-i.md](phase-i.md) keeps the report text for review. Edit the Word document
-directly, mirror substantive text changes in the Markdown, and export the final
-PDF from Word or LibreOffice. Figures are embedded in Word; the editable original
-wireframes are in [design](../design/README.md). Review page flow, contents page
-numbers, captions, Czech glyphs and author labels after edits.
+Real interviews, login/lab fields and actual attribution remain to complete.
+The draft/code were prepared with AI assistance; the course restriction on larger
+generated sections remains unresolved. Follow [submission](../submission.md).
 
-Before submission:
-
-- [ ] Conduct P01/P02 and replace research TODOs with accurate records.
-- [ ] Revise needs, comparison and design from those actual findings.
-- [ ] Fill login/lab and rename outputs to the required actual-login filenames.
-- [ ] Check attribution, source headers and understanding of the submitted work.
-- [ ] Export and inspect the final PDF; complete the [submission checklist](../submission.md).
-
-The draft text/code was prepared with AI assistance. The supplied course rules
-permit consultation/small fragments, restrict generated larger sections, and
-require detailed understanding. Responsible-owner labels do not establish
-independent student authorship; final assessed text and attribution need review.
+[Research register and interview plan](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665)
+and [future integration](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897)
+are maintained in IRCOMP Confluence.

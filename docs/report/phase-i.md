@@ -26,7 +26,7 @@ Obsah a čísla stran jsou v editovatelném dokumentu.
 
 ### 1.1 Provedený sekundární výzkum a hranice zjištění
 
-Sekundární rešerše z 1. listopadu 2026 zahrnuje 16 zdrojů: sedm veřejných diskusí či hlášení problémů, šest dokumentací a tři původní odborné práce. Zaměřuje se na význam skóre, identitu reference, opravu vstupů, obnovu kontextu a předání výsledků. Úplný registr E01 až E16 je v docs/research/s2-desk-research.md.
+Sekundární rešerše z 1. listopadu 2026 zahrnuje 16 zdrojů: sedm veřejných diskusí či hlášení problémů, šest dokumentací a tři původní odborné práce. Zaměřuje se na význam skóre, identitu reference, opravu vstupů, obnovu kontextu a předání výsledků. Úplný registr E01 až E16 je v Confluence, GUI research sources and interview plan [14].
 
 Diskuse dokládají popsanou zkušenost konkrétního pisatele, nikoli četnost problému. Dokumentace vysvětluje chování nástroje; neprokazuje obtíže uživatele. Návrhové závěry jsou interpretací těchto podkladů. Rešerše není rozhovorem ani testem použitelnosti.
 
@@ -45,7 +45,7 @@ Pro dobrovolně zvolený rozsah odpovídající dvěma členům jsou plánováni
 | Pozorování | TODO oddělit přímo pozorované kroky od vzpomínek a názorů; odkázat na záznam P01/P02 |
 | Vyhodnocení | TODO doložit potřeby, rozpory, funkční současná řešení a skutečné změny návrhu |
 
-Připravený scénář má 35 až 45 minut: poslední úkol, průchod soubory, identita a předání. Koncept se ukazuje až na konci. Osnova je v docs/research/s2-interview-plan.md; citace vyžadují přesný povolený záznam.
+Připravený scénář má 35 až 45 minut: poslední úkol, průchod soubory, identita a předání. Koncept se ukazuje až na konci. Osnova je v Confluence [14]; citace vyžadují přesný povolený záznam.
 
 <!-- page -->
 
@@ -72,7 +72,7 @@ TODO po rozhovorech: ke každé ponechané potřebě připojit konkrétní zázn
 
 Nejrizikovější otázky: začíná operátor skutečně intervaly, rozhoduje po kandidátech, potřebuje alternativní kolekce a dokáže levně dodat očekávaná metadata? Pokud současný notebook nebo skript problém řeší, návrh musí zúžit rozsah nebo využít existující předání. Změny se mají promítnout i do porovnání konkurence, scénářů a priorit, ne pouze do textu této kapitoly.
 
-Pozdější test použitelnosti se soustředí na přípravu cíle, opravu diagnostiky, rozlišení nuly od absence, kompatibilitu revize, změnu rozhodnutí a vysvětlení exportu. Automatizované testy z kapitoly 5 tento výzkum nenahrazují.
+Pozdější test použitelnosti se soustředí na přípravu cíle, opravu diagnostiky, rozlišení nuly od absence, kompatibilitu revize, změnu rozhodnutí a vysvětlení exportu. Technické kontroly z kapitoly 5 tento výzkum nenahrazují.
 
 <!-- page -->
 
@@ -220,11 +220,11 @@ Při neuložených změnách je nutné Save nebo výslovné Export last saved. E
 | Prázdná studie / žádné podklady | Konkrétní další krok; žádný vymyšlený výsledek analýzy |
 | Neplatný vstup | Diagnostika u pole, zachování bufferu a dříve přijatých dat |
 | Selhání Save | Trvalá zpráva, zachování práce, opakování; stav Saved až po potvrzení |
-| Zastaralý importní náhled | Nová kontrola vůči aktuální verzi, bez částečné změny |
-| Ztracená odpověď příkazu | Zablokovat další změny do obnovení stavu; příkaz slepě neopakovat |
+| Zastaralý importní náhled | Nová kontrola vůči vybrané revizi, bez částečné změny |
+| Ztracená odpověď příkazu | Obnovit pracovní stav a zkontrolovat přijaté změny před opakováním |
 | Starší podklady | Zobrazit původní revizi, nepřeznačit je na aktuální |
 
-Klávesnice používá nativní popsané ovládací prvky a viditelné zaměření. Nevyžádané kontroly nepřesouvají fokus. Ověřené automatizované cesty jsou uvedeny v kapitole 5; úplný audit přístupnosti ani reálné testy použitelnosti dosud provedeny nejsou.
+Klávesnice používá nativní popsané ovládací prvky a viditelné zaměření. Nevyžádané kontroly nepřesouvají fokus. Rozsah technických kontrol je uveden v kapitole 5; úplný audit přístupnosti ani reálné testy použitelnosti dosud provedeny nejsou.
 
 <!-- page -->
 
@@ -236,11 +236,11 @@ React a TypeScript vykreslují sdílený prezentační model. Kontrolér převá
 
 Obrázek 5 Vrstvy a tok změny stavu v implementované aplikaci. Obrázek je vložen v editovatelném dokumentu.
 
-Doména ani aplikační služby neimportují React, FastAPI nebo konkrétní SQLite adaptér. Lze je volat bez GUI; testy používají stejné služby. Šipky zobrazují volání při obsluze, zatímco porty vlastní aplikační vrstva a adaptéry na ně závisejí.
+Doména ani aplikační služby neimportují React, FastAPI nebo konkrétní SQLite adaptér. Lze je volat bez GUI a používat přímo z Pythonu. Šipky zobrazují volání při obsluze, zatímco porty vlastní aplikační vrstva a adaptéry na ně závisejí.
 
 | Stav | Vlastník a způsob změny |
 | --- | --- |
-| Přijatá pracovní studie | Python WorkspaceSession; verzované příkazy |
+| Přijatá pracovní studie | Python Session; příkazy pod jedním lokálním zámkem |
 | Trvale uložená studie a buffery | SQLite; výslovný atomický Save |
 | Zrcadlo přijatých dat | TypeScript reducer; náhrada úspěšnou odpovědí |
 | Rozepsané řetězce a navigace | Sdílený klientský stav; události z ovládacích prvků |
@@ -260,9 +260,9 @@ DOM není zdrojem aplikačních dat. Událost Apply vede přes kontrolér a API 
 | RequestRevision | revision_id, reference_id, profile_id, konvence a cíle; neměnný analytický kontext |
 | Target | target_id, accession, start, end, strand; identita přetrvává mezi revizemi |
 | TargetDraft | Stejné editované položky jako řetězce; neúplný vstup není přijatým intervalem |
-| WorkspaceView | workspace_id, version, base_saved_version, dirty, can_undo, study, diagnostics |
+| WorkspaceView | workspace_id, base_saved_version, dirty, can_undo, study, diagnostics |
 
-UUID identifikuje studii, požadavek, revizi a cíl. Verze pracovní relace je jiný pojem než vědecká revize nebo uložená verze. Diagnostika má code, severity, location jako JSON Pointer a message; zaměření pole nezávisí na překladu zprávy.
+UUID identifikuje studii, požadavek, revizi a cíl. Čítač uložení identifikuje snímek; UUID revize identifikuje analytický kontext. Pracovní relace nepoužívá verzovací zámky. Diagnostika má code, severity, location jako JSON Pointer a message; zaměření pole nezávisí na překladu zprávy.
 
 | Příkaz či služba | Vstup | Účinek |
 | --- | --- | --- |
@@ -299,9 +299,9 @@ Pozorování je neměnné, úsudek patří členství. Podpůrné odkazy musejí
 | remove_member | collection_id, candidate | Odstranění členství a jeho rozhodnutí |
 | set_decision | collection_id, candidate, disposition, rationale, evidence_refs | Změna úsudku odděleně od původního záznamu |
 
-ReviewView.tsx používá stejný kontrolér a reducer jako Prepare. ReviewService v application/review.py řeší členství a rozhodnutí; application/imports.py koordinuje náhledy. Neplatný či zastaralý náhled nemění studii. Shodné bundle ID a přesně stejné bajty jsou duplicitou; jiné bajty pod stejným ID jsou blokovanou kolizí.
+ReviewView.tsx používá stejný kontrolér a reducer jako Prepare. ReviewService v application/review.py řeší členství a rozhodnutí; application/imports.py koordinuje náhledy. Neplatný náhled nemění studii; při připojení se znovu ověřuje kontext i duplicity. Shodné bundle ID a přesně stejné bajty jsou duplicitou; jiné bajty pod stejným ID jsou blokovanou kolizí.
 
-Všechny měnící příkazy používají POST /api/v1/workspaces/{w}/commands s expected_version, draft_buffers a uzavřeným command. Úspěchem je celý nový WorkspaceView. Serverové operace serializuje lokální zámek; návrh počítá s jedním procesem, nikoli s distribuovanou kolaborací.
+Všechny měnící příkazy používají POST /api/v1/workspaces/{w}/commands s draft_buffers a uzavřeným command. Úspěchem je celý nový WorkspaceView. Serverové operace serializuje lokální zámek; návrh počítá s jedním procesem, nikoli s distribuovanou kolaborací.
 
 <!-- page -->
 
@@ -312,20 +312,20 @@ Všechny měnící příkazy používají POST /api/v1/workspaces/{w}/commands s
 | GET /catalogue; GET /studies | Podporované reference/profily; seznam uložených studií |
 | POST /workspaces | source new, saved, duplicate nebo request_import; 201 WorkspaceView |
 | GET nebo DELETE /workspaces/{w} | Čtení relace nebo potvrzené zavření; uloženou studii nemaže |
-| POST /workspaces/{w}/commands | Verzovaný příkaz; 200 WorkspaceView |
+| POST /workspaces/{w}/commands | Typovaný příkaz; 200 WorkspaceView |
 | POST /workspaces/{w}/validate | Lokální kontroly přijaté revize a samostatného draftu |
-| POST /workspaces/{w}/save; /undo | Atomický Save s verzemi; jednokrokové Undo |
+| POST /workspaces/{w}/save; /undo | Atomický Save; jednokrokové Undo |
 | POST /imports; DELETE /imports/{id} | Neměnný náhled / jeho zrušení, bez částečné změny studie |
 | POST /exports; GET /exports/{id}/file | Zmrazený náhled a přesně jeho bajty |
 | GET /examples/{name} | Čtyři předem označené syntetické příklady, nikoli výsledky běhu |
 
-Přesná specifikace dat a chyb je v docs/architecture/api.md a běhovém /openapi.json. HTTP adaptér pouze převádí typy a chyby; pravidla kompatibility, intervalů a dokončenosti patří službám a doméně.
+Přehled rozhraní je v docs/architecture.md, přesné běhové typy v /openapi.json. HTTP adaptér pouze převádí typy a chyby; pravidla kompatibility, intervalů a dokončenosti patří službám a doméně.
 
-Save zapisuje celý omezený agregát v jedné SQLite transakci. Jediná tabulka studies obsahuje study_id, unikátní request_id, saved_version, title, updated_at a document_json. SQL verze je PRAGMA user_version = 1; vztahy mezi objekty ověřuje doména, nejsou vydávány za samostatné SQL tabulky. Zápis s očekávanou saved_version brání přepsání novější kopie. Chyba vrací původní uložený stav.
+Save zapisuje celý omezený agregát v jedné SQLite transakci. Jediná tabulka studies obsahuje study_id, unikátní request_id, saved_version, title, updated_at a document_json. SQL verze je PRAGMA user_version = 1; vztahy mezi objekty ověřuje doména, nejsou vydávány za samostatné SQL tabulky. Save nahrazuje celý snímek; poslední výslovné uložení platí. Používá se jeden proces a jedna karta na studii. Chyba zachová dosavadní uložený stav.
 
 Po načtení se kontrolují verze, obálka, identity, odkazy a hashe původních bajtů. Neznámý či poškozený formát se nepřepisuje automatickou opravou. Undo vrací poslední přijatý pracovní snímek včetně bufferů; po Save se historie Undo čistí.
 
-Chyba má error.code, message, diagnostics a případnou workspace_version. Konflikt 409 vyžaduje obnovu či nové potvrzení, ne tichý přepis. Validační chyba 422 vede ke konkrétnímu vstupu; překročení limitu 413 k menším datům. Při selhání persistence 503 zůstává práce k opakování. Ztracená odpověď může skrývat přijatý příkaz, a proto klient nejprve obnoví autoritativní stav.
+Chyba má error.code, message a diagnostics. Stav 409 označuje kolizi identity nebo nedostupné Undo. Validační chyba 422 vede ke konkrétnímu vstupu; překročení limitu 413 k menším datům. Při selhání persistence 503 zůstává práce k opakování. Po ztracené odpovědi má uživatel obnovit pracovní stav a zkontrolovat přijaté změny před opakováním příkazu; klient neprovádí automatické smíření verzí.
 
 <!-- page -->
 
@@ -347,7 +347,7 @@ Jde o zvolené meze malého lokálního projektu, nikoli výsledky výkonnostní
 
 Katalog obsahuje syntetický demo_contig a explicitní podmnožinu GRCh38.p14: 24 jaderných chromozomů, accession a délky z NCBI assembly reportu [12]. Neobsahuje mitochondrii, alternativní ani patch sekvence. Neověřuje FASTA. Profily deklarují SpCas9/NGG a preexperimentální záměr, neprovádějí výpočet.
 
-IRCOMP vlastní formální jazyk, normalizovaný request, cartridge, cíle, omezení, plánovač, kompilátor a řízení spuštění [13]. GUI vlastní pracovní editaci a revizi. Budoucí verzovaný adaptér smí předat pouze úplný podporovaný význam; chybějící cartridge verzi, cíle, obecná omezení a AI pravidla nesmí domyslet. YAML editor, workflow graf, compile/execute a vědecké běhy jsou odloženy v docs/architecture/ircomp-integration.md. Současné validace nemají autoritu kompilátoru.
+IRCOMP vlastní formální jazyk, normalizovaný request, cartridge, cíle, omezení, plánovač, kompilátor a řízení spuštění [13]. GUI vlastní pracovní editaci a revizi. Budoucí verzovaný adaptér smí předat pouze úplný podporovaný význam; chybějící cartridge verzi, cíle, obecná omezení a AI pravidla nesmí domyslet. YAML editor, workflow graf, compile/execute a vědecké běhy jsou odloženy v integračním záznamu v Confluence [15]. Současné validace nemají autoritu kompilátoru.
 
 <!-- page -->
 
@@ -355,21 +355,21 @@ IRCOMP vlastní formální jazyk, normalizovaný request, cartridge, cíle, omez
 
 ### 5.1 Implementované rozhraní a ověření
 
-Stav implementace odpovídá commitu 9364e16 z 2. listopadu 2026. Přesné příkazy, záběr a omezení kontrol jsou v docs/verification.md. Nejde o výsledky uživatelských sezení.
+Zjednodušená implementace odpovídá commitu 5494d9f z 6. listopadu 2026. Testovací nástroje nejsou součástí odevzdání. Starší ověření zůstává u přesné původní revize v Confluence [16]; nejde o uživatelský výzkum.
 
 Obrázek 6 Implementovaný Review výřez původních metrik ze syntetického příkladu S6. Obrázek je vložen v editovatelném dokumentu.
 
 Snímek skutečné aplikace ukazuje numerickou nulu a samostatné not supplied. Editor rozhodnutí mění rozhodovací vrstvu, nikoli původní hodnoty. Výřez je přímo součástí této zprávy.
 
-| Kontrola provedená v S6 | Zjištěný výsledek a hranice |
+| Kontrola při zjednodušení | Zjištěný výsledek a hranice |
 | --- | --- |
-| Backend | 33 úspěšných pytest případů: služby, persistence, import/export, HTTP a směr závislostí |
-| Klient | Striktní TypeScript a produkční Vite build; sedm Chromium workflow |
-| Statické kontroly | Pyright bez chyb a varování, Ruff a formátování; Prettier |
-| Kontrakty | Schema, devět strukturálních očekávání fixtures, původní bajty a provenance katalogu |
-| Instalace | Čistý Git archiv a npm ci/build; sdist a samostatně instalovaný wheel s balenými zdroji |
+| Backend | Průchod editací, Save, Undo, importem, rozhodnutím, exportem a restartem; kontrola chyby uložení |
+| Klient | TypeScript a produkční Vite build; sedm prohlížečových scénářů před odstraněním testovacího nástroje |
+| Statické kontroly | Typová kontrola Pythonu bez chyb; kontrola syntaxe a importů |
+| Kontrakty | Import kontroluje schema, shodu revize, duplicity a původní bajty evidence |
+| Instalace | Čisté prostředí s requirements.txt; npm ci/build bez testovacích závislostí |
 
-Prohlížečové scénáře zahrnují Save a otevření, rozhodnutí, neplatné buffery, opožděný Save, diagnostiku s fokusem, dvě kolekce, starou revizi, ztracenou odpověď a export posledního uloženého stavu. Úzké rozložení bylo kontrolováno na šířce 390 px. Tyto případy neprokazují obecnou použitelnost, všechny prohlížeče ani úplnou přístupnost.
+Při zjednodušení byly ověřeny oba editovatelné moduly, neplatné buffery, dvě kolekce, starší evidence, oprava vstupu, Save/otevření a export posledního uloženého stavu. Po ztracené odpovědi funguje ruční obnova stavu. Kontroly neprokazují obecnou použitelnost ani úplnou přístupnost.
 
 <!-- page -->
 
@@ -391,8 +391,8 @@ Python soubory níže jsou relativní ke src/ircomp_gui. Sdílený základ ozna�
 | Doména | domain/models.py, rules.py, errors.py, catalogue.py, serialization.py |
 | Aplikační základ | application/workspace.py, commands.py, ports.py |
 | Adaptéry a HTTP | adapters/sqlite.py, exchange.py, resources.py; api/app.py, requests.py; __main__.py |
-| Automatizované kontroly | tests/test_workspace.py; web/e2e/workspace.spec.ts; scripts/development/check_contracts.py |
-| Kontrakty a konfigurace | contracts/exchange.schema.json, catalogue.json, cases.json, examples; pyproject.toml, requirements-dev.lock; web/package.json, package-lock.json, vite.config.ts, playwright.config.ts; balíčkové __init__.py |
+| Návrhové podklady | docs/design/wireframes/*.svg; docs/architecture.md |
+| Kontrakty a konfigurace | contracts/exchange.schema.json, catalogue.json, examples; pyproject.toml, requirements.txt; web/package.json, package-lock.json, vite.config.ts; balíčkové __init__.py |
 
 Přesná veřejná API a návratové typy jsou popsány v kapitole 4 a v běhovém OpenAPI. Revizi zdrojového archivu a kontrolní součet eviduje S8 v adresáři submission; postup a další kontroly jsou v docs/submission.md. Závislosti zůstávají externími projekty se svými licencemi.
 
@@ -404,7 +404,7 @@ Ověřené prostředí je Linux, Python 3.14.6, Node 20.20.2 a npm 10.8.2. Dekla
 
 ```sh
 python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements-dev.lock
+.venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python -m pip install --no-build-isolation --no-deps -e .
 npm --prefix web ci
 npm --prefix web run build
@@ -417,13 +417,13 @@ Save je výslovný. Restart serveru ztratí neuložené relace a náhledy. Obnov
 
 | Výstup nebo kontrola | Stav této verze |
 | --- | --- |
-| Lokální model/API a klíčové GUI | Implementováno a ověřeno v rozsahu S6 |
+| Lokální model/API a klíčové GUI | Implementováno; ověřeno po zjednodušení |
 | Čtyři konkurenti, wireframes, architektura | Připraveno; vazby na skutečný výzkum čekají na rozhovory |
 | Dva skutečné rozhovory | TODO provést, zapsat a promítnout do návrhu |
 | Login a termín cvičení | TODO doplnit na identifikační straně |
 | Autorské označení a pravidla AI | TODO věcná kontrola; samotný název v nadpisu ji nenahrazuje |
 | 00_DOPLNIT_LOGIN_source.zip | S8: zdrojový archiv a kontrolní součet v adresáři submission; ověřit aktuální revizi |
-| Finální kontrola a Moodle | S9 až S10: TODO; termín 6. 11. 2026 ve 23:59 |
+| Finální kontrola a Moodle | TODO doplnit povinné části a nahrát; termín 6. 11. 2026 ve 23:59 |
 
 Kontrolní prezentace proběhne v termínu cvičení v týdnu od 9. listopadu 2026. Předvede oba moduly, změny sdíleného stavu, opravu chyby, Save/otevření a odpovídající API. Konkrétní slot je k doplnění. Podle dodaného Moodle záznamu jsou všechny části a demonstrace povinné; neúplnost může vést k 0 bodům a pozdní odevzdání k penalizaci 5 bodů. Tato zpráva nenahrazuje záznam skutečného odevzdání.
 
@@ -439,7 +439,7 @@ Kontrolní prezentace proběhne v termínu cvičení v týdnu od 9. listopadu 20
 
 [3] ITU. Průvodce uživatelským výzkumem a testováním použitelnosti. Dodaný DOCX; příprava a záznam reálných sezení. Veřejné diskuse nejsou náhradními respondenty.
 
-Lokální projektové podklady: docs/research/s2-desk-research.md a s2-interview-plan.md; docs/design/README.md a SVG návrhy; docs/architecture/overview.md, domain-model.md, api.md, exchange-and-persistence.md a ircomp-integration.md. Pozorované technické výsledky: docs/verification.md, implementace 9364e16. Tyto materiály rozlišují zamýšlené chování, implementaci a ověřené případy.
+Lokální podklady: docs/design/README.md a SVG návrhy, docs/architecture.md, contracts a docs/submission.md. Výzkumné poznámky, budoucí integrace a historická ověření jsou v IRCOMP Confluence [14–16]. Běhové datové typy jsou v /openapi.json.
 
 ### 6.2 Veřejné podklady výzkumu a srovnání
 
@@ -468,5 +468,12 @@ Níže jsou klíčové zdroje z rešerše a posouzení provedených 1. listopadu
 [12] NCBI. GRCh38.p14 assembly report, GCF_000001405.40. Podklad accession a délek 24 jaderných chromozomů; stažený originál a jeho SHA-256 jsou v contracts/references a katalogu. https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_assembly_report.txt
 
 [13] IRCOMP. Návrh input/output/error contract, inspekce revize ffde336832dfa8250e4051b9c7f785009ff1e4e8. Navrhovaný, nikoli zmrazený běhový kontrakt. https://github.com/viridisquercus/IRCOMP/blob/ffde336832dfa8250e4051b9c7f785009ff1e4e8/docs/architecture/contracts/input-output-error-contract.md
+
+
+[14] IRCOMP Confluence. GUI research sources and interview plan. Sekundární rešerše a osnova skutečných sezení; přesunuto 6. listopadu 2026. https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665
+
+[15] IRCOMP Confluence. GUI integration boundary and future gates. Neimplementovaná budoucí integrace. https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897
+
+[16] IRCOMP Confluence. GUI verification and submission history. Historické výsledky u příslušných Git revizí. https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29458433
 
 Obrázky 1 a 5 jsou projektová schémata. Obrázky 2 až 4 jsou výřezy návrhů S4, obrázek 6 je výřez implementace S6. Veškerá zobrazená kandidátní data jsou syntetická. Obrázky nejsou výsledkem provedeného genomického výpočtu ani uživatelského testu.
